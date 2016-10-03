@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import java.sql.ResultSet;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by gijspeters on 02-10-16.
@@ -26,20 +26,20 @@ public class DBConnectionTest {
 
     @Test
     public void select() throws Exception {
-        String sql = "SELECT id FROM testje LIMIT 1";
+        String sql = "SELECT id FROM scraped_tweets LIMIT 1";
         ResultSet rs = c.select(sql);
         rs.next();
-        assertEquals(rs.getInt("id"), 1);
+        assertEquals(33, rs.getInt("id"));
     }
 
     @Test
     public void execute() throws Exception {
-        String sql = "UPDATE stations_ns SET korte_naam = 'Abcoude' WHERE id = 5";
+        String sql = "UPDATE scraped_tweets SET tweet_name = 'AngelaAnna' WHERE id = 1";
         c.execute(sql, true);
-        sql = "SELECT korte_naam FROM stations_ns WHERE id = 5";
+        sql = "SELECT tweet_name FROM scraped_tweets WHERE id = 1";
         ResultSet rs = c.select(sql);
         rs.next();
-        assertEquals(rs.getString("korte_naam"), "Abcoude");
+        assertEquals("AngelaAnna", rs.getString("tweet_name"));
     }
 
 
