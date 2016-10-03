@@ -8,6 +8,7 @@ import structure.Agent;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Created by gijspeters on 03-10-16.
@@ -49,6 +50,22 @@ public class TweetTest {
     @Test
     public void getUser() throws Exception {
         assertEquals("Gijs", tweet.getUser().getName());
+    }
+
+    @Test
+    public void constructorTest() throws Exception {
+        TwitterUser user = new TwitterUser("Gijs", "123");
+        Agent agent = new Agent(456);
+        Coordinate coord = new Coordinate(4.889, 52.37);
+        Date date = new Date(1449316800000L);
+
+        try {
+            Tweet tweet = new Tweet(coord, date, agent, user, "bla");
+
+        } catch (AssertionError e) {
+            return;
+        }
+        fail();
     }
 
 }
