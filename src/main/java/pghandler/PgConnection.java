@@ -1,4 +1,4 @@
-package dbhandler;
+package pghandler;
 
 import java.sql.*;
 
@@ -7,7 +7,7 @@ import java.sql.*;
  *
  * Created by gijspeters on 02-10-16.
  */
-public class DBConnection {
+public class PgConnection {
 
     public static final String HOST = "localhost";
     public static final String PORT = "5432";
@@ -25,7 +25,7 @@ public class DBConnection {
      * @throws SQLException
      * @throws ClassNotFoundException
      */
-    public DBConnection() throws SQLException, ClassNotFoundException {
+    public PgConnection() throws SQLException, ClassNotFoundException {
         setupConnection(false);
     }
 
@@ -36,7 +36,7 @@ public class DBConnection {
      * @throws ClassNotFoundException
      * @throws SQLException
      */
-    public DBConnection(boolean autocommit) throws ClassNotFoundException, SQLException {
+    public PgConnection(boolean autocommit) throws ClassNotFoundException, SQLException {
         setupConnection(autocommit);
     }
 
@@ -56,7 +56,7 @@ public class DBConnection {
      * Method for executing queries with responses
      *
      * @param query A valid SQL query
-     * @return
+     * @return A ResultSet containing the query results
      * @throws SQLException
      */
     public ResultSet select(String query) throws SQLException {
@@ -116,7 +116,7 @@ public class DBConnection {
     }
 
     /**
-     * Closes the database connection. DBConnection object becomes useless after close.
+     * Closes the database connection. PgConnection object becomes useless after close.
      *
      * @throws SQLException
      */

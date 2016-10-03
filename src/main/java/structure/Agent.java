@@ -1,6 +1,6 @@
 package structure;
 
-import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * This class represents agents: individuals publishing their locations using social media
@@ -9,7 +9,7 @@ import java.util.HashMap;
  * <p>
  * Created by gijspeters on 03-10-16.
  */
-public class Agent extends HashMap<Integer, User> {
+public class Agent extends HashSet<User> {
 
     private int agentId;
 
@@ -27,10 +27,10 @@ public class Agent extends HashMap<Integer, User> {
      * Constructor using existing hashmap
      *
      * @param agentId the agent identifier from the database
-     * @param usermap a HashMap with user keys and users
+     * @param userSet a HashSet with users
      */
-    public Agent(int agentId, HashMap<Integer, User> usermap) {
-        super(usermap);
+    public Agent(int agentId, HashSet<User> userSet) {
+        super(userSet);
         this.agentId = agentId;
     }
 

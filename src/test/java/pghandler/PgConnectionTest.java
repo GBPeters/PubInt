@@ -1,4 +1,4 @@
-package dbhandler;
+package pghandler;
 
 import org.junit.After;
 import org.junit.Before;
@@ -11,12 +11,12 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by gijspeters on 02-10-16.
  */
-public class DBConnectionTest {
+public class PgConnectionTest {
 
-    private DBConnection c;
+    private PgConnection c;
     @Before
     public void setUp() throws Exception {
-        c = new DBConnection();
+        c = new PgConnection();
     }
 
     @After

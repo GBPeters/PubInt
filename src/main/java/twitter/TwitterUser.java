@@ -1,14 +1,14 @@
 package twitter;
 
-import structure.GenericUser;
 import structure.SourceType;
+import structure.User;
 
 /**
  * User implementation for Twitter user accounts
  * <p>
  * Created by gijspeters on 03-10-16.
  */
-public class TwitterUser extends GenericUser {
+public class TwitterUser extends User {
 
     private SourceType sourceType = SourceType.TWITTER;
 

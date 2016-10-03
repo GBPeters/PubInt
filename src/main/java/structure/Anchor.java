@@ -5,36 +5,59 @@ import com.vividsolutions.jts.geom.Coordinate;
 import java.util.Date;
 
 /**
- * An interface defining the attributes of an anchor, i.e. a geotagged twitter message
- * or Instagram photo
+ * Generic Anchor class. Object is immutable after creation
  * <p>
  * Created by gijspeters on 03-10-16.
  */
-public interface Anchor {
+public abstract class Anchor {
+
+    private Coordinate coord;
+    private Date date;
+    private Agent agent;
+    private User user;
+
+    /**
+     * Default constructor. Agent should contain the user, this is asserted.
+     *
+     * @param coord   the anchor coordinate
+     * @param date    the anchor date and time
+     * @param agent   the anchor agent
+     * @param user    the anchor-specific user
+     */
+    public Anchor(Coordinate coord, Date date, Agent agent, User user) {
+        assert (agent.contains(user));
+        this.coord = coord;
+        this.date = date;
+        this.agent = agent;
+        this.user = user;
+    }
 
     /**
      * @return The anchor's location
      */
-    Coordinate getLocation();
+    public Coordinate getLocation() {
+        return coord;
+    }
 
     /**
      * @return The anchor's date and time
      */
-    Date getDate();
+    public Date getDate() {
+        return date;
+    }
 
     /**
      * @return The anchor's agent
      */
-    Agent getAgent();
+    public Agent getAgent() {
+        return agent;
+    }
 
-    /**
-     * @return The key to the anchor-specific user in the corresponding agent
-     */
-    int getUserKey();
 
     /**
      * @return The anchor's user
      */
-    User getUser();
-
+    public User getUser() {
+        return user;
+    }
 }

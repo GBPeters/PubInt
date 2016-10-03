@@ -20,10 +20,10 @@ public class TweetTest {
     public void setUp() throws Exception {
         TwitterUser user = new TwitterUser("Gijs", "123");
         Agent agent = new Agent(456);
-        agent.put(1, user);
+        agent.add(user);
         Coordinate coord = new Coordinate(4.889, 52.37);
         Date date = new Date(1449316800000L);
-        tweet = new Tweet(coord, date, agent, 1, "bla");
+        tweet = new Tweet(coord, date, agent, user, "bla");
     }
 
     @Test
@@ -47,10 +47,6 @@ public class TweetTest {
     }
 
     @Test
-    public void getUserKey() throws Exception {
-        assertEquals(1, tweet.getUserKey());
-    }
-
     public void getUser() throws Exception {
         assertEquals("Gijs", tweet.getUser().getName());
     }
