@@ -27,7 +27,7 @@ public class MorphiaConnectionTest {
     @Test
     public void testSaveQueryRemove() {
         Agent agent = new Agent();
-        TwitterUser user = new TwitterUser("Gijs", agent, 999);
+        TwitterUser user = new TwitterUser("Gijs", agent);
         Coordinate coord = new Coordinate(4.889, 52.37);
         Date date = new Date(1449316800000L);
         Tweet tweet = new Tweet(coord, date, user, "bla", 888);

@@ -4,6 +4,7 @@ import nl.gijspeters.pubint.structure.Agent;
 import nl.gijspeters.pubint.structure.SourceType;
 import nl.gijspeters.pubint.structure.User;
 import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Indexed;
 
 /**
  * User implementation for Twitter user accounts
@@ -13,7 +14,8 @@ import org.mongodb.morphia.annotations.Entity;
 @Entity("User")
 public class TwitterUser extends User {
 
-    private long twitterId;
+    @Indexed(sparse = true, unique = true)
+    private String twitterName;
 
 
     /**
@@ -26,20 +28,20 @@ public class TwitterUser extends User {
     /**
      * Default constructor inherited from superclass
      *
-     * @param name the user's name
-     * @param twitterId   the user's identifier as used by the original social network
+     * @param agent the user's agent
+     * @param twitterName   the user's identifier as used by the original social network
      */
-    public TwitterUser(String name, Agent agent, long twitterId) {
-        super(name, agent);
-        this.twitterId = twitterId;
+    public TwitterUser(String twitterName, Agent agent) {
+        super(twitterName, agent);
+        this.twitterName = twitterName;
     }
 
-    public long getTwitterId() {
-        return this.twitterId;
+    public String getTwitterName() {
+        return this.twitterName;
     }
 
-    public void setTwitterId(long twitterId) {
-        this.twitterId = twitterId;
+    public void setTwitterName(String twitterName) {
+        this.twitterName = twitterName;
     }
 
     /**

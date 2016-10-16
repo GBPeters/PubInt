@@ -17,7 +17,7 @@ public class TwitterUserTest {
     @Before
     public void setUp() throws Exception {
         Agent agent = new Agent();
-        user = new TwitterUser("Gijs", agent, 123);
+        user = new TwitterUser("Gijs", agent);
     }
 
     @Test
@@ -31,8 +31,8 @@ public class TwitterUserTest {
     }
 
     @Test
-    public void getTwitterId() throws Exception {
-        assertEquals(123, user.getTwitterId());
+    public void getTwitterName() throws Exception {
+        assertEquals("Gijs", user.getTwitterName());
     }
 
 }

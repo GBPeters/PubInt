@@ -19,7 +19,7 @@ public class TweetTest {
     @Before
     public void setUp() throws Exception {
         Agent agent = new Agent();
-        TwitterUser user = new TwitterUser("Gijs", agent, 123);
+        TwitterUser user = new TwitterUser("Gijs", agent);
         Coordinate coord = new Coordinate(4.889, 52.37);
         Date date = new Date(1449316800000L);
         tweet = new Tweet(coord, date, user, "bla", 999);

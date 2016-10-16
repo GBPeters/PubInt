@@ -4,6 +4,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import nl.gijspeters.pubint.structure.Anchor;
 import nl.gijspeters.pubint.structure.User;
 import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Indexed;
 
 import java.util.Date;
 
@@ -18,6 +19,7 @@ import java.util.Date;
 public class Tweet extends Anchor {
 
     private String message;
+    @Indexed(sparse = true, unique = true)
     private long tweetId;
 
 
