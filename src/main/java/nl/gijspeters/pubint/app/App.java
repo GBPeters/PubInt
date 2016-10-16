@@ -1,5 +1,7 @@
 package nl.gijspeters.pubint.app;
 
+import nl.gijspeters.pubint.tools.PgMongoMigrator;
+
 /**
  * Created by gijspeters on 16-10-16.
  */
@@ -26,8 +28,17 @@ public class App {
     }
 
     public static void migrate() {
-        System.out.println("Migrate!");
-
+        PgMongoMigrator migrator;
+        System.out.println("Migrating PotsgreSQL Tweets and Users to MongoDB...");
+        try {
+            migrator = new PgMongoMigrator();
+            migrator.migrateTweetsAndUsers(0);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Migration failed. \n" +
+                    "Data in MongoDB may be corrupt.");
+        }
+        System.out.println("Migration finished.");
     }
 
     public static void help() {
