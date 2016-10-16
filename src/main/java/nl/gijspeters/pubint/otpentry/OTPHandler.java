@@ -1,4 +1,4 @@
-package otpentry;
+package nl.gijspeters.pubint.otpentry;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import org.opentripplanner.routing.spt.ShortestPathTree;

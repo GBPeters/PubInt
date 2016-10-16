@@ -1,8 +1,8 @@
-package structure;
+package nl.gijspeters.pubint.structure;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by gijspeters on 03-10-16.
@@ -10,8 +10,8 @@ import static org.junit.Assert.assertEquals;
 public class AgentTest {
     @Test
     public void getAgentId() throws Exception {
-        Agent agent = new Agent(2);
-        assertEquals(2, agent.getAgentId());
+        Agent agent = new Agent();
+        assertNotNull(agent);
     }
 
 }

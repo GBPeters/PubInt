@@ -1,4 +1,4 @@
-package pghandler;
+package nl.gijspeters.pubint.pghandler;
 
 import org.junit.After;
 import org.junit.Before;

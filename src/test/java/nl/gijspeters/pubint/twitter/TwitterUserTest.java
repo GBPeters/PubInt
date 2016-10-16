@@ -1,8 +1,9 @@
-package twitter;
+package nl.gijspeters.pubint.twitter;
 
+import nl.gijspeters.pubint.structure.Agent;
+import nl.gijspeters.pubint.structure.SourceType;
 import org.junit.Before;
 import org.junit.Test;
-import structure.SourceType;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,7 +16,8 @@ public class TwitterUserTest {
 
     @Before
     public void setUp() throws Exception {
-        user = new TwitterUser("Gijs", "123");
+        Agent agent = new Agent();
+        user = new TwitterUser("Gijs", agent, 123);
     }
 
     @Test
@@ -29,8 +31,8 @@ public class TwitterUserTest {
     }
 
     @Test
-    public void getId() throws Exception {
-        assertEquals("123", user.getId());
+    public void getTwitterId() throws Exception {
+        assertEquals(123, user.getTwitterId());
     }
 
 }

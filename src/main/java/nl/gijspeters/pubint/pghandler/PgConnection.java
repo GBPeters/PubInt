@@ -1,4 +1,4 @@
-package pghandler;
+package nl.gijspeters.pubint.pghandler;
 
 import java.sql.*;
 

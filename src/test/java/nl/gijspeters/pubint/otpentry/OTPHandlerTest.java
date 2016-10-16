@@ -1,4 +1,4 @@
-package otpentry;
+package nl.gijspeters.pubint.otpentry;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import org.junit.Before;
@@ -7,7 +7,7 @@ import org.opentripplanner.routing.spt.ShortestPathTree;
 
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by gijspeters on 02-10-16.

@@ -1,18 +1,31 @@
-package structure;
+package nl.gijspeters.pubint.structure;
+
+import org.bson.types.ObjectId;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.Reference;
 
 /**
  * A generic abstract user class
  * <p>
  * Created by gijspeters on 03-10-16.
  */
+@Entity("User")
 public abstract class User {
 
     private String name;
-    private String id;
+    @Id
+    private ObjectId id;
+    @Reference
+    private Agent agent;
 
-    public User(String name, String id) {
+    public User() {
+
+    }
+
+    public User(String name, Agent agent) {
         this.name = name;
-        this.id = id;
+        this.agent = agent;
     }
 
     /**
@@ -25,8 +38,12 @@ public abstract class User {
     /**
      * @return the user's identifier, as used as unique identifier in the original social network
      */
-    public String getId() {
+    public ObjectId getId() {
         return id;
+    }
+
+    public Agent getAgent() {
+        return this.agent;
     }
 
     /**
