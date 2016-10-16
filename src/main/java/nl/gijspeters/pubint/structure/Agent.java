@@ -17,4 +17,7 @@ public class Agent {
     @Id
     private ObjectId agentId;
 
+    public ObjectId getAgentId() {
+        return agentId;
+    }
 }

@@ -46,6 +46,13 @@ public abstract class User {
         return this.agent;
     }
 
+    public void setAgent(Agent agent) {
+        this.agent = agent;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
     /**
      * @return thes user's source (e.g. Twitter, Instagram)
      */

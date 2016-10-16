@@ -41,8 +41,6 @@ public class MorphiaConnectionTest {
         con.getDs().delete(anchor);
         con.getDs().delete(agent);
         con.getDs().delete(user);
-
-
     }
 
 }

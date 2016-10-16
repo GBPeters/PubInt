@@ -57,5 +57,4 @@ public class PgMongoMigrator {
             mcon.getDs().save(tweet);
         }
     }
-
 }

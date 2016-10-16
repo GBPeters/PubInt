@@ -63,10 +63,6 @@ public abstract class Anchor {
         return objectId;
     }
 
-    public void setObjectId(ObjectId objectId) {
-        this.objectId = objectId;
-    }
-
     public Coordinate getCoord() {
         return coord;
     }
