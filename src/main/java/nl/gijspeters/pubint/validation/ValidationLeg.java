@@ -1,5 +1,7 @@
-package nl.gijspeters.pubint.structure;
+package nl.gijspeters.pubint.validation;
 
+import nl.gijspeters.pubint.structure.Anchor;
+import nl.gijspeters.pubint.structure.Leg;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
 
@@ -10,7 +12,7 @@ import java.util.Set;
 /**
  * Created by gijspeters on 18-10-16.
  */
-@Entity("ValidationLeg")
+@Entity("validationleg")
 public class ValidationLeg extends Leg {
 
     @Reference

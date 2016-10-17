@@ -4,16 +4,15 @@ import com.mongodb.MongoClient;
 import nl.gijspeters.pubint.graph.Edge;
 import nl.gijspeters.pubint.graph.Graph;
 import nl.gijspeters.pubint.graph.Vertex;
-import nl.gijspeters.pubint.structure.Agent;
-import nl.gijspeters.pubint.structure.Anchor;
-import nl.gijspeters.pubint.structure.Trajectory;
-import nl.gijspeters.pubint.structure.User;
+import nl.gijspeters.pubint.structure.*;
+import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.query.Query;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -100,6 +99,10 @@ public class MorphiaHandler {
         saveSimpleObject(u);
     }
 
+    public void saveLeg(Leg l) {
+        saveSimpleObject(l);
+    }
+
     public Trajectory getTrajectory(Agent agent) {
         Trajectory t = new Trajectory();
         Agent a = getDs().get(Agent.class, agent.getAgentId());
@@ -113,6 +116,20 @@ public class MorphiaHandler {
             t.add(anchor);
         }
         return t;
+    }
+
+    public Collection<Trajectory> getTrajectories() {
+        HashMap<ObjectId, Trajectory> ts = new HashMap<>();
+        Query<Agent> agentq = getDs().createQuery(Agent.class);
+        for (Agent a : agentq) {
+            ts.put(a.getAgentId(), new Trajectory());
+        }
+        Query<Anchor> anchorq = getDs().createQuery(Anchor.class);
+        for (Anchor a : anchorq) {
+            Agent agent = a.getUser().getAgent();
+            ts.get(agent.getAgentId()).add(a);
+        }
+        return ts.values();
     }
 
 }

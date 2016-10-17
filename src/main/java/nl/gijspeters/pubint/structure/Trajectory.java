@@ -1,5 +1,7 @@
 package nl.gijspeters.pubint.structure;
 
+import nl.gijspeters.pubint.validation.ValidationLeg;
+
 import java.util.*;
 
 /**
@@ -15,7 +17,9 @@ public class Trajectory extends TreeSet<Anchor> implements Comparable<Trajectory
 
     public Trajectory(Collection<Anchor> c) {
         this();
-        addAll(c);
+        if (c.size() > 0) {
+            addAll(c);
+        }
     }
 
 
@@ -151,6 +155,32 @@ public class Trajectory extends TreeSet<Anchor> implements Comparable<Trajectory
             legs.addAll(t.buildLegs());
         }
         return legs;
+    }
+
+    public Set<ValidationLeg> buildValidationLegs(long maxDeltaTimeMillis) {
+        HashSet<ValidationLeg> legs = new HashSet<ValidationLeg>();
+        for (Anchor a : this) {
+            Trajectory t = tailSet(a, false);
+            for (Anchor a2 : t) {
+                if (a2.getDate().getTime() - a.getDate().getTime() <= maxDeltaTimeMillis) {
+                    Trajectory validators = subSet(a, false, a2, false);
+                    if (validators.size() > 0) {
+                        legs.add(new ValidationLeg(a, a2, validators));
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+        return legs;
+    }
+
+    public Trajectory tailSet(Anchor fromElement) {
+        return tailSet(fromElement, true);
+    }
+
+    public Trajectory tailSet(Anchor fromElement, boolean inclusive) {
+        return new Trajectory(super.tailSet(fromElement, inclusive));
     }
 
     /**

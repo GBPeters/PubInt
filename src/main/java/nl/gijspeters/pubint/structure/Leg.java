@@ -8,7 +8,7 @@ import org.mongodb.morphia.annotations.Reference;
 /**
  * Created by gijspeters on 17-10-16.
  */
-@Entity("lap")
+@Entity("leg")
 public class Leg {
 
     @Id
@@ -57,4 +57,10 @@ public class Leg {
     public long getDeltaTime() {
         return destination.getDate().getTime() - origin.getDate().getTime();
     }
+
+    public Agent getAgent() {
+        return origin.getUser().getAgent();
+    }
 }
+
+
