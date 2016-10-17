@@ -3,6 +3,7 @@ package nl.gijspeters.pubint.mongohandler;
 import com.vividsolutions.jts.geom.Coordinate;
 import nl.gijspeters.pubint.structure.Agent;
 import nl.gijspeters.pubint.structure.Anchor;
+import nl.gijspeters.pubint.structure.Leg;
 import nl.gijspeters.pubint.structure.Trajectory;
 import nl.gijspeters.pubint.twitter.Tweet;
 import nl.gijspeters.pubint.twitter.TwitterUser;
@@ -53,8 +54,10 @@ public class MorphiaHandlerTest {
         assertEquals(8, t.size());
         assertTrue(t.first().getDate().getTime() < t.last().getDate().getTime());
         SortedSet<Trajectory> ts = t.splitTrajectory(3600000);
-        for (Trajectory tt : ts) {
-            System.out.println(tt.getStartTime().toString() + " - " + tt.getEndTime().toString());
+        assertEquals(7, t.buildLegs().size());
+        assertEquals(2, t.buildLegs(3600000).size());
+        for (Leg l : t.buildLegs(3600000)) {
+            System.out.println(l.getOrigin().getDate().toString() + " - " + l.getDestination().getDate().toString());
         }
     }
 

@@ -1,9 +1,6 @@
 package nl.gijspeters.pubint.structure;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Created by gijspeters on 17-10-16.
@@ -133,6 +130,27 @@ public class Trajectory extends TreeSet<Anchor> implements Comparable<Trajectory
         }
         ts.add(this.subSet(fromAnchor, true, last(), true));
         return ts;
+    }
+
+    public Set<Leg> buildLegs() {
+        HashSet<Leg> legs = new HashSet<Leg>();
+        Anchor prevA = first();
+        for (Anchor a : this) {
+            if (a != prevA) {
+                legs.add(new Leg(prevA, a));
+            }
+            prevA = a;
+        }
+        return legs;
+    }
+
+    public Set<Leg> buildLegs(long maxDeltaTimeMillis) {
+        HashSet<Leg> legs = new HashSet<Leg>();
+        SortedSet<Trajectory> ts = splitTrajectory(maxDeltaTimeMillis);
+        for (Trajectory t : ts) {
+            legs.addAll(t.buildLegs());
+        }
+        return legs;
     }
 
     /**
