@@ -20,8 +20,8 @@ import static org.junit.Assert.assertTrue;
 public class GraphTest {
 
     Graph graph;
-    Edge outgoingEdge;
-    Edge incomingEdge;
+    BasicEdge outgoingBasicEdge;
+    BasicEdge incomingBasicEdge;
     Vertex testVertex;
 
     @Before
@@ -39,25 +39,25 @@ public class GraphTest {
         LineString line2 = geomf.createLineString(coords2);
         LineString line3 = geomf.createLineString(coords3);
         LineString incomingLine = geomf.createLineString(incomingCoords);
-        outgoingEdge = new Edge(1, testVertex, v1, outgoingLine);
-        Edge edge2 = new Edge(2, v1, v2, line2);
-        Edge edge3 = new Edge(3, v2, v3, line3);
-        incomingEdge = new Edge(4, v3, testVertex, incomingLine);
+        outgoingBasicEdge = new BasicEdge(1, testVertex, v1, outgoingLine);
+        BasicEdge basicEdge2 = new BasicEdge(2, v1, v2, line2);
+        BasicEdge basicEdge3 = new BasicEdge(3, v2, v3, line3);
+        incomingBasicEdge = new BasicEdge(4, v3, testVertex, incomingLine);
         HashSet<Edge> edges = new HashSet<Edge>();
-        edges.add(outgoingEdge);
-        edges.add(edge2);
-        edges.add(edge3);
-        edges.add(incomingEdge);
-        graph = new Graph(edges);
+        edges.add(outgoingBasicEdge);
+        edges.add(basicEdge2);
+        edges.add(basicEdge3);
+        edges.add(incomingBasicEdge);
+        graph = new Graph("test", edges);
 
     }
 
     @Test
     public void getEdges() throws Exception {
-        ArrayList<Edge> edges = new ArrayList<Edge>(Arrays.asList(graph.getEdges()));
-        assertEquals(4, edges.size());
-        assertTrue(edges.contains(outgoingEdge));
-        assertTrue(edges.contains(incomingEdge));
+        ArrayList<Edge> basicEdges = new ArrayList<Edge>(Arrays.asList(graph.getEdges()));
+        assertEquals(4, basicEdges.size());
+        assertTrue(basicEdges.contains(outgoingBasicEdge));
+        assertTrue(basicEdges.contains(incomingBasicEdge));
     }
 
     @Test
@@ -70,20 +70,20 @@ public class GraphTest {
     @Test
     public void getOutgoingEdges() throws Exception {
         assertEquals(1, graph.getOutgoingEdges(testVertex).size());
-        assertTrue(graph.getOutgoingEdges(testVertex).contains(outgoingEdge));
+        assertTrue(graph.getOutgoingEdges(testVertex).contains(outgoingBasicEdge));
     }
 
     @Test
     public void getIncomingEdges() throws Exception {
         assertEquals(1, graph.getIncomingEdges(testVertex).size());
-        assertTrue(graph.getIncomingEdges(testVertex).contains(incomingEdge));
+        assertTrue(graph.getIncomingEdges(testVertex).contains(incomingBasicEdge));
     }
 
     @Test
     public void getConnectedEdges() throws Exception {
         assertEquals(2, graph.getConnectedEdges(testVertex).size());
-        assertTrue(graph.getConnectedEdges(testVertex).contains(outgoingEdge));
-        assertTrue(graph.getConnectedEdges(testVertex).contains(incomingEdge));
+        assertTrue(graph.getConnectedEdges(testVertex).contains(outgoingBasicEdge));
+        assertTrue(graph.getConnectedEdges(testVertex).contains(incomingBasicEdge));
     }
 
 }

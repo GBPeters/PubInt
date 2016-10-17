@@ -11,7 +11,7 @@ import org.mongodb.morphia.annotations.Indexed;
  * <p>
  * Created by gijspeters on 03-10-16.
  */
-@Entity("User")
+@Entity("user")
 public class TwitterUser extends User {
 
     @Indexed(sparse = true, unique = true)

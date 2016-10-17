@@ -13,7 +13,7 @@ import java.util.Date;
  * <p>
  * Created by gijspeters on 03-10-16.
  */
-@Entity("Anchor")
+@Entity("anchor")
 public abstract class Anchor {
 
     @Id

@@ -1,6 +1,7 @@
 package nl.gijspeters.pubint.otpentry;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import org.opentripplanner.routing.graph.Graph;
 import org.opentripplanner.routing.spt.ShortestPathTree;
 import org.opentripplanner.scripting.api.OtpsEntryPoint;
 import org.opentripplanner.scripting.api.OtpsRouter;
@@ -16,7 +17,24 @@ import java.util.Date;
  */
 public class OTPHandler {
 
+    private static OTPHandler ourInstance = new OTPHandler();
+
+    public static String graphDir = "/var/otp/graphs";
+
+    public static OTPHandler getInstance() throws Exception {
+        if (ourInstance.otp == null) {
+            restartOTP();
+        }
+        return ourInstance;
+    }
+
     private OtpsEntryPoint otp;
+
+    public static void restartOTP() throws Exception {
+        String[] args = {"--graphs", graphDir, "--autoScan"};
+        ourInstance.otp = OtpsEntryPoint.fromArgs(args);
+    }
+
     public enum ROUTE_MODES {FROM_ORIGIN, TO_DESTINATION}
 
     /**
@@ -24,19 +42,8 @@ public class OTPHandler {
      *
      * @throws Exception
      */
-    public OTPHandler() throws Exception {
-        String[] args = {"--autoScan"};
-        this.otp = OtpsEntryPoint.fromArgs(args);
-    }
+    public OTPHandler() {
 
-    /**
-     * Constructor for custom graph directory
-     * @param graphDir The graph directory
-     * @throws Exception
-     */
-    public OTPHandler(String graphDir) throws Exception {
-        String[] args = {"--graphs", graphDir, "--autoScan"};
-        this.otp = OtpsEntryPoint.fromArgs(args);
     }
 
     /**
@@ -63,6 +70,10 @@ public class OTPHandler {
                 req.setDestination(coord.y, coord.x);
         }
         return router.plan(req).getSpt();
+    }
+
+    public Graph getGraph() {
+        return otp.getRouter().getRouter().graph;
     }
 
 }

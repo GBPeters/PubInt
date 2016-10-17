@@ -34,4 +34,5 @@ public class Vertex {
     public void setCoord(Coordinate coord) {
         this.coord = coord;
     }
+
 }

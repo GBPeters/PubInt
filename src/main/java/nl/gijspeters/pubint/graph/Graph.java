@@ -1,11 +1,11 @@
 package nl.gijspeters.pubint.graph;
 
-import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,30 +16,37 @@ import java.util.Set;
 public class Graph {
 
     @Id
-    private ObjectId objectId;
+    private String id;
     @Reference
     private HashSet<Edge> edges = new HashSet<Edge>();
     @Reference
-    private HashSet<Vertex> vertices = new HashSet<Vertex>();
+    private HashMap<String, Vertex> vertices = new HashMap<String, Vertex>();
 
     public Graph() {
     }
 
-    public Graph(Collection<Edge> edges) {
-        this(edges, new HashSet<Vertex>());
+    public Graph(String id, Collection<Edge> edges) {
+        this(id, edges, new HashSet<Vertex>());
     }
 
-    public Graph(Collection<Edge> edges, Collection<Vertex> vertices) {
+    public Graph(String id, Collection<Edge> edges, Collection<Vertex> vertices) {
+        this.id = id;
         for (Edge e : edges) {
-            this.vertices.add(e.getFromVertex());
-            this.vertices.add(e.getToVertex());
+            vertices.add(e.getFromVertex());
+            vertices.add(e.getToVertex());
         }
         this.edges.addAll(edges);
-        this.vertices.addAll(vertices);
+        for (Vertex v : vertices) {
+            this.vertices.put(v.getVertexLabel(), v);
+        }
     }
 
-    public ObjectId getObjectId() {
-        return objectId;
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Edge[] getEdges() {
@@ -47,7 +54,7 @@ public class Graph {
     }
 
     public Vertex[] getVertices() {
-        return vertices.toArray(new Vertex[vertices.size()]);
+        return vertices.values().toArray(new Vertex[vertices.size()]);
     }
 
     public Set<Edge> getOutgoingEdges(Vertex v) {

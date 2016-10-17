@@ -11,7 +11,7 @@ import org.mongodb.morphia.annotations.Id;
  * <p>
  * Created by gijspeters on 03-10-16.
  */
-@Entity("Agent")
+@Entity("agent")
 public class Agent {
 
     @Id

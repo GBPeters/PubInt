@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class EdgeTest {
 
-    Edge edge;
+    BasicEdge basicEdge;
     LineString line;
 
     @Before
@@ -25,45 +25,45 @@ public class EdgeTest {
         Coordinate[] coords = {new Coordinate(10, 5), new Coordinate(5, 10)};
         GeometryFactory geomf = new GeometryFactory(new PrecisionModel(), 4326);
         this.line = geomf.createLineString(coords);
-        this.edge = new Edge(123, fromVertex, toVertex, this.line);
+        this.basicEdge = new BasicEdge(123, fromVertex, toVertex, this.line);
     }
 
     @Test
     public void getEdgeId() throws Exception {
-        assertEquals(123, this.edge.getEdgeId());
+        assertEquals(123, this.basicEdge.getEdgeId());
 
     }
 
     @Test
     public void getFromVertex() throws Exception {
-        assertEquals("from", this.edge.getFromVertex().getVertexLabel());
+        assertEquals("from", this.basicEdge.getFromVertex().getVertexLabel());
     }
 
     @Test
     public void getToVertex() throws Exception {
-        assertEquals("to", this.edge.getToVertex().getVertexLabel());
+        assertEquals("to", this.basicEdge.getToVertex().getVertexLabel());
 
     }
 
     @Test
     public void getGeometry() throws Exception {
-        assertTrue(this.line.equalsExact(this.edge.getGeometry()));
+        assertTrue(this.line.equalsExact(this.basicEdge.getGeometry()));
 
     }
 
     @Test
     public void setFromVertex() throws Exception {
         Vertex v = new Vertex("from2", new Coordinate(4, 8));
-        this.edge.setFromVertex(v);
-        assertEquals("from2", this.edge.getFromVertex().getVertexLabel());
+        this.basicEdge.setFromVertex(v);
+        assertEquals("from2", this.basicEdge.getFromVertex().getVertexLabel());
 
     }
 
     @Test
     public void setToVertex() throws Exception {
         Vertex v = new Vertex("to2", new Coordinate(8, 4));
-        this.edge.setToVertex(v);
-        assertEquals("to2", this.edge.getToVertex().getVertexLabel());
+        this.basicEdge.setToVertex(v);
+        assertEquals("to2", this.basicEdge.getToVertex().getVertexLabel());
 
     }
 
@@ -72,8 +72,8 @@ public class EdgeTest {
         Coordinate[] coords = {new Coordinate(4, 8), new Coordinate(8, 4)};
         GeometryFactory geomf = new GeometryFactory(new PrecisionModel(), 4326);
         LineString line = geomf.createLineString(coords);
-        this.edge.setGeometry(line);
-        assertTrue(line.equalsExact(this.edge.getGeometry()));
+        this.basicEdge.setGeometry(line);
+        assertTrue(line.equalsExact(this.basicEdge.getGeometry()));
     }
 
 }

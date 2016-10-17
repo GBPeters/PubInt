@@ -1,6 +1,7 @@
 package nl.gijspeters.pubint.otpentry;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import nl.gijspeters.pubint.app.App;
 import org.junit.Before;
 import org.junit.Test;
 import org.opentripplanner.routing.spt.ShortestPathTree;
@@ -14,12 +15,11 @@ import static org.junit.Assert.assertTrue;
  */
 public class OTPHandlerTest {
 
-    public static final String GRAPH_DIR = "/Users/gijspeters/otp/";
-
     private OTPHandler otp;
     @Before
     public void setUp() throws Exception {
-        otp = new OTPHandler(GRAPH_DIR);
+        OTPHandler.graphDir = App.OTP_DIR;
+        otp = OTPHandler.getInstance();
     }
 
     @Test

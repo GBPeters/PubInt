@@ -15,7 +15,7 @@ import java.util.Date;
  *
  * Created by gijspeters on 03-10-16.
  */
-@Entity("Anchor")
+@Entity("anchor")
 public class Tweet extends Anchor {
 
     private String message;

@@ -16,12 +16,12 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by gijspeters on 16-10-16.
  */
-public class MorphiaConnectionTest {
-    MorphiaConnection con;
+public class MorphiaHandlerTest {
+    MorphiaHandler con;
 
     @Before
     public void setUp() throws Exception {
-        con = new MorphiaConnection();
+        con = MorphiaHandler.getInstance();
     }
 
     @Test

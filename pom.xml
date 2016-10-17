@@ -28,7 +28,7 @@
         <dependency>
             <groupId>com.github.GBPeters</groupId>
             <artifactId>OpenTripPlanner</artifactId>
-            <version>PubInt_adapts-SNAPSHOT</version>
+            <version>24bcbce</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>

@@ -1,7 +1,7 @@
 package nl.gijspeters.pubint.tools;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import nl.gijspeters.pubint.mongohandler.MorphiaConnection;
+import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
 import nl.gijspeters.pubint.pghandler.PgConnection;
 import nl.gijspeters.pubint.structure.Agent;
 import nl.gijspeters.pubint.twitter.Tweet;
@@ -18,11 +18,11 @@ import java.util.HashMap;
 public class PgMongoMigrator {
 
     private PgConnection pcon;
-    private MorphiaConnection mcon;
+    private MorphiaHandler mcon;
 
     public PgMongoMigrator() throws SQLException, ClassNotFoundException {
         pcon = new PgConnection(false);
-        mcon = new MorphiaConnection();
+        mcon = MorphiaHandler.getInstance();
     }
 
     public void migrateTweetsAndUsers(long limit) throws SQLException {
@@ -40,8 +40,8 @@ public class PgMongoMigrator {
             Agent agent = new Agent();
             TwitterUser user = new TwitterUser(name, agent);
             userMap.put(name, user);
-            mcon.getDs().save(agent);
-            mcon.getDs().save(user);
+            mcon.saveAgent(agent);
+            mcon.saveUser(user);
         }
         sql = "SELECT tweet_id, tweet_name, tijddatum, lon, lat FROM scraped_tweets" + limitStr;
         ResultSet tweetSet = pcon.select(sql);
@@ -54,7 +54,7 @@ public class PgMongoMigrator {
             Coordinate coord = new Coordinate(lon, lat);
             TwitterUser user = userMap.get(name);
             Tweet tweet = new Tweet(coord, date, user, "", Long.parseLong(id));
-            mcon.getDs().save(tweet);
+            mcon.saveAnchor(tweet);
         }
     }
 }

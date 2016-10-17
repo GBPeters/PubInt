@@ -10,7 +10,7 @@ import org.mongodb.morphia.annotations.Reference;
  * <p>
  * Created by gijspeters on 03-10-16.
  */
-@Entity("User")
+@Entity("user")
 public abstract class User {
 
     private String name;
