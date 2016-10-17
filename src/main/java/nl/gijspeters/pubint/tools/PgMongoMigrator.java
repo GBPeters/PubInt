@@ -48,7 +48,7 @@ public class PgMongoMigrator {
         while (tweetSet.next()) {
             String id = tweetSet.getString("tweet_id");
             String name = tweetSet.getString("tweet_name");
-            Date date = tweetSet.getDate("tijddatum");
+            Date date = tweetSet.getTimestamp("tijddatum");
             double lon = tweetSet.getDouble("lon");
             double lat = tweetSet.getDouble("lat");
             Coordinate coord = new Coordinate(lon, lat);

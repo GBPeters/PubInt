@@ -6,12 +6,15 @@ import nl.gijspeters.pubint.graph.Graph;
 import nl.gijspeters.pubint.graph.Vertex;
 import nl.gijspeters.pubint.structure.Agent;
 import nl.gijspeters.pubint.structure.Anchor;
+import nl.gijspeters.pubint.structure.Trajectory;
 import nl.gijspeters.pubint.structure.User;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
+import org.mongodb.morphia.query.Query;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Created by gijspeters on 03-10-16.
@@ -95,6 +98,21 @@ public class MorphiaHandler {
 
     public void saveUser(User u) {
         saveSimpleObject(u);
+    }
+
+    public Trajectory getTrajectory(Agent agent) {
+        Trajectory t = new Trajectory();
+        Agent a = getDs().get(Agent.class, agent.getAgentId());
+        Query<User> userq = getDs().createQuery(User.class).field("agent").equal(a);
+        HashSet<User> users = new HashSet<User>();
+        for (User u : userq) {
+            users.add(u);
+        }
+        Query<Anchor> anchorq = getDs().createQuery(Anchor.class).field("user").in(users);
+        for (Anchor anchor : anchorq) {
+            t.add(anchor);
+        }
+        return t;
     }
 
 }

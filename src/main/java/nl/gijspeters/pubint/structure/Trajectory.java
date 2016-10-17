@@ -1,150 +1,26 @@
 package nl.gijspeters.pubint.structure;
 
-import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
-import org.mongodb.morphia.annotations.Reference;
-
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
  * Created by gijspeters on 17-10-16.
  */
-@Entity("trajectory")
-public class Trajectory implements Collection<Anchor>, SortedSet<Anchor> {
+public class Trajectory extends TreeSet<Anchor> implements Comparable<Trajectory> {
 
-    @Id
-    private ObjectId objectId;
-    @Reference
-    private TreeSet<Anchor> anchors = new TreeSet<Anchor>(new AnchorDateComparator());
-    @Reference
     private Agent agent;
 
     public Trajectory() {
-
+        super(new AnchorDateComparator());
     }
 
     public Trajectory(Collection<Anchor> c) {
+        this();
         addAll(c);
     }
 
-    /**
-     * Returns the number of elements in this collection.  If this collection
-     * contains more than <tt>Integer.MAX_VALUE</tt> elements, returns
-     * <tt>Integer.MAX_VALUE</tt>.
-     *
-     * @return the number of elements in this collection
-     */
-    public int size() {
-        return anchors.size();
-    }
-
-    /**
-     * Returns <tt>true</tt> if this collection contains no elements.
-     *
-     * @return <tt>true</tt> if this collection contains no elements
-     */
-    public boolean isEmpty() {
-        return anchors.isEmpty();
-    }
-
-    /**
-     * Returns <tt>true</tt> if this collection contains the specified element.
-     * More formally, returns <tt>true</tt> if and only if this collection
-     * contains at least one element <tt>e</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;e==null&nbsp;:&nbsp;o.equals(e))</tt>.
-     *
-     * @param o element whose presence in this collection is to be tested
-     * @return <tt>true</tt> if this collection contains the specified
-     * element
-     * @throws ClassCastException   if the type of the specified element
-     *                              is incompatible with this collection
-     *                              (<a href="#optional-restrictions">optional</a>)
-     * @throws NullPointerException if the specified element is null and this
-     *                              collection does not permit null elements
-     *                              (<a href="#optional-restrictions">optional</a>)
-     */
-    public boolean contains(Object o) {
-        return false;
-    }
-
-    /**
-     * Returns an iterator over the elements in this collection.  There are no
-     * guarantees concerning the order in which the elements are returned
-     * (unless this collection is an instance of some class that provides a
-     * guarantee).
-     *
-     * @return an <tt>Iterator</tt> over the elements in this collection
-     */
-    public Iterator<Anchor> iterator() {
-        return anchors.iterator();
-    }
-
-    /**
-     * Returns an array containing all of the elements in this collection.
-     * If this collection makes any guarantees as to what order its elements
-     * are returned by its iterator, this method must return the elements in
-     * the same order.
-     * <p>
-     * <p>The returned array will be "safe" in that no references to it are
-     * maintained by this collection.  (In other words, this method must
-     * allocate a new array even if this collection is backed by an array).
-     * The caller is thus free to modify the returned array.
-     * <p>
-     * <p>This method acts as bridge between array-based and collection-based
-     * APIs.
-     *
-     * @return an array containing all of the elements in this collection
-     */
-    public Object[] toArray() {
-        return anchors.toArray();
-    }
-
-    /**
-     * Returns an array containing all of the elements in this collection;
-     * the runtime type of the returned array is that of the specified array.
-     * If the collection fits in the specified array, it is returned therein.
-     * Otherwise, a new array is allocated with the runtime type of the
-     * specified array and the size of this collection.
-     * <p>
-     * <p>If this collection fits in the specified array with room to spare
-     * (i.e., the array has more elements than this collection), the element
-     * in the array immediately following the end of the collection is set to
-     * <tt>null</tt>.  (This is useful in determining the length of this
-     * collection <i>only</i> if the caller knows that this collection does
-     * not contain any <tt>null</tt> elements.)
-     * <p>
-     * <p>If this collection makes any guarantees as to what order its elements
-     * are returned by its iterator, this method must return the elements in
-     * the same order.
-     * <p>
-     * <p>Like the {@link #toArray()} method, this method acts as bridge between
-     * array-based and collection-based APIs.  Further, this method allows
-     * precise control over the runtime type of the output array, and may,
-     * under certain circumstances, be used to save allocation costs.
-     * <p>
-     * <p>Suppose <tt>x</tt> is a collection known to contain only strings.
-     * The following code can be used to dump the collection into a newly
-     * allocated array of <tt>String</tt>:
-     * <p>
-     * <pre>
-     *     String[] y = x.toArray(new String[0]);</pre>
-     * <p>
-     * Note that <tt>toArray(new Object[0])</tt> is identical in function to
-     * <tt>toArray()</tt>.
-     *
-     * @param a the array into which the elements of this collection are to be
-     *          stored, if it is big enough; otherwise, a new array of the same
-     *          runtime type is allocated for this purpose.
-     * @return an array containing all of the elements in this collection
-     * @throws ArrayStoreException  if the runtime type of the specified array
-     *                              is not a supertype of the runtime type of every element in
-     *                              this collection
-     * @throws NullPointerException if the specified array is null
-     */
-    public <T> T[] toArray(T[] a) {
-        return anchors.toArray(a);
-    }
 
     /**
      * Ensures that this collection contains the specified element (optional
@@ -185,53 +61,7 @@ public class Trajectory implements Collection<Anchor>, SortedSet<Anchor> {
         } else if (getAgent() != anchor.getUser().getAgent()) {
             throw new IllegalStateException("Non-equal agents");
         }
-        return anchors.add(anchor);
-    }
-
-    /**
-     * Removes a single instance of the specified element from this
-     * collection, if it is present (optional operation).  More formally,
-     * removes an element <tt>e</tt> such that
-     * <tt>(o==null&nbsp;?&nbsp;e==null&nbsp;:&nbsp;o.equals(e))</tt>, if
-     * this collection contains one or more such elements.  Returns
-     * <tt>true</tt> if this collection contained the specified element (or
-     * equivalently, if this collection changed as a result of the call).
-     *
-     * @param o element to be removed from this collection, if present
-     * @return <tt>true</tt> if an element was removed as a result of this call
-     * @throws ClassCastException            if the type of the specified element
-     *                                       is incompatible with this collection
-     *                                       (<a href="#optional-restrictions">optional</a>)
-     * @throws NullPointerException          if the specified element is null and this
-     *                                       collection does not permit null elements
-     *                                       (<a href="#optional-restrictions">optional</a>)
-     * @throws UnsupportedOperationException if the <tt>remove</tt> operation
-     *                                       is not supported by this collection
-     */
-    public boolean remove(Object o) {
-        return anchors.remove(o);
-    }
-
-    /**
-     * Returns <tt>true</tt> if this collection contains all of the elements
-     * in the specified collection.
-     *
-     * @param c collection to be checked for containment in this collection
-     * @return <tt>true</tt> if this collection contains all of the elements
-     * in the specified collection
-     * @throws ClassCastException   if the types of one or more elements
-     *                              in the specified collection are incompatible with this
-     *                              collection
-     *                              (<a href="#optional-restrictions">optional</a>)
-     * @throws NullPointerException if the specified collection contains one
-     *                              or more null elements and this collection does not permit null
-     *                              elements
-     *                              (<a href="#optional-restrictions">optional</a>),
-     *                              or if the specified collection is null.
-     * @see #contains(Object)
-     */
-    public boolean containsAll(Collection<?> c) {
-        return anchors.containsAll(c);
+        return super.add(anchor);
     }
 
     /**
@@ -267,205 +97,87 @@ public class Trajectory implements Collection<Anchor>, SortedSet<Anchor> {
                 throw new IllegalStateException("Non-equal agents");
             }
         }
-        return anchors.addAll(c);
+        return super.addAll(c);
     }
 
-    /**
-     * Removes all of this collection's elements that are also contained in the
-     * specified collection (optional operation).  After this call returns,
-     * this collection will contain no elements in common with the specified
-     * collection.
-     *
-     * @param c collection containing elements to be removed from this collection
-     * @return <tt>true</tt> if this collection changed as a result of the
-     * call
-     * @throws UnsupportedOperationException if the <tt>removeAll</tt> method
-     *                                       is not supported by this collection
-     * @throws ClassCastException            if the types of one or more elements
-     *                                       in this collection are incompatible with the specified
-     *                                       collection
-     *                                       (<a href="#optional-restrictions">optional</a>)
-     * @throws NullPointerException          if this collection contains one or more
-     *                                       null elements and the specified collection does not support
-     *                                       null elements
-     *                                       (<a href="#optional-restrictions">optional</a>),
-     *                                       or if the specified collection is null
-     * @see #remove(Object)
-     * @see #contains(Object)
-     */
-    public boolean removeAll(Collection<?> c) {
-        return anchors.removeAll(c);
+    public Trajectory subSet(Anchor fromElement, Anchor toElement) {
+        return subSet(fromElement, true, toElement, false);
     }
 
-    /**
-     * Retains only the elements in this collection that are contained in the
-     * specified collection (optional operation).  In other words, removes from
-     * this collection all of its elements that are not contained in the
-     * specified collection.
-     *
-     * @param c collection containing elements to be retained in this collection
-     * @return <tt>true</tt> if this collection changed as a result of the call
-     * @throws UnsupportedOperationException if the <tt>retainAll</tt> operation
-     *                                       is not supported by this collection
-     * @throws ClassCastException            if the types of one or more elements
-     *                                       in this collection are incompatible with the specified
-     *                                       collection
-     *                                       (<a href="#optional-restrictions">optional</a>)
-     * @throws NullPointerException          if this collection contains one or more
-     *                                       null elements and the specified collection does not permit null
-     *                                       elements
-     *                                       (<a href="#optional-restrictions">optional</a>),
-     *                                       or if the specified collection is null
-     * @see #remove(Object)
-     * @see #contains(Object)
-     */
-    public boolean retainAll(Collection<?> c) {
-        return anchors.retainAll(c);
-    }
-
-    /**
-     * Removes all of the elements from this collection (optional operation).
-     * The collection will be empty after this method returns.
-     *
-     * @throws UnsupportedOperationException if the <tt>clear</tt> operation
-     *                                       is not supported by this collection
-     */
-    public void clear() {
-        anchors.clear();
-
+    public Trajectory subSet(Anchor fromElement, boolean fromInclusive, Anchor toElement, boolean toInclusive) {
+        return new Trajectory(super.subSet(fromElement, fromInclusive, toElement, toInclusive));
     }
 
     public Agent getAgent() {
         return agent;
     }
 
-    public ObjectId getObjectId() {
-        return objectId;
+    public Date getStartTime() {
+        return first().getDate();
+    }
+
+    public Date getEndTime() {
+        return last().getDate();
+    }
+
+    public SortedSet<Trajectory> splitTrajectory(long maxDeltaTimeMillis) {
+        TreeSet<Trajectory> ts = new TreeSet<Trajectory>();
+        Anchor fromAnchor = first();
+        Anchor previousAnchor = first();
+        for (Anchor a : this) {
+            if (a.getDate().getTime() - previousAnchor.getDate().getTime() > maxDeltaTimeMillis) {
+                ts.add(this.subSet(fromAnchor, a));
+                fromAnchor = a;
+            }
+            previousAnchor = a;
+        }
+        ts.add(this.subSet(fromAnchor, true, last(), true));
+        return ts;
     }
 
     /**
-     * Returns the comparator used to order the elements in this set,
-     * or <tt>null</tt> if this set uses the {@linkplain Comparable
-     * natural ordering} of its elements.
-     *
-     * @return the comparator used to order the elements in this set,
-     * or <tt>null</tt> if this set uses the natural ordering
-     * of its elements
-     */
-    public Comparator<? super Anchor> comparator() {
-        return anchors.comparator();
-    }
-
-    /**
-     * Returns a view of the portion of this set whose elements range
-     * from <tt>fromElement</tt>, inclusive, to <tt>toElement</tt>,
-     * exclusive.  (If <tt>fromElement</tt> and <tt>toElement</tt> are
-     * equal, the returned set is empty.)  The returned set is backed
-     * by this set, so changes in the returned set are reflected in
-     * this set, and vice-versa.  The returned set supports all
-     * optional set operations that this set supports.
+     * Compares this object with the specified object for order.  Returns a
+     * negative integer, zero, or a positive integer as this object is less
+     * than, equal to, or greater than the specified object.
      * <p>
-     * <p>The returned set will throw an <tt>IllegalArgumentException</tt>
-     * on an attempt to insert an element outside its range.
-     *
-     * @param fromElement low endpoint (inclusive) of the returned set
-     * @param toElement   high endpoint (exclusive) of the returned set
-     * @return a view of the portion of this set whose elements range from
-     * <tt>fromElement</tt>, inclusive, to <tt>toElement</tt>, exclusive
-     * @throws ClassCastException       if <tt>fromElement</tt> and
-     *                                  <tt>toElement</tt> cannot be compared to one another using this
-     *                                  set's comparator (or, if the set has no comparator, using
-     *                                  natural ordering).  Implementations may, but are not required
-     *                                  to, throw this exception if <tt>fromElement</tt> or
-     *                                  <tt>toElement</tt> cannot be compared to elements currently in
-     *                                  the set.
-     * @throws NullPointerException     if <tt>fromElement</tt> or
-     *                                  <tt>toElement</tt> is null and this set does not permit null
-     *                                  elements
-     * @throws IllegalArgumentException if <tt>fromElement</tt> is
-     *                                  greater than <tt>toElement</tt>; or if this set itself
-     *                                  has a restricted range, and <tt>fromElement</tt> or
-     *                                  <tt>toElement</tt> lies outside the bounds of the range
-     */
-    public SortedSet<Anchor> subSet(Anchor fromElement, Anchor toElement) {
-        return anchors.subSet(fromElement, toElement);
-    }
-
-    /**
-     * Returns a view of the portion of this set whose elements are
-     * strictly less than <tt>toElement</tt>.  The returned set is
-     * backed by this set, so changes in the returned set are
-     * reflected in this set, and vice-versa.  The returned set
-     * supports all optional set operations that this set supports.
+     * <p>The implementor must ensure <tt>sgn(x.compareTo(y)) ==
+     * -sgn(y.compareTo(x))</tt> for all <tt>x</tt> and <tt>y</tt>.  (This
+     * implies that <tt>x.compareTo(y)</tt> must throw an exception iff
+     * <tt>y.compareTo(x)</tt> throws an exception.)
      * <p>
-     * <p>The returned set will throw an <tt>IllegalArgumentException</tt>
-     * on an attempt to insert an element outside its range.
-     *
-     * @param toElement high endpoint (exclusive) of the returned set
-     * @return a view of the portion of this set whose elements are strictly
-     * less than <tt>toElement</tt>
-     * @throws ClassCastException       if <tt>toElement</tt> is not compatible
-     *                                  with this set's comparator (or, if the set has no comparator,
-     *                                  if <tt>toElement</tt> does not implement {@link Comparable}).
-     *                                  Implementations may, but are not required to, throw this
-     *                                  exception if <tt>toElement</tt> cannot be compared to elements
-     *                                  currently in the set.
-     * @throws NullPointerException     if <tt>toElement</tt> is null and
-     *                                  this set does not permit null elements
-     * @throws IllegalArgumentException if this set itself has a
-     *                                  restricted range, and <tt>toElement</tt> lies outside the
-     *                                  bounds of the range
-     */
-    public SortedSet<Anchor> headSet(Anchor toElement) {
-        return anchors.headSet(toElement);
-    }
-
-    /**
-     * Returns a view of the portion of this set whose elements are
-     * greater than or equal to <tt>fromElement</tt>.  The returned
-     * set is backed by this set, so changes in the returned set are
-     * reflected in this set, and vice-versa.  The returned set
-     * supports all optional set operations that this set supports.
+     * <p>The implementor must also ensure that the relation is transitive:
+     * <tt>(x.compareTo(y)&gt;0 &amp;&amp; y.compareTo(z)&gt;0)</tt> implies
+     * <tt>x.compareTo(z)&gt;0</tt>.
      * <p>
-     * <p>The returned set will throw an <tt>IllegalArgumentException</tt>
-     * on an attempt to insert an element outside its range.
+     * <p>Finally, the implementor must ensure that <tt>x.compareTo(y)==0</tt>
+     * implies that <tt>sgn(x.compareTo(z)) == sgn(y.compareTo(z))</tt>, for
+     * all <tt>z</tt>.
+     * <p>
+     * <p>It is strongly recommended, but <i>not</i> strictly required that
+     * <tt>(x.compareTo(y)==0) == (x.equals(y))</tt>.  Generally speaking, any
+     * class that implements the <tt>Comparable</tt> interface and violates
+     * this condition should clearly indicate this fact.  The recommended
+     * language is "Note: this class has a natural ordering that is
+     * inconsistent with equals."
+     * <p>
+     * <p>In the foregoing description, the notation
+     * <tt>sgn(</tt><i>expression</i><tt>)</tt> designates the mathematical
+     * <i>signum</i> function, which is defined to return one of <tt>-1</tt>,
+     * <tt>0</tt>, or <tt>1</tt> according to whether the value of
+     * <i>expression</i> is negative, zero or positive.
      *
-     * @param fromElement low endpoint (inclusive) of the returned set
-     * @return a view of the portion of this set whose elements are greater
-     * than or equal to <tt>fromElement</tt>
-     * @throws ClassCastException       if <tt>fromElement</tt> is not compatible
-     *                                  with this set's comparator (or, if the set has no comparator,
-     *                                  if <tt>fromElement</tt> does not implement {@link Comparable}).
-     *                                  Implementations may, but are not required to, throw this
-     *                                  exception if <tt>fromElement</tt> cannot be compared to elements
-     *                                  currently in the set.
-     * @throws NullPointerException     if <tt>fromElement</tt> is null
-     *                                  and this set does not permit null elements
-     * @throws IllegalArgumentException if this set itself has a
-     *                                  restricted range, and <tt>fromElement</tt> lies outside the
-     *                                  bounds of the range
+     * @param o the object to be compared.
+     * @return a negative integer, zero, or a positive integer as this object
+     * is less than, equal to, or greater than the specified object.
+     * @throws NullPointerException if the specified object is null
+     * @throws ClassCastException   if the specified object's type prevents it
+     *                              from being compared to this object.
      */
-    public SortedSet<Anchor> tailSet(Anchor fromElement) {
-        return anchors.tailSet(fromElement);
-    }
-
-    /**
-     * Returns the first (lowest) element currently in this set.
-     *
-     * @return the first (lowest) element currently in this set
-     * @throws NoSuchElementException if this set is empty
-     */
-    public Anchor first() {
-        return anchors.first();
-    }
-
-    /**
-     * Returns the last (highest) element currently in this set.
-     *
-     * @return the last (highest) element currently in this set
-     * @throws NoSuchElementException if this set is empty
-     */
-    public Anchor last() {
-        return anchors.last();
+    public int compareTo(Trajectory o) {
+        if (getStartTime().equals(o.getStartTime())) {
+            return getEndTime().compareTo(o.getEndTime());
+        } else {
+            return getStartTime().compareTo(o.getStartTime());
+        }
     }
 }
