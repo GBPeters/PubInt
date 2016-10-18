@@ -58,4 +58,45 @@ public class Cube implements Graph {
         return new BasicGraph("temp", createEdgeSet()).getConnectedEdges(v);
     }
 
+    public Set<State> getTraversingStates(Edge e) {
+        HashSet<State> states = new HashSet<>();
+        for (State s : this.states) {
+            if (e.equals(s.getEdge())) {
+                states.add(s);
+            }
+        }
+        return states;
+    }
+
+    public Set<State> getOutgoingStates(Vertex v) {
+        HashSet<State> states = new HashSet<>();
+        for (State s : this.states) {
+            if (v.equals(s.getEdge().getFromVertex())) {
+                states.add(s);
+            }
+        }
+        return states;
+    }
+
+    public Set<State> getIncomingStates(Vertex v) {
+        HashSet<State> states = new HashSet<>();
+        for (State s : this.states) {
+            if (v.equals(s.getEdge().getToVertex())) {
+                states.add(s);
+            }
+        }
+        return states;
+    }
+
+    public Set<State> getConnectedStates(Vertex v) {
+        HashSet<State> states = new HashSet<>();
+        for (State s : this.states) {
+            if (v.equals(s.getEdge().getFromVertex()) ||
+                    v.equals(s.getEdge().getToVertex())) {
+                states.add(s);
+            }
+        }
+        return states;
+    }
+
 }

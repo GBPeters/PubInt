@@ -24,6 +24,7 @@ public class CubeTest {
     State outgoingState;
     State incomingState;
     Vertex testVertex;
+    Edge outgoingEdge;
 
     @Before
     public void setUp() throws Exception {
@@ -40,7 +41,7 @@ public class CubeTest {
         LineString line2 = geomf.createLineString(coords2);
         LineString line3 = geomf.createLineString(coords3);
         LineString incomingLine = geomf.createLineString(incomingCoords);
-        BasicEdge outgoingBasicEdge = new BasicEdge(1, testVertex, v1, outgoingLine);
+        outgoingEdge = new BasicEdge(1, testVertex, v1, outgoingLine);
         BasicEdge basicEdge2 = new BasicEdge(2, v1, v2, line2);
         BasicEdge basicEdge3 = new BasicEdge(3, v2, v3, line3);
         BasicEdge incomingBasicEdge = new BasicEdge(4, v3, testVertex, incomingLine);
@@ -49,7 +50,7 @@ public class CubeTest {
         Date d2 = new Date(2000);
         Date d3 = new Date(3000);
         Date d4 = new Date(4000);
-        outgoingState = new MarkovState(outgoingBasicEdge, d1, d2, d3, d4);
+        outgoingState = new MarkovState(outgoingEdge, d1, d2, d3, d4);
         State state2 = new MarkovState(basicEdge2, d1, d2, d3, d4);
         State state3 = new MarkovState(basicEdge3, d1, d2, d3, d4);
         incomingState = new MarkovState(incomingBasicEdge, d1, d2, d3, d4);
@@ -93,6 +94,31 @@ public class CubeTest {
         assertEquals(2, cube.getConnectedEdges(testVertex).size());
         assertTrue(cube.getConnectedEdges(testVertex).contains(outgoingState.getEdge()));
         assertTrue(cube.getConnectedEdges(testVertex).contains(incomingState.getEdge()));
+    }
+
+    @Test
+    public void getTraversingStates() throws Exception {
+        assertEquals(1, cube.getTraversingStates(outgoingEdge).size());
+        assertTrue(cube.getTraversingStates(outgoingEdge).contains(outgoingState));
+    }
+
+    @Test
+    public void getOutgoingStates() throws Exception {
+        assertEquals(1, cube.getOutgoingStates(testVertex).size());
+        assertTrue(cube.getOutgoingStates(testVertex).contains(outgoingState));
+    }
+
+    @Test
+    public void getIncomingStates() throws Exception {
+        assertEquals(1, cube.getIncomingStates(testVertex).size());
+        assertTrue(cube.getIncomingStates(testVertex).contains(incomingState));
+    }
+
+    @Test
+    public void getConnectedStates() throws Exception {
+        assertEquals(2, cube.getConnectedStates(testVertex).size());
+        assertTrue(cube.getConnectedStates(testVertex).contains(outgoingState));
+        assertTrue(cube.getConnectedStates(testVertex).contains(incomingState));
     }
 
 
