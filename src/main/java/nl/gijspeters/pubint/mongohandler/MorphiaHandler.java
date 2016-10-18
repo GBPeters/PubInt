@@ -1,8 +1,8 @@
 package nl.gijspeters.pubint.mongohandler;
 
 import com.mongodb.MongoClient;
+import nl.gijspeters.pubint.graph.BasicGraph;
 import nl.gijspeters.pubint.graph.Edge;
-import nl.gijspeters.pubint.graph.Graph;
 import nl.gijspeters.pubint.graph.Vertex;
 import nl.gijspeters.pubint.structure.*;
 import org.bson.types.ObjectId;
@@ -48,12 +48,12 @@ public class MorphiaHandler {
         return datastore;
     }
 
-    public void saveGraph(Graph graph, boolean basedOnExistingGraph) {
+    public void saveGraph(BasicGraph basicGraph, boolean basedOnExistingGraph) {
         if (!basedOnExistingGraph) {
-            saveNodes(Arrays.asList(graph.getVertices()));
-            saveEdges(Arrays.asList(graph.getEdges()));
+            saveNodes(Arrays.asList(basicGraph.getVertices()));
+            saveEdges(Arrays.asList(basicGraph.getEdges()));
         }
-        getDs().save(graph);
+        getDs().save(basicGraph);
     }
 
     public void saveNodes(Collection<Vertex> vertices) {
@@ -64,15 +64,15 @@ public class MorphiaHandler {
         saveSimpleCollection(edges);
     }
 
-    public void saveLargeGraph(Graph graph, boolean basedOnExistingGraph) {
+    public void saveLargeGraph(BasicGraph basicGraph, boolean basedOnExistingGraph) {
         if (!basedOnExistingGraph) {
-            saveNodes(Arrays.asList(graph.getVertices()));
-            saveEdges(Arrays.asList(graph.getEdges()));
+            saveNodes(Arrays.asList(basicGraph.getVertices()));
+            saveEdges(Arrays.asList(basicGraph.getEdges()));
         }
-        getDs().save(new MongoLargeGraph(graph));
+        getDs().save(new MongoLargeGraph(basicGraph));
     }
 
-    public Graph loadLargeGraph(String graphId) {
+    public BasicGraph loadLargeGraph(String graphId) {
         MongoLargeGraph graph = getDs().get(MongoLargeGraph.class, graphId);
         return graph.getGraph();
     }

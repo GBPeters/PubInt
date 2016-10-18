@@ -31,7 +31,7 @@ public class GraphBuilder {
         return edge;
     }
 
-    public Graph getGraph(String graphId) throws Exception {
+    public BasicGraph getGraph(String graphId) throws Exception {
         HashSet<Edge> edges = new HashSet<Edge>();
         HashSet<Vertex> vertices = new HashSet<Vertex>();
         org.opentripplanner.routing.graph.Graph otpgraph = OTPHandler.getInstance().getGraph();
@@ -43,6 +43,6 @@ public class GraphBuilder {
         for (org.opentripplanner.routing.graph.Vertex v : otpvertices) {
             vertices.add(buildVertex(v));
         }
-        return new Graph(graphId, edges, vertices);
+        return new BasicGraph(graphId, edges, vertices);
     }
 }

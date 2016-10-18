@@ -1,6 +1,6 @@
 package nl.gijspeters.pubint.app;
 
-import nl.gijspeters.pubint.graph.Graph;
+import nl.gijspeters.pubint.graph.BasicGraph;
 import nl.gijspeters.pubint.graph.GraphBuilder;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
 import nl.gijspeters.pubint.otpentry.OTPHandler;
@@ -110,12 +110,12 @@ public class App {
     public static void buildGraph() {
         try {
             GraphBuilder gb = new GraphBuilder();
-            Graph g = gb.getGraph("amsterdam_complete");
+            BasicGraph g = gb.getGraph("amsterdam_complete");
             MorphiaHandler.getInstance().saveLargeGraph(g, true);
-            System.out.println("Graph saved");
+            System.out.println("BasicGraph saved");
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("Graph building failed.");
+            System.out.println("BasicGraph building failed.");
         }
     }
 }
