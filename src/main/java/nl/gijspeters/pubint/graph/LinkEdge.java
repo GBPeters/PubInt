@@ -16,7 +16,4 @@ public class LinkEdge extends Edge {
         super(edgeId, fromVertex, toVertex);
     }
 
-    public TYPE getEdgeType() {
-        return TYPE.LINK;
-    }
 }

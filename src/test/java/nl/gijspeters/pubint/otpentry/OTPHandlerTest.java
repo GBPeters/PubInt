@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.opentripplanner.routing.spt.ShortestPathTree;
 
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import static org.junit.Assert.assertTrue;
 
@@ -25,10 +26,10 @@ public class OTPHandlerTest {
     @Test
     public void getShortestPathTree() throws Exception {
         Coordinate coord = new Coordinate(4.889, 52.37);
-        Date date = new Date(1449316800000L);
-        System.out.println(date.toString());
-        ShortestPathTree spt = otp.getShortestPathTree(coord, date, 14400, OTPHandler.ROUTE_MODES.FROM_ORIGIN);
-        assertTrue(!spt.getAllStates().isEmpty());
+        Date date = new GregorianCalendar(2015, 10, 5, 12, 0, 0).getTime();
+        ShortestPathTree spt = otp.getShortestPathTree(coord, date, 7200, OTPHandler.RouteMode.FROM_ORIGIN);
+        assertTrue(spt.getAllStates().size() > 20);
+        assertTrue(spt.getVertexCount() > 20);
     }
 
 }

@@ -39,10 +39,10 @@ public class BasicGraphTest {
         LineString line2 = geomf.createLineString(coords2);
         LineString line3 = geomf.createLineString(coords3);
         LineString incomingLine = geomf.createLineString(incomingCoords);
-        outgoingBasicEdge = new BasicEdge(1, testVertex, v1, outgoingLine);
-        BasicEdge basicEdge2 = new BasicEdge(2, v1, v2, line2);
-        BasicEdge basicEdge3 = new BasicEdge(3, v2, v3, line3);
-        incomingBasicEdge = new BasicEdge(4, v3, testVertex, incomingLine);
+        outgoingBasicEdge = new BasicEdge(1, testVertex, v1, outgoingLine, false);
+        BasicEdge basicEdge2 = new BasicEdge(2, v1, v2, line2, false);
+        BasicEdge basicEdge3 = new BasicEdge(3, v2, v3, line3, false);
+        incomingBasicEdge = new BasicEdge(4, v3, testVertex, incomingLine, false);
         HashSet<Edge> edges = new HashSet<Edge>();
         edges.add(outgoingBasicEdge);
         edges.add(basicEdge2);

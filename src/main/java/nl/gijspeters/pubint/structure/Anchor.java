@@ -78,4 +78,8 @@ public abstract class Anchor {
     public void setUser(User user) {
         this.user = user;
     }
+
+    public String toString() {
+        return getDate().toString() + ": " + getUser().getName() + " at " + getCoord().toString();
+    }
 }

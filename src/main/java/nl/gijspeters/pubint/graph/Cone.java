@@ -7,26 +7,21 @@ import java.util.Collection;
 /**
  * Created by gijspeters on 18-10-16.
  */
-public class Cone extends Cube {
-
-    public enum ConeType {ORIGIN, DESTINATION}
+public class Cone<T extends State> extends Cube {
 
     private Anchor anchor;
     private long duration;
-    public final ConeType type;
 
-    public Cone(Anchor anchor, long duration, ConeType type) {
+    public Cone(Anchor anchor, long duration) {
         super();
         this.setAnchor(anchor);
         this.setDuration(duration);
-        this.type = type;
     }
 
-    public Cone(Anchor anchor, long duration, ConeType type, Collection<State> states) {
+    public Cone(Anchor anchor, long duration, Collection<T> states) {
         super(states);
         this.setAnchor(anchor);
         this.setDuration(duration);
-        this.type = type;
     }
 
     public Anchor getAnchor() {

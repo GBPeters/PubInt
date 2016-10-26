@@ -1,7 +1,8 @@
 package nl.gijspeters.pubint.app;
 
+import nl.gijspeters.pubint.builder.DateManipulator;
+import nl.gijspeters.pubint.builder.GraphBuilder;
 import nl.gijspeters.pubint.graph.BasicGraph;
-import nl.gijspeters.pubint.graph.GraphBuilder;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
 import nl.gijspeters.pubint.otpentry.OTPHandler;
 import nl.gijspeters.pubint.structure.Leg;
@@ -109,7 +110,7 @@ public class App {
 
     public static void buildGraph() {
         try {
-            GraphBuilder gb = new GraphBuilder();
+            GraphBuilder gb = new GraphBuilder(new DateManipulator());
             BasicGraph g = gb.getGraph("amsterdam_complete");
             MorphiaHandler.getInstance().saveLargeGraph(g, true);
             System.out.println("BasicGraph saved");

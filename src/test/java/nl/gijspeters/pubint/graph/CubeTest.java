@@ -21,8 +21,8 @@ import static org.junit.Assert.assertTrue;
 public class CubeTest {
 
     Cube cube;
-    State outgoingState;
-    State incomingState;
+    PrismState outgoingState;
+    PrismState incomingState;
     Vertex testVertex;
     Edge outgoingEdge;
 
@@ -41,18 +41,18 @@ public class CubeTest {
         LineString line2 = geomf.createLineString(coords2);
         LineString line3 = geomf.createLineString(coords3);
         LineString incomingLine = geomf.createLineString(incomingCoords);
-        outgoingEdge = new BasicEdge(1, testVertex, v1, outgoingLine);
-        BasicEdge basicEdge2 = new BasicEdge(2, v1, v2, line2);
-        BasicEdge basicEdge3 = new BasicEdge(3, v2, v3, line3);
-        BasicEdge incomingBasicEdge = new BasicEdge(4, v3, testVertex, incomingLine);
-        HashSet<State> states = new HashSet<>();
+        outgoingEdge = new BasicEdge(1, testVertex, v1, outgoingLine, false);
+        BasicEdge basicEdge2 = new BasicEdge(2, v1, v2, line2, false);
+        BasicEdge basicEdge3 = new BasicEdge(3, v2, v3, line3, false);
+        BasicEdge incomingBasicEdge = new BasicEdge(4, v3, testVertex, incomingLine, false);
+        HashSet<PrismState> states = new HashSet<>();
         Date d1 = new Date(1000);
         Date d2 = new Date(2000);
         Date d3 = new Date(3000);
         Date d4 = new Date(4000);
         outgoingState = new MarkovState(outgoingEdge, d1, d2, d3, d4);
-        State state2 = new MarkovState(basicEdge2, d1, d2, d3, d4);
-        State state3 = new MarkovState(basicEdge3, d1, d2, d3, d4);
+        PrismState state2 = new MarkovState(basicEdge2, d1, d2, d3, d4);
+        PrismState state3 = new MarkovState(basicEdge3, d1, d2, d3, d4);
         incomingState = new MarkovState(incomingBasicEdge, d1, d2, d3, d4);
         states.add(outgoingState);
         states.add(state2);
@@ -120,6 +120,5 @@ public class CubeTest {
         assertTrue(cube.getConnectedStates(testVertex).contains(outgoingState));
         assertTrue(cube.getConnectedStates(testVertex).contains(incomingState));
     }
-
 
 }

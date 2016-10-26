@@ -1,5 +1,6 @@
 package nl.gijspeters.pubint.graph;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.Reference;
@@ -16,17 +17,21 @@ public abstract class Edge {
     private Vertex fromVertex;
     @Reference
     private Vertex toVertex;
-
-    public enum TYPE {STREET, TRANSIT, LINK}
+    private boolean streetEdge;
 
     public Edge() {
 
     }
 
     public Edge(int edgeId, Vertex fromVertex, Vertex toVertex) {
+        this(edgeId, fromVertex, toVertex, false);
+    }
+
+    public Edge(int edgeId, Vertex fromVertex, Vertex toVertex, boolean streetEdge) {
         this.edgeId = edgeId;
         setFromVertex(fromVertex);
         setToVertex(toVertex);
+        setStreetEdge(streetEdge);
     }
 
     public int getEdgeId() {
@@ -49,7 +54,32 @@ public abstract class Edge {
         this.toVertex = toVertex;
     }
 
-    public abstract TYPE getEdgeType();
+    public boolean isStreetEdge() {
+        return streetEdge;
+    }
+
+    public void setStreetEdge(boolean streetEdge) {
+        this.streetEdge = streetEdge;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(5, 79)
+                .append(edgeId)
+                .toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (!(o instanceof Edge)) {
+            return false;
+        }
+        Edge e = (Edge) o;
+        return getEdgeId() == e.getEdgeId();
+    }
 
 
 }

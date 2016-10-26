@@ -8,15 +8,15 @@ import java.util.Set;
  * Created by gijspeters on 18-10-16.
  */
 
-public class Cube implements Graph {
+public class Cube<T extends State> implements Graph {
 
-    private HashSet<State> states = new HashSet<>();
+    protected HashSet<T> states = new HashSet<>();
 
     public Cube() {
 
     }
 
-    public Cube(Collection<State> states) {
+    public Cube(Collection<T> states) {
         this.states.addAll(states);
     }
 
@@ -28,7 +28,7 @@ public class Cube implements Graph {
         return edges;
     }
 
-    public Set<State> getStates() {
+    public Set<T> getStates() {
         return states;
     }
 
@@ -58,9 +58,9 @@ public class Cube implements Graph {
         return new BasicGraph("temp", createEdgeSet()).getConnectedEdges(v);
     }
 
-    public Set<State> getTraversingStates(Edge e) {
-        HashSet<State> states = new HashSet<>();
-        for (State s : this.states) {
+    public Set<T> getTraversingStates(Edge e) {
+        HashSet<T> states = new HashSet<>();
+        for (T s : this.states) {
             if (e.equals(s.getEdge())) {
                 states.add(s);
             }
@@ -68,9 +68,9 @@ public class Cube implements Graph {
         return states;
     }
 
-    public Set<State> getOutgoingStates(Vertex v) {
-        HashSet<State> states = new HashSet<>();
-        for (State s : this.states) {
+    public Set<T> getOutgoingStates(Vertex v) {
+        HashSet<T> states = new HashSet<>();
+        for (T s : this.states) {
             if (v.equals(s.getEdge().getFromVertex())) {
                 states.add(s);
             }
@@ -78,9 +78,9 @@ public class Cube implements Graph {
         return states;
     }
 
-    public Set<State> getIncomingStates(Vertex v) {
-        HashSet<State> states = new HashSet<>();
-        for (State s : this.states) {
+    public Set<T> getIncomingStates(Vertex v) {
+        HashSet<T> states = new HashSet<>();
+        for (T s : this.states) {
             if (v.equals(s.getEdge().getToVertex())) {
                 states.add(s);
             }
@@ -88,9 +88,9 @@ public class Cube implements Graph {
         return states;
     }
 
-    public Set<State> getConnectedStates(Vertex v) {
-        HashSet<State> states = new HashSet<>();
-        for (State s : this.states) {
+    public Set<T> getConnectedStates(Vertex v) {
+        HashSet<T> states = new HashSet<>();
+        for (T s : this.states) {
             if (v.equals(s.getEdge().getFromVertex()) ||
                     v.equals(s.getEdge().getToVertex())) {
                 states.add(s);

@@ -22,12 +22,8 @@ public class BasicEdge extends Edge {
         super();
     }
 
-    public TYPE getEdgeType() {
-        return TYPE.STREET;
-    }
-
-    public BasicEdge(int edgeId, Vertex fromVertex, Vertex toVertex, com.vividsolutions.jts.geom.LineString geom) {
-        super(edgeId, fromVertex, toVertex);
+    public BasicEdge(int edgeId, Vertex fromVertex, Vertex toVertex, com.vividsolutions.jts.geom.LineString geom, boolean streetEdge) {
+        super(edgeId, fromVertex, toVertex, streetEdge);
         setGeometry(geom);
     }
 

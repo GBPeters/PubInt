@@ -25,7 +25,7 @@ public class EdgeTest {
         Coordinate[] coords = {new Coordinate(10, 5), new Coordinate(5, 10)};
         GeometryFactory geomf = new GeometryFactory(new PrecisionModel(), 4326);
         this.line = geomf.createLineString(coords);
-        this.basicEdge = new BasicEdge(123, fromVertex, toVertex, this.line);
+        this.basicEdge = new BasicEdge(123, fromVertex, toVertex, this.line, false);
     }
 
     @Test

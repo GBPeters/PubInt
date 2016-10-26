@@ -6,6 +6,7 @@ import org.opentripplanner.routing.spt.ShortestPathTree;
 import org.opentripplanner.scripting.api.OtpsEntryPoint;
 import org.opentripplanner.scripting.api.OtpsRouter;
 import org.opentripplanner.scripting.api.OtpsRoutingRequest;
+import org.opentripplanner.scripting.api.OtpsSPT;
 
 import java.util.Date;
 
@@ -35,14 +36,14 @@ public class OTPHandler {
         ourInstance.otp = OtpsEntryPoint.fromArgs(args);
     }
 
-    public enum ROUTE_MODES {FROM_ORIGIN, TO_DESTINATION}
+    public enum RouteMode {FROM_ORIGIN, TO_DESTINATION}
 
     /**
      * Constructor with default graph directory (/var/otp/graphs/)
      *
      * @throws Exception
      */
-    public OTPHandler() {
+    private OTPHandler() {
 
     }
 
@@ -56,20 +57,20 @@ public class OTPHandler {
      * @param mode Whether the shortest path tree is calculated from an origin, or to a destination
      * @return The calculated shortest path tree
      */
-    public ShortestPathTree getShortestPathTree(Coordinate coord, Date date, long maxTime, ROUTE_MODES mode) {
+    public ShortestPathTree getShortestPathTree(Coordinate coord, Date date, long maxTime, RouteMode mode) throws Exception {
         OtpsRouter router = otp.getRouter();
         OtpsRoutingRequest req = otp.createRequest();
-        req.setDateTime(date);
-        req.setMaxTimeSec(maxTime);
         switch (mode) {
-            case FROM_ORIGIN:
-                req.setArriveBy(false);
-                req.setOrigin(coord.y, coord.x);
             case TO_DESTINATION:
                 req.setArriveBy(true);
                 req.setDestination(coord.y, coord.x);
+            case FROM_ORIGIN:
+                req.setOrigin(coord.y, coord.x);
         }
-        return router.plan(req).getSpt();
+        req.setDateTime(date);
+        req.setMaxTimeSec(maxTime);
+        OtpsSPT spt = router.plan(req);
+        return spt.getSpt();
     }
 
     public Graph getGraph() {

@@ -12,7 +12,7 @@ import java.util.Collection;
  * Created by gijspeters on 18-10-16.
  */
 @Entity("prism")
-public class Prism extends Cube {
+public class Prism extends Cube<PrismState> {
 
     @Id
     private ObjectId objectId;
@@ -28,7 +28,7 @@ public class Prism extends Cube {
         this.setLeg(leg);
     }
 
-    public Prism(Leg leg, Collection<State> states) {
+    public Prism(Leg leg, Collection<PrismState> states) {
         super(states);
         this.setLeg(leg);
     }
