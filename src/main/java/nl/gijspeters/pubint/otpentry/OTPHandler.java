@@ -53,11 +53,11 @@ public class OTPHandler {
      *
      * @param coord The origin or destination coordinate
      * @param date  The date and time of departure or arrival
-     * @param maxTime The maximum amount of time in seconds to calculate the shortest path tree for
+     * @param maxTimeSeconds The maximum amount of time in seconds to calculate the shortest path tree for
      * @param mode Whether the shortest path tree is calculated from an origin, or to a destination
      * @return The calculated shortest path tree
      */
-    public ShortestPathTree getShortestPathTree(Coordinate coord, Date date, long maxTime, RouteMode mode) throws Exception {
+    public ShortestPathTree getShortestPathTree(Coordinate coord, Date date, int maxTimeSeconds, RouteMode mode) throws Exception {
         OtpsRouter router = otp.getRouter();
         OtpsRoutingRequest req = otp.createRequest();
         switch (mode) {
@@ -68,7 +68,7 @@ public class OTPHandler {
                 req.setOrigin(coord.y, coord.x);
         }
         req.setDateTime(date);
-        req.setMaxTimeSec(maxTime);
+        req.setMaxTimeSec(maxTimeSeconds);
         OtpsSPT spt = router.plan(req);
         return spt.getSpt();
     }
