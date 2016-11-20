@@ -4,30 +4,30 @@ import nl.gijspeters.pubint.graph.BasicGraph;
 import nl.gijspeters.pubint.graph.Cone;
 import nl.gijspeters.pubint.graph.Vertex;
 import nl.gijspeters.pubint.graph.state.OriginState;
-import nl.gijspeters.pubint.graph.traversable.BasicEdge;
+import nl.gijspeters.pubint.graph.state.OriginTransitState;
+import nl.gijspeters.pubint.graph.state.OriginUndirectedState;
 import nl.gijspeters.pubint.graph.traversable.Edge;
-import nl.gijspeters.pubint.graph.traversable.Hop;
-import nl.gijspeters.pubint.graph.traversable.LinkEdge;
 import nl.gijspeters.pubint.otpentry.OTPHandler;
-import nl.gijspeters.pubint.otpentry.OTPHop;
+import nl.gijspeters.pubint.otpentry.OTPRide;
 import nl.gijspeters.pubint.structure.Anchor;
 import org.opentripplanner.routing.core.State;
-import org.opentripplanner.routing.edgetype.AreaEdge;
 import org.opentripplanner.routing.edgetype.PatternHop;
-import org.opentripplanner.routing.edgetype.StreetEdge;
-import org.opentripplanner.routing.edgetype.StreetTransitLink;
+import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.routing.spt.ShortestPathTree;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by gijspeters on 17-10-16.
  */
 public class GraphFactory {
 
-    public static final Set<Class> STREET_EDGE_CLASSES = new HashSet<>(Arrays.asList(new Class[]{StreetEdge.class, StreetTransitLink.class, AreaEdge.class}));
-
     private AnchorManipulator manipulator;
+
+    private TraversableFactory tf = new TraversableFactory();
 
     public GraphFactory() {
         setManipulator(new EmptyManipulator());
@@ -37,45 +37,17 @@ public class GraphFactory {
         this.setManipulator(manipulator);
     }
 
-    public Vertex makeVertex(org.opentripplanner.routing.graph.Vertex v) {
-        return new Vertex(v.getLabel(), v.getCoordinate());
-    }
-
-    public Edge makeEdge(org.opentripplanner.routing.graph.Edge e) {
-        Edge edge;
-        Vertex fromV = makeVertex(e.getFromVertex());
-        Vertex toV = makeVertex(e.getToVertex());
-        if (e.getGeometry() == null) {
-            edge = new LinkEdge(e.getId(), fromV, toV);
-        } else {
-            boolean streetEdge = STREET_EDGE_CLASSES.contains(e.getClass());
-            edge = new BasicEdge(e.getId(), fromV, toV, e.getGeometry(), streetEdge);
-        }
-        return edge;
-    }
-
-    public Hop makeHop(OTPHop h) {
-        return new Hop(h.getTrip(), h.getDeparture(), h.getArrival(), h.getEdge());
-    }
-
-    public OTPHop makeOTPHop(State s) {
-        assert s.getBackEdge() instanceof PatternHop;
-        Date departure = new Date(s.getBackState().getTimeInMillis());
-        Date arrival = new Date(s.getTimeInMillis());
-        return new OTPHop(s.getBackTrip().getId(), departure, arrival, makeEdge(s.getBackEdge()), (PatternHop) s.getBackEdge());
-    }
-
     public BasicGraph getCompleteGraph(String graphId) throws Exception {
         HashSet<Edge> edges = new HashSet<>();
         HashSet<Vertex> vertices = new HashSet<>();
         org.opentripplanner.routing.graph.Graph otpgraph = OTPHandler.getInstance().getGraph();
         Collection<org.opentripplanner.routing.graph.Edge> otpedges = otpgraph.getEdges();
         for (org.opentripplanner.routing.graph.Edge e : otpedges) {
-            edges.add(makeEdge(e));
+            edges.add(tf.makeEdge(e));
         }
         Collection<org.opentripplanner.routing.graph.Vertex> otpvertices = otpgraph.getVertices();
         for (org.opentripplanner.routing.graph.Vertex v : otpvertices) {
-            vertices.add(makeVertex(v));
+            vertices.add(tf.makeVertex(v));
         }
         return new BasicGraph(graphId, edges, vertices);
     }
@@ -93,14 +65,16 @@ public class GraphFactory {
     }
 
     public Cone<OriginState> makeOriginCone(Anchor anchor, long maxTimeMillis) {
-        Cone<OriginState> cone = null;
-        //ShortestPathTree spt = makeSPT(anchor, maxTimeMillis, OTPHandler.RouteMode.FROM_ORIGIN);
-        //Cone<OriginState> cone = new Cone<>(anchor, maxTimeMillis, spt.getOptions().walkSpeed);
-        /*if (spt == null) {
+        ShortestPathTree spt = makeSPT(anchor, maxTimeMillis, OTPHandler.RouteMode.FROM_ORIGIN);
+        Cone<OriginState> cone = new Cone<>(anchor, maxTimeMillis, spt.getOptions().walkSpeed);
+        if (spt == null) {
             return cone;
         }
         long count = 0;
         Set<org.opentripplanner.routing.graph.Edge> edgeids = new HashSet<>();
+        RideBuilder rb = new RideBuilder();
+        int nhops = 0;
+        int ntstates = 0;
         for (org.opentripplanner.routing.core.State s : spt.getAllStates()) {
             if (s.getBackEdge() != null && s.getBackEdge().getGeometry() != null) {
                 if (s.getBackTrip() == null) {
@@ -110,45 +84,41 @@ public class GraphFactory {
                     org.opentripplanner.routing.graph.Vertex backToV = backEdge.getToVertex();
                     GraphPath fromPath = spt.getPath(backFromV, true);
                     GraphPath toPath = spt.getPath(backToV, true);
-                    Edge e = makeEdge(backEdge);
+                    Edge e = tf.makeEdge(backEdge);
                     Date earliestArrival = new Date(fromPath.getEndTime() * 1000);
                     Date earliestDeparture = new Date(toPath.getEndTime() * 1000);
                     OriginState state = new OriginUndirectedState(e, earliestArrival, earliestDeparture);
                     cone.getStates().add(state);
                     count++;
-                } else {
+                } else if (s.getBackEdge() != null && s.getBackEdge() instanceof PatternHop) {
                     edgeids.add(s.getBackEdge());
-                    //patterns.add(s.getLastPattern());
-                    org.opentripplanner.routing.graph.Edge edge = null;
-                    Edge stateEdge = makeEdge(s.getBackEdge());
-                    Date latestArrival = new Date(s.getBackState().getTimeInMillis());
-                    Date earliestDeparture = new Date(s.getTimeInMillis());
-                    for (org.opentripplanner.routing.graph.Edge e : s.getBackEdge().getFromVertex().getIncoming()) {
-                        if (e instanceof TransitBoardAlight) {
-                            edge = e;
-                            break;
-                        }
-                    }
-                    Date earliestArrival;
-                    if (edge == null) {
-                        edge = s.getBackState().getBackEdge();
-                        earliestArrival = new Date(spt.getPath(edge.getFromVertex(), true).getEndTime() * 1000);
-                    } else {
-                        earliestArrival = new Date(spt.getPath(edge.getFromVertex().getIncoming().iterator().next().getFromVertex(), true).getEndTime() * 1000);
-                    }
-                    OriginState state = new OriginTransitState(stateEdge, earliestArrival, latestArrival, earliestDeparture);
-                    System.out.println(state);
-                    assert earliestArrival.getTime() <= latestArrival.getTime();
-                    assert latestArrival.getTime() <= earliestDeparture.getTime();
-                    cone.getStates().add(state);
+                    rb.add(s);
 
                     count++;
                 }
             }
         }
+        for (OTPRide otpsuperride : rb.createRides()) {
+            for (OTPRide otpride : otpsuperride.getSubRides()) {
+                org.opentripplanner.routing.graph.Vertex boardVertex = otpride.getBoardVertex();
+                if (boardVertex != null) {
+                    GraphPath boardPath = spt.getPath(boardVertex, true);
+                    if (boardPath != null) {
+                        Date earliestDeparture = new Date(boardPath.getEndTime() * 1000);
+                        if (earliestDeparture.getTime() <= otpride.getDeparture().getTime()) {
+                            OriginState s = new OriginTransitState(otpride.getRide(), earliestDeparture, otpride.getDeparture(), otpride.getArrival());
+                            cone.getStates().add(s);
+                            nhops += otpride.size();
+                            ntstates++;
+                        }
+                    }
+                }
+            }
+        }
         System.out.println("Edges handled: " + String.valueOf(edgeids.size()));
         System.out.println("Processed: " + String.valueOf(count));
-        System.out.println("States in Cone: " + String.valueOf(cone.getStates().size()));*/
+        System.out.println("States in Cone: " + String.valueOf(cone.getStates().size()));
+        System.out.println(String.valueOf(nhops) + " Hops in " + String.valueOf(ntstates) + " TransitStates");
         return cone;
     }
 

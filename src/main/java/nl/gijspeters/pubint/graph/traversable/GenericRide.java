@@ -4,7 +4,9 @@ import nl.gijspeters.pubint.builder.HopTimeComparator;
 import nl.gijspeters.pubint.graph.Vertex;
 import org.onebusaway.gtfs.model.AgencyAndId;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.TreeSet;
 
 /**
  * Created by gijspeters on 20-11-16.
@@ -58,18 +60,6 @@ public class GenericRide<T extends Hop> extends TreeSet<T> implements Ridable {
     @Override
     public AgencyAndId getTrip() {
         return trip;
-    }
-
-    public Set<GenericRide<T>> getSubRides() {
-        Set<GenericRide<T>> subRides = new HashSet<>();
-        for (T th : this) {
-            GenericRide<T> hr = new GenericRide<T>(this.headSet(th, true));
-            for (T fh : hr) {
-                GenericRide<T> sr = new GenericRide<>(hr.tailSet(fh, true));
-                subRides.add(sr);
-            }
-        }
-        return subRides;
     }
 
     @Override

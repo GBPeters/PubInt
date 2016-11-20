@@ -3,6 +3,7 @@ package nl.gijspeters.pubint.graph.traversable;
 import nl.gijspeters.pubint.app.Constants;
 import nl.gijspeters.pubint.builder.DateManipulator;
 import nl.gijspeters.pubint.builder.GraphFactory;
+import nl.gijspeters.pubint.builder.TraversableFactory;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
 import nl.gijspeters.pubint.otpentry.OTPHandler;
 import nl.gijspeters.pubint.structure.Anchor;
@@ -32,6 +33,7 @@ public class RideTest {
         OTPHandler.graphDir = Constants.OTP_DIR;
         Anchor anchor = MorphiaHandler.getInstance().getTestLeg().getOrigin();
         GraphFactory gf = new GraphFactory(new DateManipulator());
+        TraversableFactory tf = new TraversableFactory();
         Set<State> states = gf.makeTestTripStates(anchor);
         Iterator<State> iter = states.iterator();
         while (iter.hasNext() && hop2 == null) {
@@ -39,15 +41,15 @@ public class RideTest {
             if (s.getPreviousTrip() != null) {
                 for (State s2 : states) {
                     if (s2.getBackTrip().equals(s.getPreviousTrip()) && !s.equals(s2)) {
-                        hop1 = gf.makeHop(gf.makeOTPHop(s));
-                        hop2 = gf.makeHop(gf.makeOTPHop(s2));
+                        hop1 = tf.makeHop(tf.makeOTPHop(s));
+                        hop2 = tf.makeHop(tf.makeOTPHop(s2));
                         break;
                     }
                 }
             }
         }
         iter.next();
-        wrongHop = gf.makeHop(gf.makeOTPHop(iter.next()));
+        wrongHop = tf.makeHop(tf.makeOTPHop(iter.next()));
     }
 
     @Test

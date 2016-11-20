@@ -7,11 +7,25 @@ import org.opentripplanner.routing.graph.Edge;
 import org.opentripplanner.routing.graph.Vertex;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by gijspeters on 20-11-16.
  */
 public class OTPRide extends GenericRide<OTPHop> {
+
+    public OTPRide() {
+        super();
+    }
+
+    public OTPRide(OTPHop h) {
+        super(h);
+    }
+
+    public OTPRide(Collection<? extends OTPHop> hops) {
+        super(hops);
+    }
 
     public Ride getRide() {
         return new Ride(this);
@@ -39,4 +53,15 @@ public class OTPRide extends GenericRide<OTPHop> {
         return alightVertex;
     }
 
+    public Set<OTPRide> getSubRides() {
+        Set<OTPRide> subRides = new HashSet<>();
+        for (OTPHop th : this) {
+            OTPRide hr = new OTPRide(this.headSet(th, true));
+            for (OTPHop fh : hr) {
+                OTPRide sr = new OTPRide(hr.tailSet(fh, true));
+                subRides.add(sr);
+            }
+        }
+        return subRides;
+    }
 }

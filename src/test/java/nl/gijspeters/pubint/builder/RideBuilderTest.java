@@ -19,7 +19,7 @@ import static org.junit.Assert.assertTrue;
 public class RideBuilderTest {
 
     GraphFactory gf = new GraphFactory(new DateManipulator());
-    RideBuilder builder = new RideBuilder(gf);
+    RideBuilder builder = new RideBuilder();
 
     @Before
     public void setUp() throws Exception {

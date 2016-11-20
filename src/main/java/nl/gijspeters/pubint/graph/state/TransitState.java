@@ -66,7 +66,7 @@ public class TransitState extends AbstractState implements State<Ride>, TransitT
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(89, 98)
+        return new HashCodeBuilder(89, 99)
                 .append(ride)
                 .append(earliestArrival)
                 .append(latestDeparture)

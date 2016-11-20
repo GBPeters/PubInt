@@ -12,21 +12,18 @@ import java.util.*;
  */
 public class RideBuilder implements Set<State> {
 
-    private final GraphFactory gf;
+    private TraversableFactory tf = new TraversableFactory();
 
     private HashMap<Trip, Set<State>> sets = new HashMap<>();
 
-    public RideBuilder(GraphFactory gf) {
-        this.gf = gf;
+    public RideBuilder() {
     }
 
-    public RideBuilder(GraphFactory gf, State s) {
-        this(gf);
+    public RideBuilder(State s) {
         add(s);
     }
 
-    public RideBuilder(GraphFactory gf, Collection<State> states) {
-        this(gf);
+    public RideBuilder(Collection<State> states) {
         addAll(states);
     }
 
@@ -35,7 +32,7 @@ public class RideBuilder implements Set<State> {
         for (Trip t : sets.keySet()) {
             OTPRide r = new OTPRide();
             for (State s : sets.get(t)) {
-                r.add(gf.makeOTPHop(s));
+                r.add(tf.makeOTPHop(s));
             }
             ridesets.add(r);
         }

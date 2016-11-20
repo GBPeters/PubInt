@@ -9,6 +9,8 @@ import nl.gijspeters.pubint.structure.Anchor;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertTrue;
+
 /**
  * Created by gijspeters on 18-10-16.
  */
@@ -27,7 +29,7 @@ public class GraphFactoryTest {
     public void getCone() throws Exception {
         GraphFactory gb = new GraphFactory(new DateManipulator());
         Cone<OriginState> cone = gb.makeOriginCone(anchor, 7200);
-        //assertTrue(cone.getStates().size() > 20);
+        assertTrue(cone.getStates().size() > 20);
     }
 
 }
