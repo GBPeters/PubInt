@@ -1,20 +1,23 @@
 package nl.gijspeters.pubint.graph;
 
+import nl.gijspeters.pubint.graph.traversable.Traversable;
+
+import java.util.Collection;
 import java.util.Set;
 
 /**
  * Created by gijspeters on 18-10-16.
  */
-public interface Graph {
+public interface Graph<T extends Traversable> {
 
-    Edge[] getEdges();
+    Collection<T> getTraversables();
 
-    Vertex[] getVertices();
+    Set<Vertex> getVertices();
 
-    Set<Edge> getOutgoingEdges(Vertex v);
+    Set<T> getOutgoingTraversables(Vertex v);
 
-    Set<Edge> getIncomingEdges(Vertex v);
+    Set<T> getIncomingTraversables(Vertex v);
 
-    Set<Edge> getConnectedEdges(Vertex v);
+    Set<T> getConnectedTraversables(Vertex v);
 
 }

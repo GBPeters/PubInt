@@ -1,5 +1,6 @@
 package nl.gijspeters.pubint.graph;
 
+import nl.gijspeters.pubint.graph.traversable.Traversable;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.Reference;
@@ -13,29 +14,28 @@ import java.util.Set;
  * Created by gijspeters on 17-10-16.
  */
 @Entity("graph")
-public class BasicGraph implements Graph {
+public class BasicGraph implements Graph<Traversable> {
 
     @Id
     private String id;
     @Reference
-    private HashSet<Edge> edges = new HashSet<Edge>();
-    @Reference
-    private HashMap<String, Vertex> vertices = new HashMap<String, Vertex>();
+    private HashMap<String, Vertex> vertices = new HashMap<>();
+    private Set<Traversable> traversables = new HashSet<>();
 
     public BasicGraph() {
     }
 
-    public BasicGraph(String id, Collection<Edge> edges) {
-        this(id, edges, new HashSet<Vertex>());
+    public BasicGraph(String id, Collection<? extends Traversable> traversables) {
+        this(id, traversables, new HashSet<>());
     }
 
-    public BasicGraph(String id, Collection<Edge> edges, Collection<Vertex> vertices) {
+    public BasicGraph(String id, Collection<? extends Traversable> traversables, Collection<Vertex> vertices) {
         this.id = id;
-        for (Edge e : edges) {
-            vertices.add(e.getFromVertex());
-            vertices.add(e.getToVertex());
+        for (Traversable t : traversables) {
+            vertices.add(t.getFromVertex());
+            vertices.add(t.getToVertex());
         }
-        this.edges.addAll(edges);
+        getTraversables().addAll(traversables);
         for (Vertex v : vertices) {
             this.vertices.put(v.getVertexLabel(), v);
         }
@@ -49,38 +49,39 @@ public class BasicGraph implements Graph {
         this.id = id;
     }
 
-    public Edge[] getEdges() {
-        return edges.toArray(new Edge[edges.size()]);
+    @Override
+    public Collection<Traversable> getTraversables() {
+        return traversables;
     }
 
-    public Vertex[] getVertices() {
-        return vertices.values().toArray(new Vertex[vertices.size()]);
+    public Set<Vertex> getVertices() {
+        return new HashSet<>(vertices.values());
     }
 
-    public Set<Edge> getOutgoingEdges(Vertex v) {
-        HashSet<Edge> outgoing = new HashSet<Edge>();
-        for (Edge e : edges) {
-            if (v.equals(e.getFromVertex())) {
-                outgoing.add(e);
+    public Set<Traversable> getOutgoingTraversables(Vertex v) {
+        HashSet<Traversable> outgoing = new HashSet<>();
+        for (Traversable t : getTraversables()) {
+            if (v.equals(t.getFromVertex())) {
+                outgoing.add(t);
             }
         }
         return outgoing;
     }
 
-    public Set<Edge> getIncomingEdges(Vertex v) {
-        HashSet<Edge> incoming = new HashSet<Edge>();
-        for (Edge e : edges) {
-            if (v.equals(e.getToVertex())) {
-                incoming.add(e);
+    public Set<Traversable> getIncomingTraversables(Vertex v) {
+        HashSet<Traversable> incoming = new HashSet<>();
+        for (Traversable t : getTraversables()) {
+            if (v.equals(t.getToVertex())) {
+                incoming.add(t);
             }
         }
         return incoming;
     }
 
-    public Set<Edge> getConnectedEdges(Vertex v) {
-        HashSet<Edge> connected = new HashSet<Edge>();
-        connected.addAll(getOutgoingEdges(v));
-        connected.addAll(getIncomingEdges(v));
+    public Set<Traversable> getConnectedTraversables(Vertex v) {
+        HashSet<Traversable> connected = new HashSet<>();
+        connected.addAll(getOutgoingTraversables(v));
+        connected.addAll(getIncomingTraversables(v));
         return connected;
     }
 

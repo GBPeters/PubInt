@@ -4,11 +4,13 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import nl.gijspeters.pubint.graph.traversable.BasicEdge;
+import nl.gijspeters.pubint.graph.traversable.Edge;
+import nl.gijspeters.pubint.graph.traversable.Traversable;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 
 import static org.junit.Assert.assertEquals;
@@ -43,7 +45,7 @@ public class BasicGraphTest {
         BasicEdge basicEdge2 = new BasicEdge(2, v1, v2, line2, false);
         BasicEdge basicEdge3 = new BasicEdge(3, v2, v3, line3, false);
         incomingBasicEdge = new BasicEdge(4, v3, testVertex, incomingLine, false);
-        HashSet<Edge> edges = new HashSet<Edge>();
+        HashSet<Edge> edges = new HashSet<>();
         edges.add(outgoingBasicEdge);
         edges.add(basicEdge2);
         edges.add(basicEdge3);
@@ -54,7 +56,7 @@ public class BasicGraphTest {
 
     @Test
     public void getEdges() throws Exception {
-        ArrayList<Edge> basicEdges = new ArrayList<Edge>(Arrays.asList(basicGraph.getEdges()));
+        ArrayList<Traversable> basicEdges = new ArrayList<>(basicGraph.getTraversables());
         assertEquals(4, basicEdges.size());
         assertTrue(basicEdges.contains(outgoingBasicEdge));
         assertTrue(basicEdges.contains(incomingBasicEdge));
@@ -62,28 +64,28 @@ public class BasicGraphTest {
 
     @Test
     public void getVertices() throws Exception {
-        ArrayList<Vertex> vertices = new ArrayList<Vertex>(Arrays.asList(basicGraph.getVertices()));
+        ArrayList<Vertex> vertices = new ArrayList<>(basicGraph.getVertices());
         assertEquals(4, vertices.size());
         assertTrue(vertices.contains(testVertex));
     }
 
     @Test
     public void getOutgoingEdges() throws Exception {
-        assertEquals(1, basicGraph.getOutgoingEdges(testVertex).size());
-        assertTrue(basicGraph.getOutgoingEdges(testVertex).contains(outgoingBasicEdge));
+        assertEquals(1, basicGraph.getOutgoingTraversables(testVertex).size());
+        assertTrue(basicGraph.getOutgoingTraversables(testVertex).contains(outgoingBasicEdge));
     }
 
     @Test
     public void getIncomingEdges() throws Exception {
-        assertEquals(1, basicGraph.getIncomingEdges(testVertex).size());
-        assertTrue(basicGraph.getIncomingEdges(testVertex).contains(incomingBasicEdge));
+        assertEquals(1, basicGraph.getIncomingTraversables(testVertex).size());
+        assertTrue(basicGraph.getIncomingTraversables(testVertex).contains(incomingBasicEdge));
     }
 
     @Test
     public void getConnectedEdges() throws Exception {
-        assertEquals(2, basicGraph.getConnectedEdges(testVertex).size());
-        assertTrue(basicGraph.getConnectedEdges(testVertex).contains(outgoingBasicEdge));
-        assertTrue(basicGraph.getConnectedEdges(testVertex).contains(incomingBasicEdge));
+        assertEquals(2, basicGraph.getConnectedTraversables(testVertex).size());
+        assertTrue(basicGraph.getConnectedTraversables(testVertex).contains(outgoingBasicEdge));
+        assertTrue(basicGraph.getConnectedTraversables(testVertex).contains(incomingBasicEdge));
     }
 
 }

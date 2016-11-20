@@ -1,5 +1,6 @@
 package nl.gijspeters.pubint.graph;
 
+import nl.gijspeters.pubint.graph.state.State;
 import nl.gijspeters.pubint.structure.Anchor;
 
 import java.util.Collection;
@@ -12,14 +13,14 @@ public class Cone<T extends State> extends Cube {
     private Anchor anchor;
     private long duration;
 
-    public Cone(Anchor anchor, long duration) {
-        super();
+    public Cone(Anchor anchor, long duration, double walkSpeed) {
+        super(walkSpeed);
         this.setAnchor(anchor);
         this.setDuration(duration);
     }
 
-    public Cone(Anchor anchor, long duration, Collection<T> states) {
-        super(states);
+    public Cone(Anchor anchor, long duration, double walkSpeed, Collection<T> states) {
+        super(states, walkSpeed);
         this.setAnchor(anchor);
         this.setDuration(duration);
     }

@@ -4,13 +4,18 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import nl.gijspeters.pubint.graph.state.BrownianState;
+import nl.gijspeters.pubint.graph.state.PrismState;
+import nl.gijspeters.pubint.graph.traversable.BasicEdge;
+import nl.gijspeters.pubint.graph.traversable.Edge;
+import nl.gijspeters.pubint.graph.traversable.Traversable;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -50,50 +55,49 @@ public class CubeTest {
         Date d2 = new Date(2000);
         Date d3 = new Date(3000);
         Date d4 = new Date(4000);
-        outgoingState = new MarkovState(outgoingEdge, d1, d2, d3, d4);
-        PrismState state2 = new MarkovState(basicEdge2, d1, d2, d3, d4);
-        PrismState state3 = new MarkovState(basicEdge3, d1, d2, d3, d4);
-        incomingState = new MarkovState(incomingBasicEdge, d1, d2, d3, d4);
+        outgoingState = new BrownianState(outgoingEdge, d1, d2, 1000);
+        PrismState state2 = new BrownianState(basicEdge2, d2, d3, 1000);
+        PrismState state3 = new BrownianState(basicEdge3, d3, d4, 1000);
+        incomingState = new BrownianState(incomingBasicEdge, d3, d4, 1000);
         states.add(outgoingState);
         states.add(state2);
         states.add(state3);
         states.add(incomingState);
-        cube = new Cube(states);
-
+        cube = new Cube(states, 1);
     }
 
     @Test
     public void getEdges() throws Exception {
-        ArrayList<Edge> basicEdges = new ArrayList<Edge>(Arrays.asList(cube.getEdges()));
+        List<Traversable> basicEdges = new ArrayList<>(cube.getTraversables());
         assertEquals(4, basicEdges.size());
-        assertTrue(basicEdges.contains(outgoingState.getEdge()));
-        assertTrue(basicEdges.contains(incomingState.getEdge()));
+        assertTrue(basicEdges.contains(outgoingState.getTraversable()));
+        assertTrue(basicEdges.contains(incomingState.getTraversable()));
     }
 
     @Test
     public void getVertices() throws Exception {
-        ArrayList<Vertex> vertices = new ArrayList<Vertex>(Arrays.asList(cube.getVertices()));
+        List<Vertex> vertices = new ArrayList<>(cube.getVertices());
         assertEquals(4, vertices.size());
         assertTrue(vertices.contains(testVertex));
     }
 
     @Test
     public void getOutgoingEdges() throws Exception {
-        assertEquals(1, cube.getOutgoingEdges(testVertex).size());
-        assertTrue(cube.getOutgoingEdges(testVertex).contains(outgoingState.getEdge()));
+        assertEquals(1, cube.getOutgoingTraversables(testVertex).size());
+        assertTrue(cube.getOutgoingTraversables(testVertex).contains(outgoingState.getTraversable()));
     }
 
     @Test
     public void getIncomingEdges() throws Exception {
-        assertEquals(1, cube.getIncomingEdges(testVertex).size());
-        assertTrue(cube.getIncomingEdges(testVertex).contains(incomingState.getEdge()));
+        assertEquals(1, cube.getIncomingTraversables(testVertex).size());
+        assertTrue(cube.getIncomingTraversables(testVertex).contains(incomingState.getTraversable()));
     }
 
     @Test
     public void getConnectedEdges() throws Exception {
-        assertEquals(2, cube.getConnectedEdges(testVertex).size());
-        assertTrue(cube.getConnectedEdges(testVertex).contains(outgoingState.getEdge()));
-        assertTrue(cube.getConnectedEdges(testVertex).contains(incomingState.getEdge()));
+        assertEquals(2, cube.getConnectedTraversables(testVertex).size());
+        assertTrue(cube.getConnectedTraversables(testVertex).contains(outgoingState.getTraversable()));
+        assertTrue(cube.getConnectedTraversables(testVertex).contains(incomingState.getTraversable()));
     }
 
     @Test

@@ -35,4 +35,9 @@ public class Vertex {
         this.coord = coord;
     }
 
+    @Override
+    public String toString() {
+        return "Vertex <" + getVertexLabel() + ">";
+    }
+
 }

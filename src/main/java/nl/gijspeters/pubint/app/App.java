@@ -1,7 +1,7 @@
 package nl.gijspeters.pubint.app;
 
 import nl.gijspeters.pubint.builder.DateManipulator;
-import nl.gijspeters.pubint.builder.GraphBuilder;
+import nl.gijspeters.pubint.builder.GraphFactory;
 import nl.gijspeters.pubint.graph.BasicGraph;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
 import nl.gijspeters.pubint.otpentry.OTPHandler;
@@ -20,10 +20,8 @@ import java.util.Set;
  */
 public class App {
 
-    public static final String OTP_DIR = "/Users/gijspeters/otp/";
-
     public static void main(String[] args) {
-        OTPHandler.graphDir = OTP_DIR;
+        OTPHandler.graphDir = Constants.OTP_DIR;
         if (args.length > 0) {
             String com = args[0];
             ArrayList<String> arglist = new ArrayList<>(Arrays.asList(args));
@@ -110,9 +108,9 @@ public class App {
 
     public static void buildGraph() {
         try {
-            GraphBuilder gb = new GraphBuilder(new DateManipulator());
-            BasicGraph g = gb.getGraph("amsterdam_complete");
-            MorphiaHandler.getInstance().saveLargeGraph(g, true);
+            GraphFactory gb = new GraphFactory(new DateManipulator());
+            BasicGraph g = gb.getCompleteGraph("amsterdam_complete");
+            MorphiaHandler.getInstance().saveLargeGraph(g, false);
             System.out.println("BasicGraph saved");
         } catch (Exception e) {
             e.printStackTrace();

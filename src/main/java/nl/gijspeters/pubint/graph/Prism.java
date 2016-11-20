@@ -1,5 +1,6 @@
 package nl.gijspeters.pubint.graph;
 
+import nl.gijspeters.pubint.graph.state.PrismState;
 import nl.gijspeters.pubint.structure.Leg;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
@@ -23,13 +24,13 @@ public class Prism extends Cube<PrismState> {
         super();
     }
 
-    public Prism(Leg leg) {
-        super();
+    public Prism(Leg leg, double walkSpeed) {
+        super(walkSpeed);
         this.setLeg(leg);
     }
 
-    public Prism(Leg leg, Collection<PrismState> states) {
-        super(states);
+    public Prism(Leg leg, double walkSpeed, Collection<PrismState> states) {
+        super(states, walkSpeed);
         this.setLeg(leg);
     }
 
