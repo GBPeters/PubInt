@@ -70,4 +70,14 @@ public class DestinationUndirectedState extends UndirectedState implements Desti
     public long getMinimalTraversalTime() {
         return getLatestArrival().getTime() - getLatestDeparture().getTime();
     }
+
+    @Override
+    public boolean matches(OriginState<Edge> originState) {
+        if (originState instanceof OriginUndirectedState) {
+            return getTraversable().equals(originState.getTraversable())
+                    && originState.getEarliestDeparture().getTime() <= getLatestDeparture().getTime()
+                    && originState.getEarliestArrival().getTime() <= getLatestArrival().getTime();
+        }
+        return false;
+    }
 }

@@ -29,17 +29,18 @@ public class GraphFactoryTest {
         testLeg = MorphiaHandler.getInstance().getTestLeg();
         originAnchor = testLeg.getOrigin();
         destinationAnchor = testLeg.getDestination();
-        System.out.println(originAnchor.toString());
     }
 
     @Test
     public void getOriginCone() throws Exception {
+        System.out.println("From " + originAnchor.toString());
         Cone<OriginState> cone = gf.makeOriginCone(originAnchor, 7200);
         assertTrue(cone.getStates().size() > 2000);
     }
 
     @Test
     public void getDestinationCone() throws Exception {
+        System.out.println("To " + destinationAnchor.toString());
         Cone<DestinationState> cone = gf.makeDestinationCone(destinationAnchor, 7200);
         assertTrue(cone.getStates().size() > 2000);
     }

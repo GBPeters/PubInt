@@ -52,4 +52,14 @@ public class DestinationTransitState extends TransitState implements Destination
     public void setLatestArrival(Date latestArrival) {
         this.latestArrival = latestArrival;
     }
+
+    @Override
+    public boolean matches(OriginState<Ride> originState) {
+        if (originState instanceof OriginTransitState) {
+            return getTraversable().equals(originState.getTraversable())
+                    && originState.getEarliestDeparture().getTime() <= getLatestDeparture().getTime()
+                    && originState.getEarliestArrival().getTime() <= getEarliestArrival().getTime();
+        }
+        return false;
+    }
 }

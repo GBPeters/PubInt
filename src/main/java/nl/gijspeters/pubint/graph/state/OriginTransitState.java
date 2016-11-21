@@ -56,4 +56,14 @@ public class OriginTransitState extends TransitState implements OriginState<Ride
     public String toString() {
         return "State on " + getTraversable().toString() + " (" + getEarliestArrival().toString() + " - " + getEarliestDeparture().toString() + " : " + getEarliestDeparture().toString() + ")";
     }
+
+    @Override
+    public boolean matches(DestinationState<Ride> destinationState) {
+        if (destinationState instanceof DestinationTransitState) {
+            return getTraversable().equals(destinationState.getTraversable())
+                    && earliestDeparture.getTime() <= destinationState.getLatestDeparture().getTime()
+                    && getEarliestArrival().getTime() <= destinationState.getLatestArrival().getTime();
+        }
+        return false;
+    }
 }
