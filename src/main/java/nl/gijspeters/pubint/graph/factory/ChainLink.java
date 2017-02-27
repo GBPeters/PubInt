@@ -1,4 +1,4 @@
-package nl.gijspeters.pubint.builder;
+package nl.gijspeters.pubint.graph.factory;
 
 import java.util.Collection;
 import java.util.HashSet;

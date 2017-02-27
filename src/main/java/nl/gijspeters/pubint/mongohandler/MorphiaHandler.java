@@ -3,7 +3,11 @@ package nl.gijspeters.pubint.mongohandler;
 import com.mongodb.MongoClient;
 import nl.gijspeters.pubint.app.Constants;
 import nl.gijspeters.pubint.graph.BasicGraph;
+import nl.gijspeters.pubint.graph.Prism;
 import nl.gijspeters.pubint.graph.Vertex;
+import nl.gijspeters.pubint.graph.traversable.Edge;
+import nl.gijspeters.pubint.graph.traversable.Hop;
+import nl.gijspeters.pubint.graph.traversable.Ride;
 import nl.gijspeters.pubint.graph.traversable.Traversable;
 import nl.gijspeters.pubint.structure.*;
 import org.bson.types.ObjectId;
@@ -11,10 +15,7 @@ import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
 import org.mongodb.morphia.query.Query;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
+import java.util.*;
 
 /**
  * Created by gijspeters on 03-10-16.
@@ -27,6 +28,7 @@ public class MorphiaHandler {
             "nl.gijspeters.pubint.graph",
             "nl.gijspeters.pubint.mongohandler"};
 
+    public static boolean ASSUME_SAVEDGRAPH = true;
 
     private final Morphia morphia;
     private final Datastore datastore;
@@ -49,6 +51,10 @@ public class MorphiaHandler {
         return datastore;
     }
 
+    public void clearCollection(Class c) {
+        datastore.getCollection(c).drop();
+    }
+
     public void saveGraph(BasicGraph basicGraph, boolean basedOnExistingGraph) {
         if (!basedOnExistingGraph) {
             saveNodes(basicGraph.getVertices());
@@ -62,7 +68,27 @@ public class MorphiaHandler {
     }
 
     public void saveTraversable(Collection<Traversable> traversables) {
-        saveSimpleCollection(traversables);
+        Set<Hop> hops = new HashSet<>();
+        for (Traversable t : traversables) {
+            if (t instanceof Ride) {
+                hops.addAll((Ride) t);
+            } else if (t instanceof Hop) {
+                hops.add((Hop) t);
+            }
+        }
+        if (!ASSUME_SAVEDGRAPH) {
+            Set<Edge> edges = new HashSet<>();
+            for (Hop t : hops) {
+                edges.add(t.getEdge());
+            }
+            for (Traversable t : traversables) {
+                if (t instanceof Edge) {
+                    edges.add((Edge) t);
+                }
+            }
+            saveSimpleCollection(edges);
+        }
+        saveSimpleCollection(hops);
     }
 
     public void saveLargeGraph(BasicGraph basicGraph, boolean basedOnExistingGraph) {
@@ -71,6 +97,10 @@ public class MorphiaHandler {
             saveTraversable(basicGraph.getTraversables());
         }
         getDs().save(new MongoLargeGraph(basicGraph));
+    }
+
+    public void saveLargeGraph(BasicGraph basicGraph) {
+        saveLargeGraph(basicGraph, ASSUME_SAVEDGRAPH);
     }
 
     public BasicGraph loadLargeGraph(String graphId) {
@@ -84,6 +114,7 @@ public class MorphiaHandler {
 
     private void saveSimpleCollection(Collection c) {
         for (Object o : c) {
+            System.out.println(o);
             getDs().save(o);
         }
     }
@@ -139,8 +170,13 @@ public class MorphiaHandler {
         Leg l;
         do {
             l = i.next();
-        } while (i.hasNext() && l.getDeltaTime() > 1200000);
+        } while (i.hasNext() && (l.getDeltaTime() < 1200000 || l.getDeltaTime() > 1500000));
         return l;
+    }
+
+    public void savePrism(Prism p) {
+        saveTraversable(p.getTraversables());
+        saveSimpleObject(new PrismContainer(p));
     }
 
 }

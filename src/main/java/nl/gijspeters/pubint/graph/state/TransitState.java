@@ -84,6 +84,10 @@ public class TransitState extends AbstractState implements State<Ride>, TransitT
         return false;
     }
 
+    public String toString() {
+        return "State on " + getTraversable().toString() + " (" + getLatestDeparture().toString() + " - " + getEarliestArrival().toString() + ")";
+    }
+
     public TransitType getType() {
         return type;
     }

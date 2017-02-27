@@ -2,6 +2,7 @@ package nl.gijspeters.pubint.otpentry;
 
 import nl.gijspeters.pubint.graph.traversable.Edge;
 import nl.gijspeters.pubint.graph.traversable.Hop;
+import nl.gijspeters.pubint.graph.traversable.Trip;
 import org.onebusaway.gtfs.model.AgencyAndId;
 import org.opentripplanner.routing.edgetype.PatternHop;
 import org.opentripplanner.routing.graph.Vertex;
@@ -21,7 +22,7 @@ public class OTPHop extends Hop {
     }
 
     public OTPHop(AgencyAndId trip, Date departure, Date arrival, Edge edge, PatternHop pHop) {
-        super(trip, departure, arrival, edge);
+        super(new Trip(trip), departure, arrival, edge);
         this.fromOTPVertex = pHop.getFromVertex();
         this.toOTPVertex = pHop.getToVertex();
     }
@@ -41,4 +42,9 @@ public class OTPHop extends Hop {
     public void setToOTPVertex(Vertex toOTPVertex) {
         this.toOTPVertex = toOTPVertex;
     }
+
+    public Hop getHop() {
+        return new Hop(getTrip(), getDeparture(), getArrival(), getEdge());
+    }
+
 }

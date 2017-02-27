@@ -1,4 +1,4 @@
-package nl.gijspeters.pubint.builder;
+package nl.gijspeters.pubint.graph.factory;
 
 import nl.gijspeters.pubint.otpentry.OTPRide;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -12,19 +12,34 @@ import java.util.*;
  */
 public class RideBuilder implements Set<State> {
 
-    private TraversableFactory tf = new TraversableFactory();
+    private TraversableFactory tf;
 
     private HashMap<Trip, Set<State>> sets = new HashMap<>();
 
     public RideBuilder() {
+        tf = new TraversableFactory();
     }
 
-    public RideBuilder(State s) {
+    public RideBuilder(TraversableFactory tf) {
+        this.tf = tf;
+    }
+
+    public RideBuilder(TraversableFactory tf, State s) {
+        this(tf);
         add(s);
     }
 
-    public RideBuilder(Collection<State> states) {
+    public RideBuilder(TraversableFactory tf, Collection<State> states) {
+        this(tf);
         addAll(states);
+    }
+
+    public RideBuilder(State s) {
+        this(new TraversableFactory(), s);
+    }
+
+    public RideBuilder(Collection<State> states) {
+        this(new TraversableFactory(), states);
     }
 
     public Set<OTPRide> createRides() {

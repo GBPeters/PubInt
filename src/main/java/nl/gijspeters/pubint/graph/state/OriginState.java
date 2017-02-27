@@ -8,6 +8,6 @@ import nl.gijspeters.pubint.graph.traversable.Traversable;
  */
 public interface OriginState<T extends Traversable> extends State<T>, OriginTimes {
 
-    boolean matches(DestinationState<T> destinationState);
+    boolean matches(DestinationState destinationState);
 
 }

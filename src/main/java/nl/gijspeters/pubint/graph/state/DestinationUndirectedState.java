@@ -72,7 +72,7 @@ public class DestinationUndirectedState extends UndirectedState implements Desti
     }
 
     @Override
-    public boolean matches(OriginState<Edge> originState) {
+    public boolean matches(OriginState originState) {
         if (originState instanceof OriginUndirectedState) {
             return getTraversable().equals(originState.getTraversable())
                     && originState.getEarliestDeparture().getTime() <= getLatestDeparture().getTime()

@@ -1,4 +1,4 @@
-package nl.gijspeters.pubint.builder;
+package nl.gijspeters.pubint.graph.factory;
 
 import org.opentripplanner.routing.core.State;
 

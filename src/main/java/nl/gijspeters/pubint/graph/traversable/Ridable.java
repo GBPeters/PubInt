@@ -1,7 +1,5 @@
 package nl.gijspeters.pubint.graph.traversable;
 
-import org.onebusaway.gtfs.model.AgencyAndId;
-
 import java.util.Date;
 
 /**
@@ -9,7 +7,7 @@ import java.util.Date;
  */
 public interface Ridable extends Traversable {
 
-    AgencyAndId getTrip();
+    Trip getTrip();
 
     Date getDeparture();
 

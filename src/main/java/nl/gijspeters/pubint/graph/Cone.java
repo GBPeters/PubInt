@@ -8,7 +8,7 @@ import java.util.Collection;
 /**
  * Created by gijspeters on 18-10-16.
  */
-public class Cone<T extends State> extends Cube {
+public class Cone<T extends State> extends Cube<T> {
 
     private Anchor anchor;
     private long duration;

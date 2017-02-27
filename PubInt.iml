@@ -15,7 +15,7 @@
     <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-s3:1.9.39" level="project" />
     <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-kms:1.9.39" level="project" />
     <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-core:1.9.39" level="project" />
-    <orderEntry type="library" name="Maven: joda-time:joda-time:2.9.4" level="project" />
+    <orderEntry type="library" name="Maven: joda-time:joda-time:2.9.7" level="project" />
     <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-ec2:1.9.39" level="project" />
     <orderEntry type="library" name="Maven: com.amazonaws:aws-java-sdk-sqs:1.9.39" level="project" />
     <orderEntry type="library" name="Maven: de.ruedigermoeller:fst:2.34" level="project" />
@@ -186,5 +186,6 @@
     <orderEntry type="library" name="Maven: cglib:cglib-nodep:2.2.2" level="project" />
     <orderEntry type="library" name="Maven: com.thoughtworks.proxytoys:proxytoys:1.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.4" level="project" />
+    <orderEntry type="library" name="Maven: args4j:args4j:2.33" level="project" />
   </component>
 </module>

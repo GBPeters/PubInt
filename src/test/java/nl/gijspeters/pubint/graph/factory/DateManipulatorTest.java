@@ -1,4 +1,4 @@
-package nl.gijspeters.pubint.builder;
+package nl.gijspeters.pubint.graph.factory;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import nl.gijspeters.pubint.structure.Agent;

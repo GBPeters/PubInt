@@ -1,7 +1,8 @@
-package nl.gijspeters.pubint.builder;
+package nl.gijspeters.pubint.graph.factory;
 
 import nl.gijspeters.pubint.app.Constants;
 import nl.gijspeters.pubint.graph.Cone;
+import nl.gijspeters.pubint.graph.Prism;
 import nl.gijspeters.pubint.graph.state.DestinationState;
 import nl.gijspeters.pubint.graph.state.OriginState;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
@@ -43,6 +44,15 @@ public class GraphFactoryTest {
         System.out.println("To " + destinationAnchor.toString());
         Cone<DestinationState> cone = gf.makeDestinationCone(destinationAnchor, 7200);
         assertTrue(cone.getStates().size() > 2000);
+    }
+
+    @Test
+    public void getPrism() throws Exception {
+
+        System.out.println("From " + originAnchor.toString() + " to " + destinationAnchor.toString());
+
+        Prism prism = gf.getPrism(testLeg);
+        assertTrue(prism.getStates().size() > 1000);
     }
 
 }

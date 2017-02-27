@@ -28,7 +28,11 @@ public class OTPRide extends GenericRide<OTPHop> {
     }
 
     public Ride getRide() {
-        return new Ride(this);
+        Ride ride = new Ride();
+        for (OTPHop hop : this) {
+            ride.add(hop.getHop());
+        }
+        return ride;
     }
 
     public Vertex getBoardVertex() {

@@ -1,9 +1,9 @@
 package nl.gijspeters.pubint.graph.traversable;
 
 import nl.gijspeters.pubint.app.Constants;
-import nl.gijspeters.pubint.builder.DateManipulator;
-import nl.gijspeters.pubint.builder.GraphFactory;
-import nl.gijspeters.pubint.builder.TraversableFactory;
+import nl.gijspeters.pubint.graph.factory.DateManipulator;
+import nl.gijspeters.pubint.graph.factory.GraphFactory;
+import nl.gijspeters.pubint.graph.factory.TraversableFactory;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
 import nl.gijspeters.pubint.otpentry.OTPHandler;
 import nl.gijspeters.pubint.structure.Anchor;

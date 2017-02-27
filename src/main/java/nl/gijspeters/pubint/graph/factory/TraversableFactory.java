@@ -1,4 +1,4 @@
-package nl.gijspeters.pubint.builder;
+package nl.gijspeters.pubint.graph.factory;
 
 import nl.gijspeters.pubint.graph.Vertex;
 import nl.gijspeters.pubint.graph.traversable.BasicEdge;
@@ -21,6 +21,21 @@ import java.util.Set;
  * Created by gijspeters on 20-11-16.
  */
 public class TraversableFactory {
+
+    public enum MODE {
+        ORIGIN,
+        DESTINATION
+    }
+
+    public MODE mode;
+
+    public TraversableFactory() {
+        this.mode = MODE.ORIGIN;
+    }
+
+    public TraversableFactory(MODE mode) {
+        this.mode = mode;
+    }
 
     public static final Set<Class> STREET_EDGE_CLASSES = new HashSet<>(Arrays.asList(new Class[]{StreetEdge.class, StreetTransitLink.class, AreaEdge.class}));
 
@@ -47,8 +62,18 @@ public class TraversableFactory {
 
     public OTPHop makeOTPHop(State s) {
         assert s.getBackEdge() instanceof PatternHop;
-        Date departure = new Date(s.getBackState().getTimeInMillis());
-        Date arrival = new Date(s.getTimeInMillis());
+        Date departure;
+        Date arrival;
+        switch (mode) {
+            case DESTINATION:
+                arrival = new Date(s.getBackState().getTimeInMillis());
+                departure = new Date(s.getTimeInMillis());
+                break;
+            default:
+                departure = new Date(s.getBackState().getTimeInMillis());
+                arrival = new Date(s.getTimeInMillis());
+                break;
+        }
         return new OTPHop(s.getBackTrip().getId(), departure, arrival, makeEdge(s.getBackEdge()), (PatternHop) s.getBackEdge());
     }
 

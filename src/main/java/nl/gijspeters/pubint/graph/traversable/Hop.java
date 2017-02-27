@@ -4,7 +4,6 @@ import nl.gijspeters.pubint.graph.Vertex;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
-import org.onebusaway.gtfs.model.AgencyAndId;
 
 import java.util.Date;
 
@@ -15,26 +14,34 @@ import java.util.Date;
 public class Hop implements Ridable {
 
     @Id
-    private EdgeAndTrip eat;
+    private String serialId;
+    private Edge edge;
+    private Trip trip;
     private Date departure;
     private Date arrival;
 
     public Hop() {
     }
 
-    public Hop(AgencyAndId trip, Date departure, Date arrival, Edge edge) {
+    public Hop(Trip trip, Date departure, Date arrival, Edge edge) {
+        if (departure.getTime() > arrival.getTime()) {
+            throw new AssertionError(departure.toString() + " > " + arrival.toString());
+        }
         this.departure = departure;
         this.arrival = arrival;
-        this.eat = new EdgeAndTrip(edge, trip);
+        this.trip = trip;
+        this.edge = edge;
+        setSerialId();
     }
 
     @Override
-    public AgencyAndId getTrip() {
-        return eat.getTrip();
+    public Trip getTrip() {
+        return trip;
     }
 
-    public void setTrip(AgencyAndId trip) {
-        eat.setTrip(trip);
+    public void setTrip(Trip trip) {
+        this.trip = trip;
+        setSerialId();
     }
 
     @Override
@@ -71,16 +78,18 @@ public class Hop implements Ridable {
     }
 
     public Edge getEdge() {
-        return eat.getEdge();
+        return edge;
     }
 
     public void setEdge(Edge edge) {
-        this.eat.setEdge(edge);
+        this.edge = edge;
+        setSerialId();
     }
 
     public int hashCode() {
         return new HashCodeBuilder(7, 97)
-                .append(eat.hashCode())
+                .append(edge.hashCode())
+                .append(trip.hashCode())
                 .append(departure.hashCode())
                 .append(arrival.hashCode())
                 .toHashCode();
@@ -91,17 +100,25 @@ public class Hop implements Ridable {
             return false;
         } else if (o instanceof Hop) {
             Hop h = (Hop) o;
-            return departure.equals(h.getDeparture())
+            return edge.equals(h.getEdge())
+                    && trip.equals(h.getTrip())
                     && arrival.equals(h.getArrival())
-                    && getEdge().equals(h.getEdge())
-                    && getTrip().equals(h.getTrip());
+                    && departure.equals(h.getDeparture());
         } else {
             return false;
         }
     }
 
-    public String toString() {
-        return "<Hop " + getTrip().toString() + " on " + getEdge().toString() + ">";
+    private void setSerialId() {
+        serialId = String.valueOf(edge.getEdgeId()) + ":" + trip.getAgencyAndId().toString();
     }
 
+
+    public String toString() {
+        return "<Hop - " + getTrip().toString() + " on " + getEdge().toString() + ">";
+    }
+
+    public String getSerialId() {
+        return serialId;
+    }
 }

@@ -53,16 +53,11 @@ public class OriginTransitState extends TransitState implements OriginState<Ride
         this.earliestDeparture = earliestDeparture;
     }
 
-    public String toString() {
-        return "State on " + getTraversable().toString() + " (" + getEarliestArrival().toString() + " - " + getEarliestDeparture().toString() + " : " + getEarliestDeparture().toString() + ")";
-    }
-
     @Override
-    public boolean matches(DestinationState<Ride> destinationState) {
+    public boolean matches(DestinationState destinationState) {
         if (destinationState instanceof DestinationTransitState) {
-            return getTraversable().equals(destinationState.getTraversable())
-                    && earliestDeparture.getTime() <= destinationState.getLatestDeparture().getTime()
-                    && getEarliestArrival().getTime() <= destinationState.getLatestArrival().getTime();
+            DestinationTransitState ds = (DestinationTransitState) destinationState;
+            return getTraversable().equals(destinationState.getTraversable());
         }
         return false;
     }

@@ -1,4 +1,4 @@
-package nl.gijspeters.pubint.builder;
+package nl.gijspeters.pubint.graph.factory;
 
 import nl.gijspeters.pubint.app.Constants;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;

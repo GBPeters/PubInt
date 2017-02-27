@@ -1,11 +1,12 @@
 package nl.gijspeters.pubint.graph.traversable;
 
-import nl.gijspeters.pubint.builder.HopTimeComparator;
 import nl.gijspeters.pubint.graph.Vertex;
-import org.onebusaway.gtfs.model.AgencyAndId;
+import nl.gijspeters.pubint.graph.factory.HopTimeComparator;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.TreeSet;
 
 /**
@@ -13,7 +14,7 @@ import java.util.TreeSet;
  */
 public class GenericRide<T extends Hop> extends TreeSet<T> implements Ridable {
 
-    private AgencyAndId trip;
+    private Trip trip;
 
     public GenericRide() {
         super(new HopTimeComparator());
@@ -34,7 +35,7 @@ public class GenericRide<T extends Hop> extends TreeSet<T> implements Ridable {
         if (trip == null) {
             trip = h.getTrip();
         } else {
-            assert h.getTrip() == trip;
+            assert h.getTrip().equals(trip);
         }
     }
 
@@ -58,7 +59,7 @@ public class GenericRide<T extends Hop> extends TreeSet<T> implements Ridable {
     }
 
     @Override
-    public AgencyAndId getTrip() {
+    public Trip getTrip() {
         return trip;
     }
 
@@ -86,4 +87,31 @@ public class GenericRide<T extends Hop> extends TreeSet<T> implements Ridable {
     public Vertex getToVertex() {
         return last().getEdge().getToVertex();
     }
+
+    public int hashCode() {
+        HashCodeBuilder builder = new HashCodeBuilder(47, 93);
+        for (T t : this) {
+            builder.append(t.hashCode());
+        }
+        return builder.toHashCode();
+    }
+
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof GenericRide)) {
+            return false;
+        }
+        GenericRide r = (GenericRide) o;
+        if (r.size() != size()) {
+            return false;
+        }
+        Iterator<T> thisi = iterator();
+        Iterator thati = r.iterator();
+        while (thisi.hasNext()) {
+            if (!thisi.next().equals(thati.next())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 }

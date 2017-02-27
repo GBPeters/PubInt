@@ -54,11 +54,12 @@ public class DestinationTransitState extends TransitState implements Destination
     }
 
     @Override
-    public boolean matches(OriginState<Ride> originState) {
+    public boolean matches(OriginState originState) {
         if (originState instanceof OriginTransitState) {
+            OriginTransitState os = (OriginTransitState) originState;
             return getTraversable().equals(originState.getTraversable())
-                    && originState.getEarliestDeparture().getTime() <= getLatestDeparture().getTime()
-                    && originState.getEarliestArrival().getTime() <= getEarliestArrival().getTime();
+                    && getLatestDeparture().equals(os.getLatestDeparture())
+                    && getEarliestArrival().equals((os.getEarliestArrival()));
         }
         return false;
     }
