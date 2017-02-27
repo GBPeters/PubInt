@@ -6,6 +6,7 @@ import nl.gijspeters.pubint.structure.Leg;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Set;
 
@@ -18,6 +19,7 @@ public class PrismContainer {
     @Id
     private ObjectId oid;
     private Set<PrismState> states;
+    @Reference
     private Leg leg;
     private double walkSpeed;
 

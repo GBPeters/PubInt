@@ -114,7 +114,6 @@ public class MorphiaHandler {
 
     private void saveSimpleCollection(Collection c) {
         for (Object o : c) {
-            System.out.println(o);
             getDs().save(o);
         }
     }

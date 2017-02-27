@@ -1,5 +1,7 @@
 package nl.gijspeters.pubint.app;
 
+import nl.gijspeters.pubint.export.csv.CSVWriter;
+import nl.gijspeters.pubint.export.csv.prism.PrismDocument;
 import nl.gijspeters.pubint.graph.BasicGraph;
 import nl.gijspeters.pubint.graph.Prism;
 import nl.gijspeters.pubint.graph.factory.DateManipulator;
@@ -23,6 +25,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import static nl.gijspeters.pubint.app.Constants.CSV_DUMP_FILE;
 import static org.kohsuke.args4j.ExampleMode.ALL;
 
 /**
@@ -39,7 +42,7 @@ public class App {
     @Option(name = "-t", usage = "Use test leg for single testing")
     boolean test = false;
 
-    @Option(name = "-d", usage = "Dump first output to CSV")
+    @Option(name = "-d", usage = "Dump last output to CSV")
     boolean dump = false;
 
     @Option(name = "-c", usage = "Clear existing documents")
@@ -158,6 +161,7 @@ public class App {
     }
 
     public void createPrisms() {
+        Prism p = new Prism();
         if (clear) {
             System.out.println("Clearing prisms...");
             MorphiaHandler.getInstance().clearCollection(PrismContainer.class);
@@ -166,17 +170,18 @@ public class App {
         GraphFactory gf = new GraphFactory(new DateManipulator());
         if (test) {
             Leg l = MorphiaHandler.getInstance().getTestLeg();
-            Prism p = gf.getPrism(l);
+            p = gf.getPrism(l);
             MorphiaHandler.getInstance().savePrism(p);
         } else {
             Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class);
             for (Leg l : q) {
-                Prism p = gf.getPrism(l);
+                p = gf.getPrism(l);
                 MorphiaHandler.getInstance().savePrism(p);
             }
         }
         if (dump) {
-            String fields = "";
+            PrismDocument pd = new PrismDocument(p.getStates());
+            new CSVWriter<PrismDocument>(CSV_DUMP_FILE).writeDocument(pd);
         }
         System.out.println("Prisms created.");
     }

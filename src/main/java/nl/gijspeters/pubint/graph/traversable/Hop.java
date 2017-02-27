@@ -4,6 +4,7 @@ import nl.gijspeters.pubint.graph.Vertex;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
+import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Date;
 
@@ -15,6 +16,7 @@ public class Hop implements Ridable {
 
     @Id
     private String serialId;
+    @Reference
     private Edge edge;
     private Trip trip;
     private Date departure;

@@ -49,6 +49,8 @@ public class BrownianState extends UndirectedState implements PrismState<Edge> {
     public BrownianState(Edge edge, Date earliestDeparture, Date latestArrival, long minimalTraversalTime) {
         super(edge);
         setMinimalTraversalTime(minimalTraversalTime);
+        setEarliestDeparture(earliestDeparture);
+        setLatestArrival(latestArrival);
     }
 
     @Override
