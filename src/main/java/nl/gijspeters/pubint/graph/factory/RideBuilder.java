@@ -9,6 +9,8 @@ import java.util.*;
 
 /**
  * Created by gijspeters on 02-11-16.
+ *
+ * Builder class that combines and creates OTPRides from contained States
  */
 public class RideBuilder implements Set<State> {
 
@@ -42,6 +44,11 @@ public class RideBuilder implements Set<State> {
         this(new TraversableFactory(), states);
     }
 
+    /**
+     * Create OTPRides based on contained OTP states
+     *
+     * @return A Set with OTPRides
+     */
     public Set<OTPRide> createRides() {
         Set<OTPRide> ridesets = new HashSet<>();
         for (Trip t : sets.keySet()) {

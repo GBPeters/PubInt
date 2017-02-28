@@ -8,6 +8,8 @@ import java.util.Date;
 
 /**
  * Created by gijspeters on 25-10-16.
+ *
+ * TransitState calculated to a destination
  */
 @Entity("state")
 public class DestinationTransitState extends TransitState implements DestinationState<Ride> {

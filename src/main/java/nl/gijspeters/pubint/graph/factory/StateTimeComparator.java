@@ -6,6 +6,8 @@ import java.util.Comparator;
 
 /**
  * Created by gijspeters on 19-11-16.
+ *
+ * Compares OTP states by time
  */
 public class StateTimeComparator implements Comparator<State> {
 

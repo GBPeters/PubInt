@@ -4,6 +4,8 @@ import nl.gijspeters.pubint.structure.Anchor;
 
 /**
  * Created by gijspeters on 18-10-16.
+ *
+ * Empty AnchorManipulator
  */
 public class EmptyManipulator implements AnchorManipulator {
 

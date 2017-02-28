@@ -8,6 +8,9 @@ import java.util.Date;
 
 /**
  * Created by gijspeters on 18-10-16.
+ *
+ * PrismState derived from matching UnidirectedStates. The Brownian Bridges model for visit probabilities should be
+ * used on these States.
  */
 @Entity("state")
 public class BrownianState extends UndirectedState implements PrismState<Edge> {

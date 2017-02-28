@@ -10,6 +10,8 @@ import java.util.Date;
 
 /**
  * Created by gijspeters on 20-11-16.
+ *
+ * Superclass for States on a transit network. Contains a Ride as Traversable
  */
 @Entity("state")
 public class TransitState extends AbstractState implements State<Ride>, TransitTimes {

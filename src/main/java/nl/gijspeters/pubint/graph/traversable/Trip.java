@@ -4,6 +4,8 @@ import org.onebusaway.gtfs.model.AgencyAndId;
 
 /**
  * Created by gijspeters on 23-02-17.
+ *
+ * A class describing a unique bus trip, similar to GTFS AgencyAndId.
  */
 public class Trip {
 

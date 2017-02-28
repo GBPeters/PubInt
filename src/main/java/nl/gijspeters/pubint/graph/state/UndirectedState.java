@@ -6,6 +6,8 @@ import org.mongodb.morphia.annotations.Reference;
 
 /**
  * Created by gijspeters on 20-11-16.
+ *
+ * Superclass for States on an (undirected) street network, contains an Edge as Traversable.
  */
 @Entity("state")
 public abstract class UndirectedState extends AbstractState implements State<Edge> {

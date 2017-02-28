@@ -7,6 +7,10 @@ import org.mongodb.morphia.annotations.Reference;
 
 /**
  * Created by gijspeters on 17-10-16.
+ *
+ * This class represents a specific edge on a graph, i.e. a fixed connection between two vertices.
+ * This could be a street, a piece of railway track, or a link between two station platforms, as retrieved from the
+ * original OSM and GTFS input.
  */
 @Entity("edge")
 public abstract class Edge implements Traversable {

@@ -1,7 +1,6 @@
 package nl.gijspeters.pubint.graph.traversable;
 
 import nl.gijspeters.pubint.graph.Vertex;
-import nl.gijspeters.pubint.graph.factory.HopTimeComparator;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Collection;
@@ -11,6 +10,9 @@ import java.util.TreeSet;
 
 /**
  * Created by gijspeters on 20-11-16.
+ *
+ * Generic implementation for a Ride: An ordered set of Hops with the same Trip, representing a specific
+ * transit trip from one stop to another stop.
  */
 public class GenericRide<T extends Hop> extends TreeSet<T> implements Ridable {
 

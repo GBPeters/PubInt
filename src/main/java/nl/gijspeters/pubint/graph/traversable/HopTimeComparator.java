@@ -1,11 +1,11 @@
-package nl.gijspeters.pubint.graph.factory;
-
-import nl.gijspeters.pubint.graph.traversable.Hop;
+package nl.gijspeters.pubint.graph.traversable;
 
 import java.util.Comparator;
 
 /**
  * Created by gijspeters on 02-11-16.
+ *
+ * Comparator for ordering Hops in a Ride
  */
 public class HopTimeComparator implements Comparator<Hop> {
     /**

@@ -8,6 +8,8 @@ import java.util.Date;
 
 /**
  * Created by gijspeters on 20-10-16.
+ *
+ * UndirectedState calculated fom an origin
  */
 @Entity("state")
 public class OriginUndirectedState extends UndirectedState implements OriginState<Edge> {

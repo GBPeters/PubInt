@@ -8,6 +8,8 @@ import java.util.Date;
 
 /**
  * Created by gijspeters on 24-10-16.
+ *
+ * TransitState calculated from an origin
  */
 @Entity("state")
 public class OriginTransitState extends TransitState implements OriginState<Ride> {

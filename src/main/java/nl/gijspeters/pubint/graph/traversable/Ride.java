@@ -6,6 +6,8 @@ import java.util.Set;
 
 /**
  * Created by gijspeters on 02-11-16.
+ *
+ * Specific implementation of a Ride as an ordered set of Hop
  */
 public class Ride extends GenericRide<Hop> {
 
@@ -21,6 +23,11 @@ public class Ride extends GenericRide<Hop> {
         super(hops);
     }
 
+    /**
+     * Get all Rides possible on the trajectory of Hops contained in this Ride
+     *
+     * @return A Set of Rides
+     */
     public Set<Ride> getSubRides() {
         Set<Ride> subRides = new HashSet<>();
         for (Hop th : this) {

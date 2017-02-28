@@ -19,6 +19,8 @@ import java.util.Set;
 
 /**
  * Created by gijspeters on 20-11-16.
+ *
+ * Factory for converting OTP graph objects to pubint.graph objects
  */
 public class TraversableFactory {
 

@@ -7,6 +7,9 @@ import java.util.Collection;
 
 /**
  * Created by gijspeters on 18-10-16.
+ *
+ * A Cone is a network-time structure for which all vertices are reachable from a given origin (or to a given destination)
+ * within the set amount of time. The States are derived from optimal paths leading from or to these vertices.
  */
 public class Cone<T extends State> extends Cube<T> {
 

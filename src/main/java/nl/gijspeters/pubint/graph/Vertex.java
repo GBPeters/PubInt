@@ -6,6 +6,9 @@ import org.mongodb.morphia.annotations.Id;
 
 /**
  * Created by gijspeters on 16-10-16.
+ *
+ * A Class representing a Vertex on a Graph with Vertices and Traversables.
+ * A Vertex does not contain information on connectivity, and only has a identifying label and a Coordinate
  */
 @Entity("vertex")
 public class Vertex {

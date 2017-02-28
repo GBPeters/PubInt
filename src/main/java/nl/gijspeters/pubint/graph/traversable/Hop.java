@@ -10,6 +10,8 @@ import java.util.Date;
 
 /**
  * Created by gijspeters on 15-11-16.
+ *
+ * A Ridable class representing a ride from one transit stop to the next, over a specific Edge.
  */
 @Entity("hop")
 public class Hop implements Ridable {
@@ -114,7 +116,6 @@ public class Hop implements Ridable {
     private void setSerialId() {
         serialId = String.valueOf(edge.getEdgeId()) + ":" + trip.getAgencyAndId().toString();
     }
-
 
     public String toString() {
         return "<Hop - " + getTrip().toString() + " on " + getEdge().toString() + ">";

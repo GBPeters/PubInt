@@ -8,6 +8,8 @@ import java.util.GregorianCalendar;
 
 /**
  * Created by gijspeters on 18-10-16.
+ *
+ * AnchorManipulator that sets all anchor dates to their equivalent in October 2015
  */
 public class DateManipulator implements AnchorManipulator {
 

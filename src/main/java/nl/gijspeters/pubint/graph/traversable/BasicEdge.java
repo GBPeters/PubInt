@@ -13,6 +13,8 @@ import java.util.ArrayList;
 
 /**
  * Created by gijspeters on 16-10-16.
+ *
+ * An Edge class with a fixed geometry
  */
 @Entity("edge")
 public class BasicEdge extends Edge {

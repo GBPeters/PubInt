@@ -5,6 +5,8 @@ import org.mongodb.morphia.annotations.Entity;
 
 /**
  * Created by gijspeters on 17-10-16.
+ *
+ * An Edge without a geometry
  */
 @Entity("edge")
 public class LinkEdge extends Edge {
