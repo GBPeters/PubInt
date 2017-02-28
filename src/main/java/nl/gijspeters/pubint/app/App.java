@@ -1,5 +1,7 @@
 package nl.gijspeters.pubint.app;
 
+import nl.gijspeters.pubint.config.Config;
+import nl.gijspeters.pubint.config.Constants;
 import nl.gijspeters.pubint.export.csv.CSVWriter;
 import nl.gijspeters.pubint.export.csv.prism.PrismDocument;
 import nl.gijspeters.pubint.graph.BasicGraph;
@@ -25,7 +27,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import static nl.gijspeters.pubint.app.Constants.CSV_DUMP_FILE;
+import static nl.gijspeters.pubint.config.Constants.CSV_DUMP_FILE;
+import static nl.gijspeters.pubint.config.Constants.VALIDATE_DB;
 import static org.kohsuke.args4j.ExampleMode.ALL;
 
 /**
@@ -72,6 +75,9 @@ public class App {
             if (arguments.isEmpty())
                 throw new CmdLineException(parser, "No argument is given");
             String command = arguments.get(0);
+            if (validate) {
+                Config.setMongoConfig(VALIDATE_DB);
+            }
             switch (command) {
                 case "migrate":
                     migrate();

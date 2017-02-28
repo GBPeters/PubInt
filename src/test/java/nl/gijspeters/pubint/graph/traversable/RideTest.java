@@ -1,6 +1,6 @@
 package nl.gijspeters.pubint.graph.traversable;
 
-import nl.gijspeters.pubint.app.Constants;
+import nl.gijspeters.pubint.config.Constants;
 import nl.gijspeters.pubint.graph.factory.DateManipulator;
 import nl.gijspeters.pubint.graph.factory.GraphFactory;
 import nl.gijspeters.pubint.graph.factory.TraversableFactory;

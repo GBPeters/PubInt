@@ -1,7 +1,7 @@
 package nl.gijspeters.pubint.mongohandler;
 
 import com.mongodb.MongoClient;
-import nl.gijspeters.pubint.app.Constants;
+import nl.gijspeters.pubint.config.Config;
 import nl.gijspeters.pubint.graph.BasicGraph;
 import nl.gijspeters.pubint.graph.Prism;
 import nl.gijspeters.pubint.graph.Vertex;
@@ -44,7 +44,7 @@ public class MorphiaHandler {
         for (String pack : PACKAGES) {
             morphia.mapPackage(pack);
         }
-        datastore = morphia.createDatastore(new MongoClient(), Constants.DB_NAME);
+        datastore = morphia.createDatastore(new MongoClient(), Config.getMongoConfig().getDbName());
     }
 
     public Datastore getDs() {

@@ -12,7 +12,7 @@ import java.util.Set;
 /**
  * Created by gijspeters on 18-10-16.
  */
-@Entity("validationleg")
+@Entity("leg")
 public class ValidationLeg extends Leg {
 
     @Reference

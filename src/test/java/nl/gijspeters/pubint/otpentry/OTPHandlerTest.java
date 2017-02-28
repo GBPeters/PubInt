@@ -1,7 +1,7 @@
 package nl.gijspeters.pubint.otpentry;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import nl.gijspeters.pubint.app.Constants;
+import nl.gijspeters.pubint.config.Constants;
 import org.junit.Before;
 import org.junit.Test;
 import org.opentripplanner.routing.spt.ShortestPathTree;

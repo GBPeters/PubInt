@@ -1,4 +1,6 @@
-package nl.gijspeters.pubint.app;
+package nl.gijspeters.pubint.config;
+
+import nl.gijspeters.pubint.mongohandler.MongoConfig;
 
 /**
  * Created by gijspeters on 19-11-16.
@@ -9,7 +11,9 @@ public class Constants {
 
     public static final String OTP_DIR = "/Users/gijspeters/otp/";
 
-    public static final String DB_NAME = "pubint";
-
     public static final String CSV_DUMP_FILE = "pubint_dump.csv";
+
+    public static final MongoConfig BASE_DB = new MongoConfig("pubint");
+
+    public static final MongoConfig VALIDATE_DB = new MongoConfig("pubint_v");
 }

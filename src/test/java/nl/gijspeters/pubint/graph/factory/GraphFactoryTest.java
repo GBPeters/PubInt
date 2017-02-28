@@ -1,6 +1,6 @@
 package nl.gijspeters.pubint.graph.factory;
 
-import nl.gijspeters.pubint.app.Constants;
+import nl.gijspeters.pubint.config.Constants;
 import nl.gijspeters.pubint.graph.Cone;
 import nl.gijspeters.pubint.graph.Prism;
 import nl.gijspeters.pubint.graph.state.DestinationState;

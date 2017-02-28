@@ -1,6 +1,6 @@
 package nl.gijspeters.pubint.graph.factory;
 
-import nl.gijspeters.pubint.app.Constants;
+import nl.gijspeters.pubint.config.Constants;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
 import nl.gijspeters.pubint.otpentry.OTPHandler;
 import nl.gijspeters.pubint.otpentry.OTPRide;
