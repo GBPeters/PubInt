@@ -30,6 +30,9 @@ import static org.kohsuke.args4j.ExampleMode.ALL;
 
 /**
  * Created by gijspeters on 16-10-16.
+ *
+ * Main Command Line Application class
+ *
  */
 public class App {
 
@@ -48,10 +51,20 @@ public class App {
     @Option(name = "-c", usage = "Clear existing documents")
     boolean clear = false;
 
+    /**
+     * Main method. Starting point for the application.
+     *
+     * @param args Arguments supplied in the command line
+     */
     public static void main(String[] args) {
         new App().doMain(args);
     }
 
+    /**
+     * Non-static main method. Parses arguments and calls required methods.
+     *
+     * @param args Arguments supplied in the command line
+     */
     public void doMain(String[] args) {
         CmdLineParser parser = new CmdLineParser(this);
         try {
@@ -88,6 +101,9 @@ public class App {
         }
     }
 
+    /**
+     * Entry method for PostgreSQL -> MongoDB migration.
+     */
     public void migrate() {
         PgMongoMigrator migrator;
         System.out.println("Migrating PotsgreSQL Tweets and Users to MongoDB...");
@@ -102,6 +118,9 @@ public class App {
         System.out.println("Migration finished.");
     }
 
+    /**
+     * Entry method for creating legs, based on combinations of two consequent anchors with the same agent.
+     */
     public void createLegs() {
         try {
             if (clear) {
@@ -123,6 +142,10 @@ public class App {
         }
     }
 
+    /**
+     * Entry method for creating legs used for validation based on combinations of at least
+     * three consequent anchors with the same agent
+     */
     public void createValidationLegs() {
         try {
             if (clear) {
@@ -144,6 +167,9 @@ public class App {
         }
     }
 
+    /**
+     * Entry method that retrieves the complete graph from OTP and stores it in the MongoDB instance
+     */
     public void buildGraph() {
         try {
             if (clear) {
@@ -160,6 +186,9 @@ public class App {
         }
     }
 
+    /**
+     * Entry method for creating prisms from legs
+     */
     public void createPrisms() {
         Prism p = new Prism();
         if (clear) {

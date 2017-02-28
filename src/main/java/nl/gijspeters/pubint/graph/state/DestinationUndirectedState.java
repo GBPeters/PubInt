@@ -42,7 +42,7 @@ public class DestinationUndirectedState extends UndirectedState implements Desti
                 && getLatestDeparture().equals(c.getLatestDeparture());
     }
 
-    public DestinationUndirectedState(Edge edge, Date latestArrival, Date latestDeparture) {
+    public DestinationUndirectedState(Edge edge, Date latestDeparture, Date latestArrival) {
         super(edge);
         this.setLatestDeparture(latestDeparture);
         this.setLatestArrival(latestArrival);

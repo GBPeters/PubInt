@@ -23,7 +23,8 @@ public class StateFactory {
         if (originState.matches(destinationState)) {
             if (originState instanceof OriginUndirectedState) {
                 OriginUndirectedState s = (OriginUndirectedState) originState;
-                return new BrownianState(s.getTraversable(), s.getEarliestDeparture(), destinationState.getLatestArrival(), Math.min(s.getMinimalTraversalTime(), destinationState.getMinimalTraversalTime()));
+                BrownianState bs = new BrownianState(s.getTraversable(), s.getEarliestDeparture(), destinationState.getLatestArrival(), Math.min(s.getMinimalTraversalTime(), destinationState.getMinimalTraversalTime()));
+                return bs;
             } else if (originState instanceof OriginTransitState) {
                 OriginTransitState s = (OriginTransitState) originState;
                 MarkovState ms = new MarkovState(s.getTraversable(), s.getEarliestDeparture(), s.getLatestDeparture(), s.getEarliestArrival(), destinationState.getLatestArrival());

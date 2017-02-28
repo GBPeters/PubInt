@@ -66,31 +66,24 @@ public class GraphFactory {
     public Cone<OriginState> makeOriginCone(Anchor anchor, int maxTimeSeconds) {
         ShortestPathTree spt = makeSPT(anchor, maxTimeSeconds, OTPHandler.RouteMode.FROM_ORIGIN);
         Cone<OriginState> cone = new Cone<>(anchor, maxTimeSeconds, spt.getOptions().walkSpeed);
-        long count = 0;
         Set<org.opentripplanner.routing.graph.Edge> edgeids = new HashSet<>();
         RideBuilder rb = new RideBuilder();
-        int nhops = 0;
-        int ntstates = 0;
         for (org.opentripplanner.routing.core.State s : spt.getAllStates()) {
             if (s.getBackEdge() != null && s.getBackEdge().getGeometry() != null) {
                 if (s.getBackTrip() == null) {
                     edgeids.add(s.getBackEdge());
                     org.opentripplanner.routing.graph.Edge backEdge = s.getBackEdge();
                     org.opentripplanner.routing.graph.Vertex backFromV = backEdge.getFromVertex();
-                    org.opentripplanner.routing.graph.Vertex backToV = backEdge.getToVertex();
                     GraphPath fromPath = spt.getPath(backFromV, true);
-                    GraphPath toPath = spt.getPath(backToV, true);
-                    Edge e = tf.makeEdge(backEdge);
+                    long minTraversalTime = s.getAbsTimeDeltaSeconds() * 1000;
                     Date earliestDeparture = new Date(fromPath.getEndTime() * 1000);
-                    Date earliestArrival = new Date(toPath.getEndTime() * 1000);
+                    Date earliestArrival = new Date(earliestDeparture.getTime() + minTraversalTime);
+                    Edge e = tf.makeEdge(backEdge);
                     OriginState<Edge> state = new OriginUndirectedState(e, earliestDeparture, earliestArrival);
                     cone.getStates().add(state);
-                    count++;
                 } else if (s.getBackEdge() != null && s.getBackEdge() instanceof PatternHop) {
                     edgeids.add(s.getBackEdge());
                     rb.add(s);
-
-                    count++;
                 }
             }
         }
@@ -104,48 +97,35 @@ public class GraphFactory {
                         if (earliestDeparture.getTime() <= otpride.getDeparture().getTime()) {
                             OriginState<Ride> s = new OriginTransitState(otpride.getRide(), earliestDeparture, otpride.getDeparture(), otpride.getArrival());
                             cone.getStates().add(s);
-                            nhops += otpride.size();
-                            ntstates++;
                         }
                     }
                 }
             }
         }
-        System.out.println("Edges handled: " + String.valueOf(edgeids.size()));
-        System.out.println("Processed: " + String.valueOf(count));
-        System.out.println("States in Cone: " + String.valueOf(cone.getStates().size()));
-        System.out.println(String.valueOf(nhops) + " Hops in " + String.valueOf(ntstates) + " TransitStates");
         return cone;
     }
 
     public Cone<DestinationState> makeDestinationCone(Anchor anchor, int maxTimeSeconds) {
         ShortestPathTree spt = makeSPT(anchor, maxTimeSeconds, OTPHandler.RouteMode.TO_DESTINATION);
         Cone<DestinationState> cone = new Cone<>(anchor, maxTimeSeconds, spt.getOptions().walkSpeed);
-        long count = 0;
         Set<org.opentripplanner.routing.graph.Edge> edgeids = new HashSet<>();
         RideBuilder rb = new RideBuilder(new TraversableFactory(TraversableFactory.MODE.DESTINATION));
-        int nhops = 0;
-        int ntstates = 0;
         for (org.opentripplanner.routing.core.State s : spt.getAllStates()) {
             if (s.getBackEdge() != null && s.getBackEdge().getGeometry() != null) {
                 if (s.getBackTrip() == null) {
                     edgeids.add(s.getBackEdge());
                     org.opentripplanner.routing.graph.Edge backEdge = s.getBackEdge();
-                    org.opentripplanner.routing.graph.Vertex backFromV = backEdge.getFromVertex();
                     org.opentripplanner.routing.graph.Vertex backToV = backEdge.getToVertex();
-                    GraphPath fromPath = spt.getPath(backFromV, true);
                     GraphPath toPath = spt.getPath(backToV, true);
                     Edge e = tf.makeEdge(backEdge);
-                    Date latestDeparture = new Date(fromPath.getStartTime() * 1000);
+                    long minTraversalTime = s.getAbsTimeDeltaSeconds() * 1000;
                     Date latestArrival = new Date(toPath.getStartTime() * 1000);
+                    Date latestDeparture = new Date(latestArrival.getTime() - minTraversalTime);
                     DestinationState<Edge> state = new DestinationUndirectedState(e, latestDeparture, latestArrival);
                     cone.getStates().add(state);
-                    count++;
                 } else if (s.getBackEdge() != null && s.getBackEdge() instanceof PatternHop) {
                     edgeids.add(s.getBackEdge());
                     rb.add(s);
-
-                    count++;
                 }
             }
         }
@@ -159,17 +139,11 @@ public class GraphFactory {
                         if (latestArrival.getTime() >= otpride.getArrival().getTime()) {
                             DestinationState<Ride> s = new DestinationTransitState(otpride.getRide(), otpride.getDeparture(), otpride.getArrival(), latestArrival);
                             cone.getStates().add(s);
-                            nhops += otpride.size();
-                            ntstates++;
                         }
                     }
                 }
             }
         }
-        System.out.println("Edges handled: " + String.valueOf(edgeids.size()));
-        System.out.println("Processed: " + String.valueOf(count));
-        System.out.println("States in Cone: " + String.valueOf(cone.getStates().size()));
-        System.out.println(String.valueOf(nhops) + " Hops in " + String.valueOf(ntstates) + " TransitStates");
         return cone;
     }
 
@@ -200,9 +174,9 @@ public class GraphFactory {
                 }
             }
         }
-        System.out.println("States in Prism: " + String.valueOf(brownianstates + markovstates));
-        System.out.println("MarkovStates: " + String.valueOf(markovstates));
-        System.out.println("BrownianStates: " + String.valueOf(brownianstates));
+        int total = brownianstates + markovstates;
+        String s = String.format("States in Prism: %d ( %d B; %d M )", total, brownianstates, markovstates);
+        System.out.println(s);
         return prism;
     }
 

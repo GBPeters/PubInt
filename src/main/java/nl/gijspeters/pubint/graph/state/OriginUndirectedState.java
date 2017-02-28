@@ -42,7 +42,7 @@ public class OriginUndirectedState extends UndirectedState implements OriginStat
                 && getEarliestDeparture().equals(c.getEarliestDeparture());
     }
 
-    public OriginUndirectedState(Edge edge, Date earliestArrival, Date earliestDeparture) {
+    public OriginUndirectedState(Edge edge, Date earliestDeparture, Date earliestArrival) {
         super(edge);
         this.earliestArrival = earliestArrival;
         this.earliestDeparture = earliestDeparture;
