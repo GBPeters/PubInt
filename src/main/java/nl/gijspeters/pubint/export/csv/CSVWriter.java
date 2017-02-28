@@ -9,15 +9,26 @@ import java.nio.file.StandardOpenOption;
 
 /**
  * Created by gijspeters on 27-02-17.
+ *
+ * Class for writing CSVDocuments to a file
  */
 public class CSVWriter<T extends CSVDocument> {
 
     private String fileName;
 
+    /**
+     * Public constructor
+     *
+     * @param fileName The filename or filepath to write to
+     */
     public CSVWriter(String fileName) {
         this.fileName = fileName;
     }
 
+    /**
+     * Write a CSVDocument extension to file.
+     * @param document
+     */
     public void writeDocument(T document) {
         Path file = Paths.get(fileName);
         try {

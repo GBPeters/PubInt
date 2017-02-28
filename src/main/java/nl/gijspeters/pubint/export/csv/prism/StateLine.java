@@ -16,6 +16,8 @@ import java.util.List;
 
 /**
  * Created by gijspeters on 27-02-17.
+ *
+ * CSVLine extension for a PrismState
  */
 public class StateLine extends CSVLine<PrismState> {
 
@@ -40,35 +42,33 @@ public class StateLine extends CSVLine<PrismState> {
 
     @Override
     protected void setData(PrismState data) {
-        try {
-            setValue("oid", index);
-            if (data instanceof BrownianState) {
-                BrownianState b = (BrownianState) data;
-                if (b.getTraversable() instanceof BasicEdge) {
-                    setValue("geom", ((BasicEdge) b.getTraversable()).getGeometry());
-                }
-            } else if (data instanceof MarkovState) {
-                Ride r = ((MarkovState) data).getTraversable();
-                List<LineString> linelist = new ArrayList<>();
-                for (Hop h : r) {
-                    Edge e = h.getEdge();
-                    if (e instanceof BasicEdge) {
-                        BasicEdge be = (BasicEdge) e;
-                        linelist.add(be.getGeometry());
-                    }
-                }
-                GeometryFactory gf = new GeometryFactory();
-                setValue("geom", gf.createMultiLineString(linelist.toArray(new LineString[]{})));
-            } else {
-                throw new IllegalArgumentException();
+        setValue("oid", index);
+        if (data instanceof BrownianState) {
+            // If the data is a BrownianState with a BasicEdge, set geometry to Edge geometry
+            BrownianState b = (BrownianState) data;
+            if (b.getTraversable() instanceof BasicEdge) {
+                setValue("geom", ((BasicEdge) b.getTraversable()).getGeometry());
             }
-            setValue("eDepart", data.getEarliestDeparture());
-            setValue("lDepart", data.getLatestDeparture());
-            setValue("eArrival", data.getEarliestArrival());
-            setValue("lArrival", data.getLatestArrival());
-            setValue("type", data.getClass().getName());
-        } catch (Exception e) {
-            e.printStackTrace();
+        } else if (data instanceof MarkovState) {
+            // If the data is a MarkovState, combine LineStrings in Hop Edges to a MultiLineString
+            Ride r = ((MarkovState) data).getTraversable();
+            List<LineString> linelist = new ArrayList<>();
+            for (Hop h : r) {
+                Edge e = h.getEdge();
+                if (e instanceof BasicEdge) {
+                    BasicEdge be = (BasicEdge) e;
+                    linelist.add(be.getGeometry());
+                }
+            }
+            GeometryFactory gf = new GeometryFactory();
+            setValue("geom", gf.createMultiLineString(linelist.toArray(new LineString[]{})));
+        } else {
+            throw new IllegalArgumentException();
         }
+        setValue("eDepart", data.getEarliestDeparture());
+        setValue("lDepart", data.getLatestDeparture());
+        setValue("eArrival", data.getEarliestArrival());
+        setValue("lArrival", data.getLatestArrival());
+        setValue("type", data.getClass().getName());
     }
 }

@@ -7,6 +7,8 @@ import java.util.Collection;
 
 /**
  * Created by gijspeters on 27-02-17.
+ *
+ * CSVDocument for writing prisms (list of PrismStates) to a CSV file
  */
 public class PrismDocument extends CSVDocument<PrismState, StateLine> {
 

@@ -2,6 +2,8 @@ package nl.gijspeters.pubint.app;
 
 /**
  * Created by gijspeters on 19-11-16.
+ * Container class for application scope constants
+ *
  */
 public class Constants {
 
