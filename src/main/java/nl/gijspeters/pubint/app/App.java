@@ -78,6 +78,7 @@ public class App {
             if (validate) {
                 Config.setMongoConfig(VALIDATE_DB);
             }
+            OTPHandler.graphDir = Constants.OTP_DIR;
             switch (command) {
                 case "migrate":
                     migrate();
@@ -201,7 +202,6 @@ public class App {
             System.out.println("Clearing prisms...");
             MorphiaHandler.getInstance().clearCollection(PrismContainer.class);
         }
-        OTPHandler.graphDir = Constants.OTP_DIR;
         GraphFactory gf = new GraphFactory(new DateManipulator());
         if (test) {
             Leg l = MorphiaHandler.getInstance().getTestLeg();
