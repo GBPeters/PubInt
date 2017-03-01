@@ -50,10 +50,10 @@ sudo systemctl enable mongodb
 sudo systemctl start mongodb
 
 # Restore Mongo Dumps
-mongorestore -d pubint --archive=~/pubint_transfer/pubint_agent.zip
-mongorestore -d pubint --archive=~/pubint_transfer/pubint_user.zip
-mongorestore -d pubint --archive=~/pubint_transfer/pubint_anchor.zip
+mongorestore -d pubint --archive=pubint_transfer/pubint_agent.zip
+mongorestore -d pubint --archive=pubint_transfer/pubint_user.zip
+mongorestore -d pubint --archive=pubint_transfer/pubint_anchor.zip
 
-mongorestore -d pubint_v --archive=~/pubint_transfer/pubint_agent.zip
-mongorestore -d pubint_v --archive=~/pubint_transfer/pubint_user.zip
-mongorestore -d pubint_v --archive=~/pubint_transfer/pubint_anchor.zip
+mongorestore -d pubint_v --archive=pubint_transfer/pubint_agent.zip
+mongorestore -d pubint_v --archive=pubint_transfer/pubint_user.zip
+mongorestore -d pubint_v --archive=pubint_transfer/pubint_anchor.zip
