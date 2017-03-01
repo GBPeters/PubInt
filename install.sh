@@ -6,6 +6,9 @@ echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" 
 sudo add-apt-repository ppa:webupd8team/java
 sudo apt-get update
 
+# Install unzip
+sudo apt-get install unzip
+
 # Install Java
 sudo apt-get install oracle-java8-installer
 
@@ -16,6 +19,12 @@ then
     sudo echo "JAVA_HOME=/usr/lib/jvm/java-8-oracle" >> /etc/environment
     source /etc/environment
 fi
+
+# Download and unpack source data
+wget https://dl.dropboxusercontent.com/s/d2kpw8bcg2zbi6n/pubint_transfer.zip
+unzip pubint_transfer.zip
+sudo mkdir /var/otp
+sudo cp -r pubint_transfer/otp/graphs /var/otp/graphs
 
 # Install MongoDB
 sudo apt-get install -y mongodb-org
@@ -50,6 +59,18 @@ cd PubInt
 mvn clean
 mvn package -DskipTests
 
+# Restore Mongo Collections
+mongorestore -d pubint --archive=pubint_transfer/pubint_agent.zip
+mongorestore -d pubint --archive=pubint_transfer/pubint_user.zip
+mongorestore -d pubint --archive=pubint_transfer/pubint_anchor.zip
 
+mongorestore -d pubint_v --archive=pubint_transfer/pubint_agent.zip
+mongorestore -d pubint_v --archive=pubint_transfer/pubint_user.zip
+mongorestore -d pubint_v --archive=pubint_transfer/pubint_anchor.zip
+
+# Clean
 cd ..
 cd ..
+rm -r pubint_transfer
+rm pubint_transfer.zip
+
