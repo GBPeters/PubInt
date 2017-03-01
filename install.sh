@@ -4,13 +4,13 @@
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
 echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
 sudo add-apt-repository ppa:webupd8team/java
-sudo apt-get update
+sudo apt-get -y update
 
 # Install unzip
-sudo apt-get install unzip
+sudo apt-get -y install unzip
 
 # Install Java
-sudo apt-get install oracle-java8-installer
+sudo apt-get -y install oracle-java8-installer
 
 # Set JAVA_HOME
 if [ "$JAVA_HOME" != '/usr/lib/jvm/java-8-oracle' ]
@@ -49,25 +49,24 @@ sudo systemctl enable mongodb
 sudo systemctl start mongodb
 
 # Install Maven
-sudo apt-get install maven
+sudo apt-get -y install maven
 
 # Clone Git and build
 mkdir git
 cd git
 git clone http://github.com/GBPeters/PubInt
 cd PubInt
-mvn clean
-mvn package -DskipTests
+mvn -U clean package -DskipTests
 cd ~
 
 # Restore Mongo Collections
-mongorestore -d pubint --archive=pubint_transfer/pubint_agent.zip
-mongorestore -d pubint --archive=pubint_transfer/pubint_user.zip
-mongorestore -d pubint --archive=pubint_transfer/pubint_anchor.zip
+mongorestore -d pubint --archive=~/pubint_transfer/pubint_agent.zip
+mongorestore -d pubint --archive=~/pubint_transfer/pubint_user.zip
+mongorestore -d pubint --archive=~/pubint_transfer/pubint_anchor.zip
 
-mongorestore -d pubint_v --archive=pubint_transfer/pubint_agent.zip
-mongorestore -d pubint_v --archive=pubint_transfer/pubint_user.zip
-mongorestore -d pubint_v --archive=pubint_transfer/pubint_anchor.zip
+mongorestore -d pubint_v --archive=~/pubint_transfer/pubint_agent.zip
+mongorestore -d pubint_v --archive=~/pubint_transfer/pubint_user.zip
+mongorestore -d pubint_v --archive=~/pubint_transfer/pubint_anchor.zip
 
 # Clean
 rm -r pubint_transfer
