@@ -48,7 +48,7 @@ cd git
 git clone http://github.com/GBPeters/PubInt
 cd PubInt
 mvn clean
-mvn install -DskipTests
+mvn package -DskipTests
 
 
 cd ..

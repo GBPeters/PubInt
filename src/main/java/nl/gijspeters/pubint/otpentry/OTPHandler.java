@@ -10,6 +10,8 @@ import org.opentripplanner.scripting.api.OtpsSPT;
 
 import java.util.Date;
 
+import static nl.gijspeters.pubint.config.Constants.OTP_DIR;
+
 /**
  * Created by gijspeters on 02-10-16.
  *
@@ -20,7 +22,7 @@ public class OTPHandler {
 
     private static OTPHandler ourInstance = new OTPHandler();
 
-    public static String graphDir = "/var/otp/graphs";
+    public static String graphDir = OTP_DIR;
 
     public static OTPHandler getInstance() throws Exception {
         if (ourInstance.otp == null) {
