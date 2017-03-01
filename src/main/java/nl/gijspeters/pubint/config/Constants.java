@@ -4,12 +4,12 @@ import nl.gijspeters.pubint.mongohandler.MongoConfig;
 
 /**
  * Created by gijspeters on 19-11-16.
- * Container class for application scope constants
+ * Container class for application-scope constants
  *
  */
 public class Constants {
 
-    public static final String OTP_DIR = "/Users/gijspeters/otp/";
+    public static final String OTP_DIR = "/var/otp/";
 
     public static final String CSV_DUMP_FILE = "pubint_dump.csv";
 

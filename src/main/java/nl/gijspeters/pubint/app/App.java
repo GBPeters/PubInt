@@ -1,7 +1,6 @@
 package nl.gijspeters.pubint.app;
 
 import nl.gijspeters.pubint.config.Config;
-import nl.gijspeters.pubint.config.Constants;
 import nl.gijspeters.pubint.export.csv.CSVWriter;
 import nl.gijspeters.pubint.export.csv.prism.PrismDocument;
 import nl.gijspeters.pubint.graph.BasicGraph;
@@ -27,8 +26,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import static nl.gijspeters.pubint.config.Constants.CSV_DUMP_FILE;
-import static nl.gijspeters.pubint.config.Constants.VALIDATE_DB;
+import static nl.gijspeters.pubint.config.Constants.*;
 import static org.kohsuke.args4j.ExampleMode.ALL;
 
 /**
@@ -54,6 +52,9 @@ public class App {
     @Option(name = "-c", usage = "Clear existing documents")
     boolean clear = false;
 
+    @Option(name = "--otpDir", usage = "Use other OTP directory")
+    String otpDir = OTP_DIR;
+
     /**
      * Main method. Starting point for the application.
      *
@@ -78,7 +79,7 @@ public class App {
             if (validate) {
                 Config.setMongoConfig(VALIDATE_DB);
             }
-            OTPHandler.graphDir = Constants.OTP_DIR;
+            OTPHandler.graphDir = otpDir;
             switch (command) {
                 case "migrate":
                     migrate();
