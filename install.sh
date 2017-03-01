@@ -33,6 +33,9 @@ ExecStart=/usr/bin/mongod --quiet --config /etc/mongod.conf
 [Install]
 WantedBy=multi-user.target
 EOT
+sudo mkdir /data
+sudo mkdir /data/db
+sudo chmod 777 /data/db
 sudo systemctl enable mongodb
 sudo systemctl start mongodb
 
