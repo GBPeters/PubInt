@@ -57,3 +57,8 @@ mongorestore -d pubint --archive=pubint_transfer/pubint_anchor.zip
 mongorestore -d pubint_v --archive=pubint_transfer/pubint_agent.zip
 mongorestore -d pubint_v --archive=pubint_transfer/pubint_user.zip
 mongorestore -d pubint_v --archive=pubint_transfer/pubint_anchor.zip
+
+# Clean up
+rm -r pubint_transfer
+rm -r __MACOSX
+rm pubint_transfer.zip
