@@ -21,7 +21,7 @@ fi
 sudo apt-get install -y mongodb-org
 sudo rm -f /etc/systemd/system/mongodb.service
 sudo touch /etc/systemd/system/mongodb.service
-sudo cat > /etc/systemd/system/mongodb.service <<EOT
+sudo bash -c 'cat >/etc/systemd/system/mongodb.service' <<EOT
 [Unit]
 Description=High-performance, schema-free document-oriented database
 After=network.target
