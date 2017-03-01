@@ -58,6 +58,7 @@ git clone http://github.com/GBPeters/PubInt
 cd PubInt
 mvn clean
 mvn package -DskipTests
+cd ~
 
 # Restore Mongo Collections
 mongorestore -d pubint --archive=pubint_transfer/pubint_agent.zip
@@ -69,8 +70,7 @@ mongorestore -d pubint_v --archive=pubint_transfer/pubint_user.zip
 mongorestore -d pubint_v --archive=pubint_transfer/pubint_anchor.zip
 
 # Clean
-cd ..
-cd ..
 rm -r pubint_transfer
+rm -r __MACOSX
 rm pubint_transfer.zip
 
