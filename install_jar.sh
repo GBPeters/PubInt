@@ -25,7 +25,6 @@ wget https://dl.dropboxusercontent.com/s/d2kpw8bcg2zbi6n/pubint_transfer.zip
 unzip pubint_transfer.zip
 sudo mkdir /var/otp
 sudo cp -r pubint_transfer/otp/graphs /var/otp/graphs
-cp pubint_transfer/PubInt-0.1-SNAPSHOT.jar PubInt-0.1-SNAPSHOT.jar
 
 # Install MongoDB
 sudo apt-get install -y mongodb-org
@@ -49,9 +48,6 @@ sudo chmod 777 /data/db
 sudo systemctl enable mongodb
 sudo systemctl start mongodb
 
-# Install supervisor
-sudo apt-get install -y supervisor
-
 # Restore Mongo Dumps
 mongorestore -d pubint --archive=pubint_transfer/pubint_agent.zip
 mongorestore -d pubint --archive=pubint_transfer/pubint_user.zip
@@ -60,6 +56,18 @@ mongorestore -d pubint --archive=pubint_transfer/pubint_anchor.zip
 mongorestore -d pubint_v --archive=pubint_transfer/pubint_agent.zip
 mongorestore -d pubint_v --archive=pubint_transfer/pubint_user.zip
 mongorestore -d pubint_v --archive=pubint_transfer/pubint_anchor.zip
+
+# Download JAR
+wget https://dl.dropboxusercontent.com/s/c9tzekjca8bsbhu/PubInt-0.1-SNAPSHOT.jar
+
+# Install supervisor and create service
+sudo apt-get install -y supervisor
+sudo bash -c 'cat >/etc/supervisor/supervisord.conf' <<EOT
+[program:pubint_createprisms]
+command=java Xmx12g -jar ~/PubInt-0.1-SNAPSHOT.jar createprisms -c -M 8
+stdout_logfile=~/pubint_log
+stderr_logfile=~/pubint_log
+EOT
 
 # Clean up
 rm -r pubint_transfer
