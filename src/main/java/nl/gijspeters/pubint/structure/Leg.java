@@ -61,6 +61,10 @@ public class Leg {
     public Agent getAgent() {
         return origin.getUser().getAgent();
     }
+
+    public String toString() {
+        return "Leg <" + origin.toString() + " to " + destination.toString() + ">";
+    }
 }
 
 

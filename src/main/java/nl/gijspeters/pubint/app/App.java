@@ -10,6 +10,8 @@ import nl.gijspeters.pubint.graph.factory.GraphFactory;
 import nl.gijspeters.pubint.mongohandler.MongoLargeGraph;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
 import nl.gijspeters.pubint.mongohandler.PrismContainer;
+import nl.gijspeters.pubint.mutlithreading.CreatePrismTask;
+import nl.gijspeters.pubint.mutlithreading.TaskManager;
 import nl.gijspeters.pubint.otpentry.OTPHandler;
 import nl.gijspeters.pubint.structure.Leg;
 import nl.gijspeters.pubint.structure.Trajectory;
@@ -54,6 +56,9 @@ public class App {
 
     @Option(name = "--otpDir", usage = "Use other OTP directory")
     String otpDir = OTP_DIR;
+
+    @Option(name = "-M", usage = "Use multiple threads")
+    int mt = 1;
 
     /**
      * Main method. Starting point for the application.
@@ -210,10 +215,12 @@ public class App {
             MorphiaHandler.getInstance().savePrism(p);
         } else {
             Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class);
+            TaskManager tm = new TaskManager(mt);
             for (Leg l : q) {
-                p = gf.getPrism(l);
-                MorphiaHandler.getInstance().savePrism(p);
+                tm.addTask(new CreatePrismTask(tm, l, gf));
             }
+            tm.start();
+
         }
         if (dump) {
             PrismDocument pd = new PrismDocument(p.getStates());

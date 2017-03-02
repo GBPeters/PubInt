@@ -16,6 +16,8 @@ import org.opentripplanner.routing.core.State;
 import org.opentripplanner.routing.edgetype.PatternHop;
 import org.opentripplanner.routing.spt.GraphPath;
 import org.opentripplanner.routing.spt.ShortestPathTree;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -25,6 +27,8 @@ import java.util.*;
  * The GraphFactory contains functionality for building Graphs, Cubes, Cones and Prisms from other sources
  */
 public class GraphFactory {
+
+    private static Logger logger = LoggerFactory.getLogger(GraphFactory.class);
 
     private AnchorManipulator manipulator;
 
@@ -75,7 +79,7 @@ public class GraphFactory {
      * @param mode The RouteMode, either FROM_ORIGIN or TO_DESTINATION
      * @return An OTP ShortestPathTree
      */
-    private ShortestPathTree makeSPT(Anchor anchor, int maxTimeSeconds, OTPHandler.RouteMode mode) {
+    public synchronized ShortestPathTree makeSPT(Anchor anchor, int maxTimeSeconds, OTPHandler.RouteMode mode) {
         getManipulator().manipulate(anchor);
         try {
             OTPHandler otp = OTPHandler.getInstance();
@@ -96,7 +100,10 @@ public class GraphFactory {
     public Cone<OriginState> makeOriginCone(Anchor anchor, int maxTimeSeconds) {
         // Get ShortestPath Tree
         ShortestPathTree spt = makeSPT(anchor, maxTimeSeconds, OTPHandler.RouteMode.FROM_ORIGIN);
+        return makeOriginCone(anchor, spt, maxTimeSeconds);
+    }
 
+    public Cone<OriginState> makeOriginCone(Anchor anchor, ShortestPathTree spt, int maxTimeSeconds) {
         // Create empty Cone
         Cone<OriginState> cone = new Cone<>(anchor, maxTimeSeconds, spt.getOptions().walkSpeed);
 
@@ -149,10 +156,7 @@ public class GraphFactory {
         return cone;
     }
 
-    public Cone<DestinationState> makeDestinationCone(Anchor anchor, int maxTimeSeconds) {
-        // Get ShortestPath Tree
-        ShortestPathTree spt = makeSPT(anchor, maxTimeSeconds, OTPHandler.RouteMode.TO_DESTINATION);
-
+    public Cone<DestinationState> makeDestinationCone(Anchor anchor, ShortestPathTree spt, int maxTimeSeconds) {
         // Create empty Cone
         Cone<DestinationState> cone = new Cone<>(anchor, maxTimeSeconds, spt.getOptions().walkSpeed);
 
@@ -205,20 +209,21 @@ public class GraphFactory {
         return cone;
     }
 
+    public Cone<DestinationState> makeDestinationCone(Anchor anchor, int maxTimeSeconds) {
+        // Get ShortestPath Tree
+        ShortestPathTree spt = makeSPT(anchor, maxTimeSeconds, OTPHandler.RouteMode.TO_DESTINATION);
+        return makeDestinationCone(anchor, spt, maxTimeSeconds);
+    }
+
     /**
-     * Create a Prism from a leg. This first creates to Cones, and then matches all States
+     * Create a Prism from a leg. This first creates two Cones, and then matches all States
      * @param leg The leg to create the Prism for
      * @return A Prism
      */
-    public Prism getPrism(Leg leg) {
+    public Prism getPrism(Leg leg, Cone<OriginState> originCone, Cone<DestinationState> destinationCone) {
         // Counters
         int markovstates = 0;
         int brownianstates = 0;
-
-        // Create Cones
-        int deltaTime = (int) leg.getDeltaTime() / 1000;
-        Cone<OriginState> originCone = makeOriginCone(leg.getOrigin(), deltaTime);
-        Cone<DestinationState> destinationCone = makeDestinationCone(leg.getDestination(), deltaTime);
 
         // Create a HashMap with DestinationStates hashed on the Traversable
         Map<Traversable, DestinationState> destinationMap = new HashMap<>();
@@ -254,8 +259,16 @@ public class GraphFactory {
         }
         int total = brownianstates + markovstates;
         String s = String.format("States in Prism: %d ( %d B; %d M )", total, brownianstates, markovstates);
-        System.out.println(s);
+        logger.info(s);
         return prism;
+    }
+
+    public Prism getPrism(Leg leg) {
+        // Create Cones
+        int deltaTime = (int) leg.getDeltaTime() / 1000;
+        Cone<OriginState> originCone = makeOriginCone(leg.getOrigin(), deltaTime);
+        Cone<DestinationState> destinationCone = makeDestinationCone(leg.getDestination(), deltaTime);
+        return getPrism(leg, originCone, destinationCone);
     }
 
     public Set<org.opentripplanner.routing.core.State> makeTestTripStates(Anchor anchor) {

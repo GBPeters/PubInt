@@ -49,6 +49,9 @@ sudo chmod 777 /data/db
 sudo systemctl enable mongodb
 sudo systemctl start mongodb
 
+# Install supervisor
+sudo apt-get install -y supervisor
+
 # Restore Mongo Dumps
 mongorestore -d pubint --archive=pubint_transfer/pubint_agent.zip
 mongorestore -d pubint --archive=pubint_transfer/pubint_user.zip
