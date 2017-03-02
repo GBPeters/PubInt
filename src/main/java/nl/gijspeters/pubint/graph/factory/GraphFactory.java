@@ -8,6 +8,7 @@ import nl.gijspeters.pubint.graph.state.*;
 import nl.gijspeters.pubint.graph.traversable.Edge;
 import nl.gijspeters.pubint.graph.traversable.Ride;
 import nl.gijspeters.pubint.graph.traversable.Traversable;
+import nl.gijspeters.pubint.otpentry.OTPEntry;
 import nl.gijspeters.pubint.otpentry.OTPHandler;
 import nl.gijspeters.pubint.otpentry.OTPRide;
 import nl.gijspeters.pubint.structure.Anchor;
@@ -29,26 +30,33 @@ import java.util.*;
 public class GraphFactory {
 
     private static Logger logger = LoggerFactory.getLogger(GraphFactory.class);
+    private final OTPEntry otp;
 
     private AnchorManipulator manipulator;
 
     private TraversableFactory tf = new TraversableFactory();
 
-    /**
-     * Default Constructor
-     */
     public GraphFactory() {
-        setManipulator(new EmptyManipulator());
+        this(OTPHandler.getInstance(), new EmptyManipulator());
+    }
+
+    public GraphFactory(AnchorManipulator manipulator) {
+        this(OTPHandler.getInstance(), manipulator);
+    }
+
+    public GraphFactory(OTPEntry otp) {
+        this(otp, new EmptyManipulator());
     }
 
     /**
-     * Constructor setting this GraphFactory's AnchorManipulator.
+     * Default constructor
      *
-     * @param manipulator An AnchorManipulator. Each Anchor used in calculations will be manipulated first through
-     *                    this AnchorManipulator
+     * @param otp         OTPEntry to use for this GraphFactory
+     * @param manipulator AnchorManipulator to premanipulate Anchors
      */
-    public GraphFactory(AnchorManipulator manipulator) {
-        this.setManipulator(manipulator);
+    public GraphFactory(OTPEntry otp, AnchorManipulator manipulator) {
+        this.otp = otp;
+        setManipulator(manipulator);
     }
 
     /**
@@ -57,10 +65,10 @@ public class GraphFactory {
      * @return A BasicGraph containing all OTP edges and vertices
      * @throws Exception
      */
-    public BasicGraph getCompleteGraph(String graphId) throws Exception {
+    public synchronized BasicGraph getCompleteGraph(String graphId) throws Exception {
         HashSet<Edge> edges = new HashSet<>();
         HashSet<Vertex> vertices = new HashSet<>();
-        org.opentripplanner.routing.graph.Graph otpgraph = OTPHandler.getInstance().getGraph();
+        org.opentripplanner.routing.graph.Graph otpgraph = otp.getGraph();
         Collection<org.opentripplanner.routing.graph.Edge> otpedges = otpgraph.getEdges();
         for (org.opentripplanner.routing.graph.Edge e : otpedges) {
             edges.add(tf.makeEdge(e));
@@ -79,10 +87,9 @@ public class GraphFactory {
      * @param mode The RouteMode, either FROM_ORIGIN or TO_DESTINATION
      * @return An OTP ShortestPathTree
      */
-    public synchronized ShortestPathTree makeSPT(Anchor anchor, int maxTimeSeconds, OTPHandler.RouteMode mode) {
+    public synchronized ShortestPathTree makeSPT(Anchor anchor, int maxTimeSeconds, OTPEntry.RouteMode mode) {
         getManipulator().manipulate(anchor);
         try {
-            OTPHandler otp = OTPHandler.getInstance();
             ShortestPathTree spt = otp.getShortestPathTree(anchor.getCoord(), anchor.getDate(), maxTimeSeconds, mode);
             return spt;
         } catch (Exception e) {
@@ -99,7 +106,7 @@ public class GraphFactory {
      */
     public Cone<OriginState> makeOriginCone(Anchor anchor, int maxTimeSeconds) {
         // Get ShortestPath Tree
-        ShortestPathTree spt = makeSPT(anchor, maxTimeSeconds, OTPHandler.RouteMode.FROM_ORIGIN);
+        ShortestPathTree spt = makeSPT(anchor, maxTimeSeconds, OTPEntry.RouteMode.FROM_ORIGIN);
         return makeOriginCone(anchor, spt, maxTimeSeconds);
     }
 
@@ -117,7 +124,7 @@ public class GraphFactory {
                     // If the state is on a StreetEdge, create an OriginUndirected State
                     org.opentripplanner.routing.graph.Edge backEdge = s.getBackEdge();
                     org.opentripplanner.routing.graph.Vertex backFromV = backEdge.getFromVertex();
-                    GraphPath fromPath = spt.getPath(backFromV, true);
+                    GraphPath fromPath = spt.getPath(backFromV, false);
                     long minTraversalTime = s.getAbsTimeDeltaSeconds() * 1000;
                     Date earliestDeparture = new Date(fromPath.getEndTime() * 1000);
                     Date earliestArrival = new Date(earliestDeparture.getTime() + minTraversalTime);
@@ -140,7 +147,7 @@ public class GraphFactory {
 
                 //Check if the boardVertex is reachable from other sources
                 if (boardVertex != null) {
-                    GraphPath boardPath = spt.getPath(boardVertex, true);
+                    GraphPath boardPath = spt.getPath(boardVertex, false);
                     if (boardPath != null) {
 
                         // Add OriginTransitState to the Cone
@@ -211,7 +218,7 @@ public class GraphFactory {
 
     public Cone<DestinationState> makeDestinationCone(Anchor anchor, int maxTimeSeconds) {
         // Get ShortestPath Tree
-        ShortestPathTree spt = makeSPT(anchor, maxTimeSeconds, OTPHandler.RouteMode.TO_DESTINATION);
+        ShortestPathTree spt = makeSPT(anchor, maxTimeSeconds, OTPEntry.RouteMode.TO_DESTINATION);
         return makeDestinationCone(anchor, spt, maxTimeSeconds);
     }
 
@@ -272,7 +279,7 @@ public class GraphFactory {
     }
 
     public Set<org.opentripplanner.routing.core.State> makeTestTripStates(Anchor anchor) {
-        ShortestPathTree spt = makeSPT(anchor, 7200, OTPHandler.RouteMode.FROM_ORIGIN);
+        ShortestPathTree spt = makeSPT(anchor, 7200, OTPEntry.RouteMode.FROM_ORIGIN);
         Set<State> states = new HashSet<>();
         for (State s : spt.getAllStates()) {
             try {

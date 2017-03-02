@@ -6,7 +6,7 @@ import nl.gijspeters.pubint.graph.Prism;
 import nl.gijspeters.pubint.graph.state.DestinationState;
 import nl.gijspeters.pubint.graph.state.OriginState;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
-import nl.gijspeters.pubint.otpentry.OTPHandler;
+import nl.gijspeters.pubint.otpentry.OTPEntry;
 import nl.gijspeters.pubint.structure.Anchor;
 import nl.gijspeters.pubint.structure.Leg;
 import org.junit.Before;
@@ -26,7 +26,7 @@ public class GraphFactoryTest {
 
     @Before
     public void setUp() throws Exception {
-        OTPHandler.graphDir = Constants.OTP_DIR;
+        OTPEntry.graphDir = Constants.OTP_DIR;
         testLeg = MorphiaHandler.getInstance().getTestLeg();
         originAnchor = testLeg.getOrigin();
         destinationAnchor = testLeg.getDestination();

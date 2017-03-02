@@ -6,7 +6,7 @@ import nl.gijspeters.pubint.graph.factory.GraphFactory;
 import nl.gijspeters.pubint.graph.state.DestinationState;
 import nl.gijspeters.pubint.graph.state.OriginState;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
-import nl.gijspeters.pubint.otpentry.OTPHandler;
+import nl.gijspeters.pubint.otpentry.OTPEntry;
 import nl.gijspeters.pubint.structure.Leg;
 import org.opentripplanner.routing.spt.ShortestPathTree;
 
@@ -27,9 +27,9 @@ public class CreatePrismTask extends Task {
     @Override
     protected void executeTask() throws Exception {
         int maxTime = (int) (leg.getDeltaTime() / 1000);
-        ShortestPathTree spt = gf.makeSPT(leg.getOrigin(), maxTime, OTPHandler.RouteMode.FROM_ORIGIN);
+        ShortestPathTree spt = gf.makeSPT(leg.getOrigin(), maxTime, OTPEntry.RouteMode.FROM_ORIGIN);
         Cone<OriginState> originCone = gf.makeOriginCone(leg.getOrigin(), spt, maxTime);
-        spt = gf.makeSPT(leg.getDestination(), maxTime, OTPHandler.RouteMode.TO_DESTINATION);
+        spt = gf.makeSPT(leg.getDestination(), maxTime, OTPEntry.RouteMode.TO_DESTINATION);
         Cone<DestinationState> destinationCone = gf.makeDestinationCone(leg.getDestination(), spt, maxTime);
         Prism p = gf.getPrism(leg, originCone, destinationCone);
         MorphiaHandler.getInstance().savePrism(p);

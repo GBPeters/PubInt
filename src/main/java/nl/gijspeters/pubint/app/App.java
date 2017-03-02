@@ -12,6 +12,7 @@ import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
 import nl.gijspeters.pubint.mongohandler.PrismContainer;
 import nl.gijspeters.pubint.mutlithreading.CreatePrismTask;
 import nl.gijspeters.pubint.mutlithreading.TaskManager;
+import nl.gijspeters.pubint.otpentry.OTPEntry;
 import nl.gijspeters.pubint.otpentry.OTPHandler;
 import nl.gijspeters.pubint.structure.Leg;
 import nl.gijspeters.pubint.structure.Trajectory;
@@ -57,8 +58,11 @@ public class App {
     @Option(name = "--otpDir", usage = "Use other OTP directory")
     String otpDir = OTP_DIR;
 
-    @Option(name = "-M", usage = "Use multiple threads")
+    @Option(name = "-m", usage = "Use multiple threads")
     int mt = 1;
+
+    @Option(name = "-o", usage = "Use multiple OTP instances")
+    int oi = 1;
 
     /**
      * Main method. Starting point for the application.
@@ -84,7 +88,7 @@ public class App {
             if (validate) {
                 Config.setMongoConfig(VALIDATE_DB);
             }
-            OTPHandler.graphDir = otpDir;
+            OTPEntry.graphDir = otpDir;
             switch (command) {
                 case "migrate":
                     migrate();
@@ -208,16 +212,26 @@ public class App {
             System.out.println("Clearing prisms...");
             MorphiaHandler.getInstance().clearCollection(PrismContainer.class);
         }
-        GraphFactory gf = new GraphFactory(new DateManipulator());
         if (test) {
+            GraphFactory gf = new GraphFactory(new DateManipulator());
             Leg l = MorphiaHandler.getInstance().getTestLeg();
             p = gf.getPrism(l);
             MorphiaHandler.getInstance().savePrism(p);
         } else {
             Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class);
             TaskManager tm = new TaskManager(mt);
+            List<OTPEntry> instances = OTPHandler.getInstances(oi);
+            List<GraphFactory> factories = new ArrayList<>();
+            for (OTPEntry instance : instances) {
+                factories.add(new GraphFactory(instance, new DateManipulator()));
+            }
+            int i = 0;
             for (Leg l : q) {
-                tm.addTask(new CreatePrismTask(tm, l, gf));
+                tm.addTask(new CreatePrismTask(tm, l, factories.get(i)));
+                i++;
+                if (i >= factories.size()) {
+                    i = 0;
+                }
             }
             tm.start();
 

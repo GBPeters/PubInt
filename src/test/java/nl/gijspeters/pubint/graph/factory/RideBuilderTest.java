@@ -2,7 +2,7 @@ package nl.gijspeters.pubint.graph.factory;
 
 import nl.gijspeters.pubint.config.Constants;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
-import nl.gijspeters.pubint.otpentry.OTPHandler;
+import nl.gijspeters.pubint.otpentry.OTPEntry;
 import nl.gijspeters.pubint.otpentry.OTPRide;
 import nl.gijspeters.pubint.structure.Anchor;
 import org.junit.Before;
@@ -23,7 +23,7 @@ public class RideBuilderTest {
 
     @Before
     public void setUp() throws Exception {
-        OTPHandler.graphDir = Constants.OTP_DIR;
+        OTPEntry.graphDir = Constants.OTP_DIR;
         Anchor anchor = MorphiaHandler.getInstance().getTestLeg().getOrigin();
         Set<State> states = gf.makeTestTripStates(anchor);
         builder.addAll(states);

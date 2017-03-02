@@ -5,7 +5,7 @@ import nl.gijspeters.pubint.graph.factory.DateManipulator;
 import nl.gijspeters.pubint.graph.factory.GraphFactory;
 import nl.gijspeters.pubint.graph.factory.TraversableFactory;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
-import nl.gijspeters.pubint.otpentry.OTPHandler;
+import nl.gijspeters.pubint.otpentry.OTPEntry;
 import nl.gijspeters.pubint.structure.Anchor;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +30,7 @@ public class RideTest {
 
     @Before
     public void setUp() throws Exception {
-        OTPHandler.graphDir = Constants.OTP_DIR;
+        OTPEntry.graphDir = Constants.OTP_DIR;
         Anchor anchor = MorphiaHandler.getInstance().getTestLeg().getOrigin();
         GraphFactory gf = new GraphFactory(new DateManipulator());
         TraversableFactory tf = new TraversableFactory();
