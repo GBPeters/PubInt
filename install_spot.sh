@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# mount external drive
+sudo mkdir /extdata
+sudo mount /dev/xvdf /extdata
+
 # Add apt-repos and update
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
 echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
@@ -30,11 +34,8 @@ ExecStart=/usr/bin/mongod --quiet --config /etc/mongod.conf
 [Install]
 WantedBy=multi-user.target
 EOT
-sudo mkdir /data
-sudo mkdir /data/db
-sudo chmod 777 /data/db
-sudo mv /data/db /extdata/db
-sudo ln -s /extdata/db /data/db
+sudo mv /var/lib/mongodb /extdata/mongodb
+sudo ln -s /extdata/db /var/lib/mongodb
 sudo chown mongodb:mongodb /extdata/db
 
 sudo systemctl enable mongodb
@@ -52,7 +53,7 @@ mongorestore -d pubint_v --archive=pubint_transfer/pubint_anchor.zip
 # Download JAR
 wget https://dl.dropboxusercontent.com/s/c9tzekjca8bsbhu/PubInt-0.1-SNAPSHOT.jar
 
-# Install supervisor and create service
+# Create service
 sudo bash -c 'cat >/etc/systemd/system/pubint_create.service' <<EOT
 [Unit]
 Description=PubInt Prism Creator
