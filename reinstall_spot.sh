@@ -29,14 +29,12 @@ After=network.target
 
 [Service]
 User=mongodb
-ExecStart=/usr/bin/mongod --quiet --config /etc/mongod.conf
+ExecStart=/usr/bin/mongod --quiet --config /etc/mongod.conf --dbpath /extdata/mongodb
 
 [Install]
 WantedBy=multi-user.target
 EOT
-sudo systemctl stop mongodb
-sudo rm -r /var/lib/mongodb
-sudo ln -s /extdata/db /var/lib/mongodb
+
 sudo chown mongodb:mongodb /extdata/db
 
 sudo systemctl enable mongodb
