@@ -70,7 +70,11 @@ public class Leg {
     }
 
     public Prism getPrism() {
-        return prism.getPrism();
+        if (prism == null) {
+            return null;
+        } else {
+            return prism.getPrism();
+        }
     }
 
     public void setPrism(Prism prism) {

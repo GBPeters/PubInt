@@ -42,6 +42,7 @@ After=network.target
 [Service]
 User=mongodb
 ExecStart=/usr/bin/mongod --quiet --config /etc/mongod.conf --dbpath /extdata/mongodb
+Restart=always
 
 [Install]
 WantedBy=multi-user.target
@@ -62,7 +63,7 @@ Description=PubInt Prism Creator
 
 [Service]
 User=ubuntu
-ExecStart=/usr/bin/java -Xmx32g -jar /home/ubuntu/PubInt-0.1-SNAPSHOT.jar createprisms -m 16 -o 4
+ExecStart=/usr/bin/java -Xmx56g -jar /home/ubuntu/PubInt-0.1-SNAPSHOT.jar createprisms -m 16 -o 4
 WorkingDirectory=/home/ubuntu
 
 [Install]
