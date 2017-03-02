@@ -1,5 +1,7 @@
 package nl.gijspeters.pubint.structure;
 
+import nl.gijspeters.pubint.graph.Prism;
+import nl.gijspeters.pubint.mongohandler.PrismContainer;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
@@ -17,6 +19,7 @@ public class Leg {
     private Anchor origin;
     @Reference
     private Anchor destination;
+    private PrismContainer prism;
 
     public Leg() {
     }
@@ -64,6 +67,14 @@ public class Leg {
 
     public String toString() {
         return "Leg <" + origin.toString() + " to " + destination.toString() + ">";
+    }
+
+    public Prism getPrism() {
+        return prism.getPrism();
+    }
+
+    public void setPrism(Prism prism) {
+        this.prism = new PrismContainer(prism);
     }
 }
 

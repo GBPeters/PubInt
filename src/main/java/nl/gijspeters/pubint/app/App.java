@@ -9,7 +9,6 @@ import nl.gijspeters.pubint.graph.factory.DateManipulator;
 import nl.gijspeters.pubint.graph.factory.GraphFactory;
 import nl.gijspeters.pubint.mongohandler.MongoLargeGraph;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
-import nl.gijspeters.pubint.mongohandler.PrismContainer;
 import nl.gijspeters.pubint.mutlithreading.CreatePrismTask;
 import nl.gijspeters.pubint.mutlithreading.TaskManager;
 import nl.gijspeters.pubint.otpentry.OTPEntry;
@@ -209,16 +208,21 @@ public class App {
     public void createPrisms() {
         Prism p = new Prism();
         if (clear) {
-            System.out.println("Clearing prisms...");
-            MorphiaHandler.getInstance().clearCollection(PrismContainer.class);
+            System.out.println("Clearing prisms from legs...");
+            Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class).field("prism").exists();
+            for (Leg l : q) {
+                l.setPrism(null);
+                MorphiaHandler.getInstance().saveLeg(l);
+            }
         }
         if (test) {
             GraphFactory gf = new GraphFactory(new DateManipulator());
             Leg l = MorphiaHandler.getInstance().getTestLeg();
             p = gf.getPrism(l);
-            MorphiaHandler.getInstance().savePrism(p);
+            l.setPrism(p);
+            MorphiaHandler.getInstance().saveLeg(l);
         } else {
-            Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class);
+            Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class).field("prism").doesNotExist();
             TaskManager tm = new TaskManager(mt);
             List<OTPEntry> instances = OTPHandler.getInstances(oi);
             List<GraphFactory> factories = new ArrayList<>();

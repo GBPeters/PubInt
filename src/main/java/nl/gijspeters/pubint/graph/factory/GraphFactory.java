@@ -112,7 +112,7 @@ public class GraphFactory {
 
     public Cone<OriginState> makeOriginCone(Anchor anchor, ShortestPathTree spt, int maxTimeSeconds) {
         // Create empty Cone
-        Cone<OriginState> cone = new Cone<>(anchor, maxTimeSeconds, spt.getOptions().walkSpeed);
+        Cone<OriginState> cone = new Cone<>(maxTimeSeconds, spt.getOptions().walkSpeed);
 
         // Create RideBuilder
         RideBuilder rb = new RideBuilder();
@@ -165,7 +165,7 @@ public class GraphFactory {
 
     public Cone<DestinationState> makeDestinationCone(Anchor anchor, ShortestPathTree spt, int maxTimeSeconds) {
         // Create empty Cone
-        Cone<DestinationState> cone = new Cone<>(anchor, maxTimeSeconds, spt.getOptions().walkSpeed);
+        Cone<DestinationState> cone = new Cone<>(maxTimeSeconds, spt.getOptions().walkSpeed);
 
         // Create RideBuilder
         RideBuilder rb = new RideBuilder(new TraversableFactory(TraversableFactory.MODE.DESTINATION));
@@ -236,7 +236,7 @@ public class GraphFactory {
         Map<Traversable, DestinationState> destinationMap = new HashMap<>();
 
         // Create empty Prism and a StateFactory
-        Prism prism = new Prism(leg, originCone.getWalkSpeed());
+        Prism prism = new Prism(originCone.getWalkSpeed());
         StateFactory sf = new StateFactory();
 
         // Populate HashMap

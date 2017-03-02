@@ -3,7 +3,6 @@ package nl.gijspeters.pubint.mongohandler;
 import com.mongodb.MongoClient;
 import nl.gijspeters.pubint.config.Config;
 import nl.gijspeters.pubint.graph.BasicGraph;
-import nl.gijspeters.pubint.graph.Prism;
 import nl.gijspeters.pubint.graph.Vertex;
 import nl.gijspeters.pubint.graph.traversable.Edge;
 import nl.gijspeters.pubint.graph.traversable.Hop;
@@ -131,6 +130,9 @@ public class MorphiaHandler {
     }
 
     public void saveLeg(Leg l) {
+        if (l.getPrism() != null) {
+            saveTraversable(l.getPrism().getTraversables());
+        }
         saveSimpleObject(l);
     }
 
@@ -171,11 +173,6 @@ public class MorphiaHandler {
             l = i.next();
         } while (i.hasNext() && (l.getDeltaTime() < 1200000 || l.getDeltaTime() > 1500000));
         return l;
-    }
-
-    public void savePrism(Prism p) {
-        saveTraversable(p.getTraversables());
-        saveSimpleObject(new PrismContainer(p));
     }
 
 }

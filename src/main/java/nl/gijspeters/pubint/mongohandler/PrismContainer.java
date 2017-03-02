@@ -2,25 +2,17 @@ package nl.gijspeters.pubint.mongohandler;
 
 import nl.gijspeters.pubint.graph.Prism;
 import nl.gijspeters.pubint.graph.state.PrismState;
-import nl.gijspeters.pubint.structure.Leg;
-import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
-import org.mongodb.morphia.annotations.Reference;
+import org.mongodb.morphia.annotations.Embedded;
 
 import java.util.Set;
 
 /**
  * Created by gijspeters on 23-02-17.
  */
-@Entity("prism")
+@Embedded
 public class PrismContainer {
 
-    @Id
-    private ObjectId oid;
     private Set<PrismState> states;
-    @Reference
-    private Leg leg;
     private double walkSpeed;
 
     public PrismContainer() {
@@ -31,17 +23,12 @@ public class PrismContainer {
     }
 
     public Prism getPrism() {
-        return new Prism(leg, walkSpeed, states);
+        return new Prism(walkSpeed, states);
     }
 
     public void setPrism(Prism prism) {
         states = prism.getStates();
-        leg = prism.getLeg();
         walkSpeed = prism.getWalkSpeed();
-    }
-
-    public ObjectId getOid() {
-        return oid;
     }
 
 }

@@ -3,22 +3,10 @@
 # Add apt-repos and update
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
 echo "deb http://repo.mongodb.org/apt/ubuntu xenial/mongodb-org/3.2 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.2.list
-sudo add-apt-repository ppa:webupd8team/java
 sudo apt-get -y update
 
 # Install unzip
 sudo apt-get -y install unzip
-
-# Install Java
-sudo apt-get -y install oracle-java8-installer
-
-# Set JAVA_HOME
-if [ "$JAVA_HOME" != '/usr/lib/jvm/java-8-oracle' ]
-then
-    sudo chmod 777 /etc/environment
-    sudo echo "JAVA_HOME=/usr/lib/jvm/java-8-oracle" >> /etc/environment
-    source /etc/environment
-fi
 
 # Download and unpack source data
 wget https://dl.dropboxusercontent.com/s/d2kpw8bcg2zbi6n/pubint_transfer.zip
@@ -67,7 +55,7 @@ Description=PubInt Prism Creator
 
 [Service]
 User=ubuntu
-ExecStart=/usr/bin/java -Xmx32g -jar /home/ubuntu/PubInt-0.1-SNAPSHOT.jar createprisms -c -M 8
+ExecStart=/usr/bin/java -Xmx32g -jar /home/ubuntu/PubInt-0.1-SNAPSHOT.jar createprisms -m 16 -o 4
 WorkingDirectory=/home/ubuntu
 
 [Install]
