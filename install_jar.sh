@@ -61,12 +61,18 @@ mongorestore -d pubint_v --archive=pubint_transfer/pubint_anchor.zip
 wget https://dl.dropboxusercontent.com/s/c9tzekjca8bsbhu/PubInt-0.1-SNAPSHOT.jar
 
 # Install supervisor and create service
-sudo apt-get install -y supervisor
-sudo bash -c 'cat >/etc/supervisor/supervisord.conf' <<EOT
-[program:pubint_createprisms]
-command=java Xmx12g -jar ~/PubInt-0.1-SNAPSHOT.jar createprisms -c -M 8
-stdout_logfile=~/pubint_log
-stderr_logfile=~/pubint_log
+sudo bash -c 'cat >/etc/systemd/system/pubint_create.service' <<EOT
+[Unit]
+Description=PubInt Prism Creator
+
+[Service]
+User=ubuntu
+ExecStart=/usr/bin/java -Xmx32g -jar /home/ubuntu/PubInt-0.1-SNAPSHOT.jar createprisms -c -M 8
+WorkingDirectory=/home/ubuntu
+
+[Install]
+WantedBy=multi-user.target
+
 EOT
 
 # Clean up
