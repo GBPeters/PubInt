@@ -26,7 +26,7 @@ public class GraphFactoryTest {
 
     @Before
     public void setUp() throws Exception {
-        OTPEntry.graphDir = Constants.OTP_DIR;
+        OTPEntry.otpDir = Constants.OTP_DIR;
         testLeg = MorphiaHandler.getInstance().getTestLeg();
         originAnchor = testLeg.getOrigin();
         destinationAnchor = testLeg.getDestination();

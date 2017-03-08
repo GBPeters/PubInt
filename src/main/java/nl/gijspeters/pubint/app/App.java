@@ -5,7 +5,6 @@ import nl.gijspeters.pubint.export.csv.CSVWriter;
 import nl.gijspeters.pubint.export.csv.prism.PrismDocument;
 import nl.gijspeters.pubint.graph.BasicGraph;
 import nl.gijspeters.pubint.graph.Prism;
-import nl.gijspeters.pubint.graph.factory.DateManipulator;
 import nl.gijspeters.pubint.graph.factory.GraphFactory;
 import nl.gijspeters.pubint.mongohandler.MongoLargeGraph;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
@@ -87,7 +86,7 @@ public class App {
             if (validate) {
                 Config.setMongoConfig(VALIDATE_DB);
             }
-            OTPEntry.graphDir = otpDir;
+            OTPEntry.otpDir = otpDir;
             switch (command) {
                 case "migrate":
                     migrate();
@@ -192,7 +191,7 @@ public class App {
                 System.out.println("Clearing large graphs...");
                 MorphiaHandler.getInstance().clearCollection(MongoLargeGraph.class);
             }
-            GraphFactory gb = new GraphFactory(new DateManipulator());
+            GraphFactory gb = new GraphFactory();
             BasicGraph g = gb.getCompleteGraph("amsterdam_complete");
             MorphiaHandler.getInstance().saveLargeGraph(g, false);
             System.out.println("BasicGraph saved");
@@ -216,7 +215,7 @@ public class App {
             }
         }
         if (test) {
-            GraphFactory gf = new GraphFactory(new DateManipulator());
+            GraphFactory gf = new GraphFactory();
             Leg l = MorphiaHandler.getInstance().getTestLeg();
             p = gf.getPrism(l);
             l.setPrism(p);
@@ -227,7 +226,7 @@ public class App {
             List<OTPEntry> instances = OTPHandler.getInstances(oi);
             List<GraphFactory> factories = new ArrayList<>();
             for (OTPEntry instance : instances) {
-                factories.add(new GraphFactory(instance, new DateManipulator()));
+                factories.add(new GraphFactory(instance));
             }
             int i = 0;
             for (Leg l : q) {

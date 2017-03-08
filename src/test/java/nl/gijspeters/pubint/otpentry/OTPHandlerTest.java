@@ -19,7 +19,7 @@ public class OTPHandlerTest {
     private OTPEntry otp;
     @Before
     public void setUp() throws Exception {
-        OTPEntry.graphDir = Constants.OTP_DIR;
+        OTPEntry.otpDir = Constants.OTP_DIR;
         otp = OTPHandler.getInstance();
     }
 

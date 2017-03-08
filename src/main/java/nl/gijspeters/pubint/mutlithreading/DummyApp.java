@@ -13,7 +13,7 @@ public class DummyApp {
 
     public static void main(String[] args) {
         TaskManager tm = new TaskManager(2);
-        OTPEntry.graphDir = "/Users/gijspeters/otp";
+        OTPEntry.otpDir = "/Users/gijspeters/otp";
         Leg testLeg = MorphiaHandler.getInstance().getTestLeg();
         GraphFactory gf = new GraphFactory(new DateManipulator());
         tm.addTask(new CreatePrismTask(tm, testLeg, gf));

@@ -18,14 +18,14 @@ import static nl.gijspeters.pubint.config.Constants.OTP_DIR;
 public class OTPEntry {
 
 
-    public static String graphDir = OTP_DIR;
+    public static String otpDir = OTP_DIR;
 
     public enum RouteMode {FROM_ORIGIN, TO_DESTINATION}
 
     private OtpsEntryPoint otp;
 
     void restartOTP() throws Exception {
-        String[] args = {"--graphs", OTPEntry.graphDir, "--autoScan"};
+        String[] args = {"--basePath", OTPEntry.otpDir, "--autoScan"};
         otp = OtpsEntryPoint.fromArgs(args);
     }
 

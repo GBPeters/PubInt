@@ -95,7 +95,7 @@ public class MorphiaHandler {
             saveNodes(basicGraph.getVertices());
             saveTraversable(basicGraph.getTraversables());
         }
-        getDs().save(new MongoLargeGraph(basicGraph));
+        //getDs().save(new MongoLargeGraph(basicGraph));
     }
 
     public void saveLargeGraph(BasicGraph basicGraph) {

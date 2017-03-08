@@ -30,7 +30,7 @@ public class RideTest {
 
     @Before
     public void setUp() throws Exception {
-        OTPEntry.graphDir = Constants.OTP_DIR;
+        OTPEntry.otpDir = Constants.OTP_DIR;
         Anchor anchor = MorphiaHandler.getInstance().getTestLeg().getOrigin();
         GraphFactory gf = new GraphFactory(new DateManipulator());
         TraversableFactory tf = new TraversableFactory();

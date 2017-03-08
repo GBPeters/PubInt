@@ -23,7 +23,7 @@ public class RideBuilderTest {
 
     @Before
     public void setUp() throws Exception {
-        OTPEntry.graphDir = Constants.OTP_DIR;
+        OTPEntry.otpDir = Constants.OTP_DIR;
         Anchor anchor = MorphiaHandler.getInstance().getTestLeg().getOrigin();
         Set<State> states = gf.makeTestTripStates(anchor);
         builder.addAll(states);
