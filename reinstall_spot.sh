@@ -25,7 +25,7 @@ fi
 sudo apt-get -y install unzip
 
 # Download and unpack source data
-wget https://dl.dropboxusercontent.com/s/d2kpw8bcg2zbi6n/pubint_transfer.zip
+wget https://dl.dropboxusercontent.com/s/x8b7pvk90vjr9hv/pubint_transfer.zip
 unzip pubint_transfer.zip
 sudo mkdir /var/otp
 sudo cp -r pubint_transfer/otp/graphs /var/otp/graphs
