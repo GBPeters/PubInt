@@ -28,6 +28,7 @@ sudo apt-get -y install unzip
 wget https://dl.dropboxusercontent.com/s/x8b7pvk90vjr9hv/pubint_transfer.zip
 unzip pubint_transfer.zip
 sudo mkdir /var/otp
+sudo chmod 777 /var/otp
 sudo cp -r pubint_transfer/otp/graphs /var/otp/graphs
 
 # Install MongoDB
