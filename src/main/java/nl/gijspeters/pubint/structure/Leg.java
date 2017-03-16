@@ -78,7 +78,11 @@ public class Leg {
     }
 
     public void setPrism(Prism prism) {
-        this.prism = new PrismContainer(prism);
+        if (prism == null) {
+            this.prism = null;
+        } else {
+            this.prism = new PrismContainer(prism);
+        }
     }
 }
 
