@@ -12,7 +12,7 @@ import java.util.Date;
  * TransitState calculated to a destination
  */
 @Entity("state")
-public class DestinationTransitState extends TransitState implements DestinationState<Ride> {
+public class DestinationTransitState extends TransitState implements DestinationTraversedState<Ride> {
 
     private Date latestArrival;
 
@@ -55,14 +55,4 @@ public class DestinationTransitState extends TransitState implements Destination
         this.latestArrival = latestArrival;
     }
 
-    @Override
-    public boolean matches(OriginState originState) {
-        if (originState instanceof OriginTransitState) {
-            OriginTransitState os = (OriginTransitState) originState;
-            return getTraversable().equals(originState.getTraversable())
-                    && getLatestDeparture().equals(os.getLatestDeparture())
-                    && getEarliestArrival().equals((os.getEarliestArrival()));
-        }
-        return false;
-    }
 }

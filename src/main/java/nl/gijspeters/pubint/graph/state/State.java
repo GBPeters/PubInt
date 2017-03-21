@@ -11,6 +11,4 @@ public interface State<T extends Traversable> {
 
     T getTraversable();
 
-    long getMinimalTraversalTime();
-
 }

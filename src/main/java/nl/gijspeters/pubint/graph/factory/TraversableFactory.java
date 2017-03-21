@@ -39,7 +39,8 @@ public class TraversableFactory {
         this.mode = mode;
     }
 
-    public static final Set<Class> STREET_EDGE_CLASSES = new HashSet<>(Arrays.asList(new Class[]{StreetEdge.class, StreetTransitLink.class, AreaEdge.class}));
+    public static final Set<Class> STREET_EDGE_CLASSES = new HashSet<>(Arrays.asList(new Class[]{StreetEdge.class,
+            StreetTransitLink.class, AreaEdge.class}));
 
     public Vertex makeVertex(org.opentripplanner.routing.graph.Vertex v) {
         return new Vertex(v.getLabel(), v.getCoordinate());

@@ -50,14 +50,14 @@ public class MorphiaHandler {
         return datastore;
     }
 
-    public void clearCollection(Class c) {
-        datastore.getCollection(c).drop();
+    public void clearCollection(String name) {
+        datastore.getDB().getCollection(name).drop();
     }
 
     public void saveGraph(BasicGraph basicGraph, boolean basedOnExistingGraph) {
         if (!basedOnExistingGraph) {
             saveNodes(basicGraph.getVertices());
-            saveTraversable(basicGraph.getTraversables());
+            saveTraversables(basicGraph.getTraversables());
         }
         getDs().save(basicGraph);
     }
@@ -66,7 +66,7 @@ public class MorphiaHandler {
         saveSimpleCollection(vertices);
     }
 
-    public void saveTraversable(Collection<Traversable> traversables) {
+    public void saveTraversables(Collection<Traversable> traversables) {
         Set<Hop> hops = new HashSet<>();
         for (Traversable t : traversables) {
             if (t instanceof Ride) {
@@ -92,8 +92,11 @@ public class MorphiaHandler {
 
     public void saveLargeGraph(BasicGraph basicGraph, boolean basedOnExistingGraph) {
         if (!basedOnExistingGraph) {
+            boolean as = ASSUME_SAVEDGRAPH;
+            ASSUME_SAVEDGRAPH = false;
             saveNodes(basicGraph.getVertices());
-            saveTraversable(basicGraph.getTraversables());
+            saveTraversables(basicGraph.getTraversables());
+            ASSUME_SAVEDGRAPH = as;
         }
         //getDs().save(new MongoLargeGraph(basicGraph));
     }
@@ -112,6 +115,7 @@ public class MorphiaHandler {
     }
 
     private void saveSimpleCollection(Collection c) {
+        System.out.println("Objects in collection: " + String.valueOf(c.size()));
         for (Object o : c) {
             getDs().save(o);
         }
@@ -131,7 +135,8 @@ public class MorphiaHandler {
 
     public void saveLeg(Leg l) {
         if (l.getPrism() != null) {
-            saveTraversable(l.getPrism().getTraversables());
+            saveTraversables(l.getPrism().getTraversables());
+            saveSimpleCollection(l.getPrism().getStates());
         }
         saveSimpleObject(l);
     }
@@ -140,7 +145,7 @@ public class MorphiaHandler {
         Trajectory t = new Trajectory();
         Agent a = getDs().get(Agent.class, agent.getAgentId());
         Query<User> userq = getDs().createQuery(User.class).field("agent").equal(a);
-        HashSet<User> users = new HashSet<User>();
+        HashSet<User> users = new HashSet<>();
         for (User u : userq) {
             users.add(u);
         }

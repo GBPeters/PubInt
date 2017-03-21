@@ -5,5 +5,5 @@ package nl.gijspeters.pubint.graph.times;
  *
  * Transit states derived from shortest paths to a destination should implement this.
  */
-public interface DestinationTransitTimes extends DestinationTimes, TransitTimes {
+public interface DestinationTransitTimes extends DestinationTraversedTimes, TransitTimes {
 }

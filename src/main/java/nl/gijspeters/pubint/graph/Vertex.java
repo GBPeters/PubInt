@@ -1,6 +1,7 @@
 package nl.gijspeters.pubint.graph;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 
@@ -41,6 +42,22 @@ public class Vertex {
     @Override
     public String toString() {
         return "Vertex <" + getVertexLabel() + ">";
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(1, 3)
+                .append(vertexLabel)
+                .toHashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || !(o instanceof Vertex)) {
+            return false;
+        }
+        Vertex v = (Vertex) o;
+        return vertexLabel.equals(v.getVertexLabel()) && coord.equals(v.getCoord());
     }
 
 }

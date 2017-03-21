@@ -22,11 +22,12 @@ public class GraphFactoryTest {
     private Leg testLeg;
     private Anchor originAnchor;
     private Anchor destinationAnchor;
-    private GraphFactory gf = new GraphFactory(new DateManipulator());
+    private GraphFactory gf;
 
     @Before
     public void setUp() throws Exception {
-        OTPEntry.otpDir = Constants.OTP_DIR;
+        OTPEntry.otpDir = Constants.OTP_DIR_DEBUG;
+        gf = new GraphFactory(new DateManipulator());
         testLeg = MorphiaHandler.getInstance().getTestLeg();
         originAnchor = testLeg.getOrigin();
         destinationAnchor = testLeg.getDestination();

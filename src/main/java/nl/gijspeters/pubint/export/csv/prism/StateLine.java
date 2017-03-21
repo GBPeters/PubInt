@@ -3,7 +3,7 @@ package nl.gijspeters.pubint.export.csv.prism;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import nl.gijspeters.pubint.export.csv.CSVLine;
-import nl.gijspeters.pubint.graph.state.BrownianState;
+import nl.gijspeters.pubint.graph.state.BrownianTraversedState;
 import nl.gijspeters.pubint.graph.state.MarkovState;
 import nl.gijspeters.pubint.graph.state.PrismState;
 import nl.gijspeters.pubint.graph.traversable.BasicEdge;
@@ -43,9 +43,9 @@ public class StateLine extends CSVLine<PrismState> {
     @Override
     protected void setData(PrismState data) {
         setValue("oid", index);
-        if (data instanceof BrownianState) {
-            // If the data is a BrownianState with a BasicEdge, set geometry to Edge geometry
-            BrownianState b = (BrownianState) data;
+        if (data instanceof BrownianTraversedState) {
+            // If the data is a BrownianTraversedState with a BasicEdge, set geometry to Edge geometry
+            BrownianTraversedState b = (BrownianTraversedState) data;
             if (b.getTraversable() instanceof BasicEdge) {
                 setValue("geom", ((BasicEdge) b.getTraversable()).getGeometry());
             }
@@ -66,8 +66,6 @@ public class StateLine extends CSVLine<PrismState> {
             throw new IllegalArgumentException();
         }
         setValue("eDepart", data.getEarliestDeparture());
-        setValue("lDepart", data.getLatestDeparture());
-        setValue("eArrival", data.getEarliestArrival());
         setValue("lArrival", data.getLatestArrival());
         setValue("type", data.getClass().getName());
     }

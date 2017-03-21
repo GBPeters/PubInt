@@ -7,15 +7,10 @@ import org.mongodb.morphia.annotations.Entity;
 import java.util.Date;
 
 /**
- * Created by gijspeters on 18-10-16.
- *
- * PrismState derived from matching UnidirectedStates. The Brownian Bridges model for visit probabilities should be
- * used on these States.
+ * Created by gijspeters on 18-03-17.
  */
 @Entity("state")
-public class BrownianState extends UndirectedState implements PrismState<Edge> {
-
-    private long minimalTraversalTime;
+public abstract class BrownianState extends UndirectedState implements PrismState<Edge> {
 
     private Date earliestDeparture;
     private Date latestArrival;
@@ -24,45 +19,10 @@ public class BrownianState extends UndirectedState implements PrismState<Edge> {
         super();
     }
 
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(13, 31)
-                .append(getTraversable())
-                .append(getEarliestDeparture())
-                .append(getLatestArrival())
-                .append(minimalTraversalTime)
-                .toHashCode();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
-        if (!(o instanceof BrownianState)) {
-            return false;
-        }
-        BrownianState b = (BrownianState) o;
-        return getTraversable().equals(b.getTraversable())
-                && getEarliestArrival().equals(b.getEarliestArrival())
-                && getLatestDeparture().equals(b.getLatestDeparture())
-                && getMinimalTraversalTime() == b.getMinimalTraversalTime();
-    }
-
-    public BrownianState(Edge edge, Date earliestDeparture, Date latestArrival, long minimalTraversalTime) {
+    public BrownianState(Edge edge, Date earliestDeparture, Date latestArrival) {
         super(edge);
-        setMinimalTraversalTime(minimalTraversalTime);
         setEarliestDeparture(earliestDeparture);
         setLatestArrival(latestArrival);
-    }
-
-    @Override
-    public long getMinimalTraversalTime() {
-        return minimalTraversalTime;
-    }
-
-    public void setMinimalTraversalTime(long t) {
-        this.minimalTraversalTime = t;
     }
 
     @Override
@@ -84,12 +44,26 @@ public class BrownianState extends UndirectedState implements PrismState<Edge> {
     }
 
     @Override
-    public Date getEarliestArrival() {
-        return new Date(earliestDeparture.getTime() + minimalTraversalTime);
+    public int hashCode() {
+        return new HashCodeBuilder(13, 31)
+                .append(getTraversable())
+                .append(getEarliestDeparture())
+                .append(getLatestArrival())
+                .toHashCode();
     }
 
     @Override
-    public Date getLatestDeparture() {
-        return new Date(latestArrival.getTime() - minimalTraversalTime);
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (!(o instanceof BrownianState)) {
+            return false;
+        }
+        BrownianState b = (BrownianState) o;
+        return getTraversable().equals(b.getTraversable())
+                && getEarliestDeparture() == b.getEarliestDeparture()
+                && getLatestArrival() == b.getLatestArrival();
     }
+
 }

@@ -3,6 +3,7 @@ package nl.gijspeters.pubint.mongohandler;
 import nl.gijspeters.pubint.graph.Prism;
 import nl.gijspeters.pubint.graph.state.PrismState;
 import org.mongodb.morphia.annotations.Embedded;
+import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Set;
 
@@ -12,6 +13,7 @@ import java.util.Set;
 @Embedded
 public class PrismContainer {
 
+    @Reference
     private Set<PrismState> states;
     private double walkSpeed;
 

@@ -6,7 +6,6 @@ import nl.gijspeters.pubint.export.csv.prism.PrismDocument;
 import nl.gijspeters.pubint.graph.BasicGraph;
 import nl.gijspeters.pubint.graph.Prism;
 import nl.gijspeters.pubint.graph.factory.GraphFactory;
-import nl.gijspeters.pubint.mongohandler.MongoLargeGraph;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
 import nl.gijspeters.pubint.mutlithreading.CreatePrismTask;
 import nl.gijspeters.pubint.mutlithreading.TaskManager;
@@ -140,7 +139,7 @@ public class App {
         try {
             if (clear) {
                 System.out.println("Clearing legs...");
-                MorphiaHandler.getInstance().clearCollection(Leg.class);
+                MorphiaHandler.getInstance().clearCollection("leg");
             }
             System.out.println("Building legs...");
             Collection<Trajectory> ts = MorphiaHandler.getInstance().getTrajectories();
@@ -165,7 +164,7 @@ public class App {
         try {
             if (clear) {
                 System.out.println("Clearing validation legs...");
-                MorphiaHandler.getInstance().clearCollection(ValidationLeg.class);
+                MorphiaHandler.getInstance().clearCollection("leg");
             }
             System.out.println("Building validation legs...");
             Collection<Trajectory> ts = MorphiaHandler.getInstance().getTrajectories();
@@ -189,7 +188,10 @@ public class App {
         try {
             if (clear) {
                 System.out.println("Clearing large graphs...");
-                MorphiaHandler.getInstance().clearCollection(MongoLargeGraph.class);
+                MorphiaHandler.getInstance().clearCollection("largegraph");
+                MorphiaHandler.getInstance().clearCollection("edge");
+                MorphiaHandler.getInstance().clearCollection("vertex");
+                MorphiaHandler.getInstance().clearCollection("hop");
             }
             GraphFactory gb = new GraphFactory();
             BasicGraph g = gb.getCompleteGraph("amsterdam_complete");
@@ -213,6 +215,7 @@ public class App {
                 l.setPrism(null);
                 MorphiaHandler.getInstance().saveLeg(l);
             }
+            MorphiaHandler.getInstance().clearCollection("state");
         }
         if (test) {
             GraphFactory gf = new GraphFactory();

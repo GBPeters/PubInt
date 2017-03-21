@@ -5,5 +5,5 @@ package nl.gijspeters.pubint.graph.times;
  *
  * Prism states should implement this.
  */
-public interface PrismTimes extends OriginTransitTimes, DestinationTransitTimes {
+public interface PrismTimes extends EarliestDepartureTime, LatestArrivalTime {
 }

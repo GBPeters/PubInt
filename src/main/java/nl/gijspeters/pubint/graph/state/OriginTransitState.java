@@ -12,7 +12,7 @@ import java.util.Date;
  * TransitState calculated from an origin
  */
 @Entity("state")
-public class OriginTransitState extends TransitState implements OriginState<Ride> {
+public class OriginTransitState extends TransitState implements OriginTraversedState<Ride> {
 
     private Date earliestDeparture;
 
@@ -53,14 +53,5 @@ public class OriginTransitState extends TransitState implements OriginState<Ride
 
     public void setEarliestDeparture(Date earliestDeparture) {
         this.earliestDeparture = earliestDeparture;
-    }
-
-    @Override
-    public boolean matches(DestinationState destinationState) {
-        if (destinationState instanceof DestinationTransitState) {
-            DestinationTransitState ds = (DestinationTransitState) destinationState;
-            return getTraversable().equals(destinationState.getTraversable());
-        }
-        return false;
     }
 }

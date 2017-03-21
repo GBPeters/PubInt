@@ -7,7 +7,6 @@ import nl.gijspeters.pubint.graph.Vertex;
 import nl.gijspeters.pubint.graph.state.*;
 import nl.gijspeters.pubint.graph.traversable.Edge;
 import nl.gijspeters.pubint.graph.traversable.Ride;
-import nl.gijspeters.pubint.graph.traversable.Traversable;
 import nl.gijspeters.pubint.otpentry.OTPEntry;
 import nl.gijspeters.pubint.otpentry.OTPHandler;
 import nl.gijspeters.pubint.otpentry.OTPRide;
@@ -70,13 +69,18 @@ public class GraphFactory {
         HashSet<Vertex> vertices = new HashSet<>();
         org.opentripplanner.routing.graph.Graph otpgraph = otp.getGraph();
         Collection<org.opentripplanner.routing.graph.Edge> otpedges = otpgraph.getEdges();
+        int ei = 0;
+        int vi = 0;
         for (org.opentripplanner.routing.graph.Edge e : otpedges) {
             edges.add(tf.makeEdge(e));
+            ei++;
         }
         Collection<org.opentripplanner.routing.graph.Vertex> otpvertices = otpgraph.getVertices();
         for (org.opentripplanner.routing.graph.Vertex v : otpvertices) {
             vertices.add(tf.makeVertex(v));
+            vi++;
         }
+        logger.info(String.format("Graph created |V|=%d, |E|=%d", vi, ei));
         return new BasicGraph(graphId, edges, vertices);
     }
 
@@ -113,10 +117,10 @@ public class GraphFactory {
     public Cone<OriginState> makeOriginCone(Anchor anchor, ShortestPathTree spt, int maxTimeSeconds) {
         // Create empty Cone
         Cone<OriginState> cone = new Cone<>(maxTimeSeconds, spt.getOptions().walkSpeed);
-
+        Set<Edge> edges = new HashSet<>();
+        Map<org.opentripplanner.routing.graph.Vertex, OriginState> vertices = new HashMap<>();
         // Create RideBuilder
         RideBuilder rb = new RideBuilder();
-
         // Iterate OTP states
         for (org.opentripplanner.routing.core.State s : spt.getAllStates()) {
             if (s.getBackEdge() != null && s.getBackEdge().getGeometry() != null) {
@@ -129,7 +133,9 @@ public class GraphFactory {
                     Date earliestDeparture = new Date(fromPath.getEndTime() * 1000);
                     Date earliestArrival = new Date(earliestDeparture.getTime() + minTraversalTime);
                     Edge e = tf.makeEdge(backEdge);
-                    OriginState<Edge> state = new OriginUndirectedState(e, earliestDeparture, earliestArrival);
+                    edges.add(e);
+                    OriginState<Edge> state = new OriginTraversedUndirectedState(e, earliestDeparture, earliestArrival);
+                    vertices.put(s.getVertex(), state);
                     cone.getStates().add(state);
                 } else if (s.getBackEdge() != null && s.getBackEdge() instanceof PatternHop) {
                     // If the state is on a transit edge, add it to the RideBuilder
@@ -153,10 +159,29 @@ public class GraphFactory {
                         // Add OriginTransitState to the Cone
                         Date earliestDeparture = new Date(boardPath.getEndTime() * 1000);
                         if (earliestDeparture.getTime() <= otpride.getDeparture().getTime()) {
-                            OriginState<Ride> s = new OriginTransitState(otpride.getRide(), earliestDeparture, otpride.getDeparture(), otpride.getArrival());
+                            OriginTraversedState<Ride> s = new OriginTransitState(otpride.getRide(),
+                                    earliestDeparture, otpride.getDeparture(), otpride.getArrival());
                             cone.getStates().add(s);
                         }
                     }
+                }
+            }
+        }
+        for (org.opentripplanner.routing.graph.Vertex v : vertices.keySet()) {
+            for (org.opentripplanner.routing.graph.Edge e : v.getOutgoingStreetEdges()) {
+                Edge edge = tf.makeEdge(e);
+                if (!edges.contains(edge)) {
+
+                    long minTraversalTime = (long) (e.getDistance() / cone.getWalkSpeed());
+                    Date earliestDeparture = vertices.get(v).getEarliestDeparture();
+                    Date earliestArrival = new Date(earliestDeparture.getTime() + minTraversalTime * 1000);
+                    OriginState<Edge> s;
+                    if (earliestArrival.getTime() <= anchor.getDate().getTime() + cone.getDuration() * 1000) {
+                        s = new OriginTraversedUndirectedState(edge, earliestDeparture, earliestArrival);
+                    } else {
+                        s = new OriginHalfwayState(edge, earliestDeparture);
+                    }
+                    cone.getStates().add(s);
                 }
             }
         }
@@ -164,9 +189,12 @@ public class GraphFactory {
     }
 
     public Cone<DestinationState> makeDestinationCone(Anchor anchor, ShortestPathTree spt, int maxTimeSeconds) {
+
         // Create empty Cone
         Cone<DestinationState> cone = new Cone<>(maxTimeSeconds, spt.getOptions().walkSpeed);
 
+        Set<Edge> edges = new HashSet<>();
+        Map<org.opentripplanner.routing.graph.Vertex, DestinationState> vertices = new HashMap<>();
         // Create RideBuilder
         RideBuilder rb = new RideBuilder(new TraversableFactory(TraversableFactory.MODE.DESTINATION));
 
@@ -182,8 +210,10 @@ public class GraphFactory {
                     long minTraversalTime = s.getAbsTimeDeltaSeconds() * 1000;
                     Date latestArrival = new Date(toPath.getStartTime() * 1000);
                     Date latestDeparture = new Date(latestArrival.getTime() - minTraversalTime);
-                    DestinationState<Edge> state = new DestinationUndirectedState(e, latestDeparture, latestArrival);
+                    DestinationTraversedState<Edge> state = new DestinationTraversedUndirectedState(e, latestDeparture, latestArrival);
                     cone.getStates().add(state);
+                    edges.add(e);
+                    vertices.put(s.getVertex(), state);
                 } else if (s.getBackEdge() != null && s.getBackEdge() instanceof PatternHop) {
                     // If the state is on a transit edge, add it to the RideBuilder
                     rb.add(s);
@@ -206,10 +236,27 @@ public class GraphFactory {
                         // Add OriginTransitState to the Cone
                         Date latestArrival = new Date(alightPath.getEndTime() * 1000);
                         if (latestArrival.getTime() >= otpride.getArrival().getTime()) {
-                            DestinationState<Ride> s = new DestinationTransitState(otpride.getRide(), otpride.getDeparture(), otpride.getArrival(), latestArrival);
+                            DestinationTraversedState<Ride> s = new DestinationTransitState(otpride.getRide(), otpride.getDeparture(), otpride.getArrival(), latestArrival);
                             cone.getStates().add(s);
                         }
                     }
+                }
+            }
+        }
+        for (org.opentripplanner.routing.graph.Vertex v : vertices.keySet()) {
+            for (org.opentripplanner.routing.graph.Edge e : v.getOutgoingStreetEdges()) {
+                Edge edge = tf.makeEdge(e);
+                if (!edges.contains(edge)) {
+                    long minTraversalTime = (long) (e.getDistance() / cone.getWalkSpeed());
+                    Date latestArrival = vertices.get(v).getLatestArrival();
+                    Date latestDeparture = new Date(latestArrival.getTime() - minTraversalTime * 1000);
+                    DestinationState<Edge> s;
+                    if (latestDeparture.getTime() >= anchor.getDate().getTime() - cone.getDuration() * 1000) {
+                        s = new DestinationTraversedUndirectedState(edge, latestDeparture, latestArrival);
+                    } else {
+                        s = new DestinationHalfwayState(edge, latestArrival);
+                    }
+                    cone.getStates().add(s);
                 }
             }
         }
@@ -224,48 +271,45 @@ public class GraphFactory {
 
     /**
      * Create a Prism from a leg. This first creates two Cones, and then matches all States
-     * @param leg The leg to create the Prism for
+     * @param originCone The OriginState Cone to use
+     * @param destinationCone The DestinationState Cone to use
      * @return A Prism
      */
-    public Prism getPrism(Leg leg, Cone<OriginState> originCone, Cone<DestinationState> destinationCone) {
+    public Prism getPrism(Cone<OriginState> originCone, Cone<DestinationState> destinationCone) {
         // Counters
         int markovstates = 0;
         int brownianstates = 0;
+        int uturnstates = 0;
 
-        // Create a HashMap with DestinationStates hashed on the Traversable
-        Map<Traversable, DestinationState> destinationMap = new HashMap<>();
+        // Create a StateMatcher
+        StateMatcher sm = new StateMatcher();
 
         // Create empty Prism and a StateFactory
         Prism prism = new Prism(originCone.getWalkSpeed());
-        StateFactory sf = new StateFactory();
 
-        // Populate HashMap
+        // Populate StateMatcher
         for (DestinationState ds : destinationCone.getStates()) {
-            destinationMap.put(ds.getTraversable(), ds);
+            sm.add(ds);
         }
-
         // Iterate all OriginStates
         for (OriginState os : originCone.getStates()) {
 
-            // Find DestinationState with same Traversable in HashMap
-            Traversable t = os.getTraversable();
-            DestinationState ds = destinationMap.get(t);
-            if (ds != null) {
-
-                // If the two states match, create a new PrismState and add it to the Prism
-                if (os.matches(ds)) {
-                    PrismState s = sf.matchStates(os, ds);
-                    prism.getStates().add(s);
-                    if (s instanceof BrownianState) {
-                        brownianstates++;
-                    } else {
-                        markovstates++;
-                    }
+            // Match States
+            PrismState ps = sm.matchStates(os);
+            if (ps != null) {
+                prism.getStates().add(ps);
+                if (ps instanceof MarkovState) {
+                    markovstates++;
+                } else if (ps instanceof BrownianTraversedState) {
+                    brownianstates++;
+                } else if (ps instanceof BrownianUturnState) {
+                    uturnstates++;
                 }
             }
+
         }
-        int total = brownianstates + markovstates;
-        String s = String.format("States in Prism: %d ( %d B; %d M )", total, brownianstates, markovstates);
+        int total = brownianstates + markovstates + uturnstates;
+        String s = String.format("States in Prism: %d ( %d B; %s U; %d M )", total, brownianstates, uturnstates, markovstates);
         logger.info(s);
         return prism;
     }
@@ -275,7 +319,7 @@ public class GraphFactory {
         int deltaTime = (int) leg.getDeltaTime() / 1000;
         Cone<OriginState> originCone = makeOriginCone(leg.getOrigin(), deltaTime);
         Cone<DestinationState> destinationCone = makeDestinationCone(leg.getDestination(), deltaTime);
-        return getPrism(leg, originCone, destinationCone);
+        return getPrism(originCone, destinationCone);
     }
 
     public Set<org.opentripplanner.routing.core.State> makeTestTripStates(Anchor anchor) {

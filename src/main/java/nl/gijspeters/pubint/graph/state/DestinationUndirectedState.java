@@ -2,31 +2,40 @@ package nl.gijspeters.pubint.graph.state;
 
 import nl.gijspeters.pubint.graph.traversable.Edge;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.mongodb.morphia.annotations.Entity;
 
 import java.util.Date;
 
 /**
- * Created by gijspeters on 20-10-16.
- *
- * Undirected State calculated to a destination
+ * Created by gijspeters on 18-03-17.
  */
-@Entity("state")
-public class DestinationUndirectedState extends UndirectedState implements DestinationState<Edge> {
+public abstract class DestinationUndirectedState extends UndirectedState implements DestinationState<Edge> {
 
-    private Date latestDeparture;
+
     private Date latestArrival;
 
+    public DestinationUndirectedState(Edge edge, Date latestArrival) {
+        super(edge);
+        setLatestArrival(latestArrival);
+    }
+
     public DestinationUndirectedState() {
-        super();
+
+    }
+
+    @Override
+    public Date getLatestArrival() {
+        return latestArrival;
+    }
+
+    public void setLatestArrival(Date latestArrival) {
+        this.latestArrival = latestArrival;
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(11, 33)
                 .append(getTraversable())
-                .append(latestDeparture.getTime())
-                .append(latestArrival.getTime())
+                .append(getLatestArrival().getTime())
                 .toHashCode();
     }
 
@@ -40,46 +49,7 @@ public class DestinationUndirectedState extends UndirectedState implements Desti
         }
         DestinationUndirectedState c = (DestinationUndirectedState) o;
         return getTraversable().equals(c.getTraversable())
-                && getLatestArrival().equals(c.getLatestArrival())
-                && getLatestDeparture().equals(c.getLatestDeparture());
+                && getLatestArrival().equals(c.getLatestArrival());
     }
 
-    public DestinationUndirectedState(Edge edge, Date latestDeparture, Date latestArrival) {
-        super(edge);
-        this.setLatestDeparture(latestDeparture);
-        this.setLatestArrival(latestArrival);
-    }
-
-    @Override
-    public Date getLatestDeparture() {
-        return latestDeparture;
-    }
-
-    public void setLatestDeparture(Date latestDeparture) {
-        this.latestDeparture = latestDeparture;
-    }
-
-    @Override
-    public Date getLatestArrival() {
-        return latestArrival;
-    }
-
-    public void setLatestArrival(Date latestArrival) {
-        this.latestArrival = latestArrival;
-    }
-
-    @Override
-    public long getMinimalTraversalTime() {
-        return getLatestArrival().getTime() - getLatestDeparture().getTime();
-    }
-
-    @Override
-    public boolean matches(OriginState originState) {
-        if (originState instanceof OriginUndirectedState) {
-            return getTraversable().equals(originState.getTraversable())
-                    && originState.getEarliestDeparture().getTime() <= getLatestDeparture().getTime()
-                    && originState.getEarliestArrival().getTime() <= getLatestArrival().getTime();
-        }
-        return false;
-    }
 }

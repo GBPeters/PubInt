@@ -19,4 +19,13 @@ public class LinkEdge extends Edge {
         super(edgeId, fromVertex, toVertex);
     }
 
+    public boolean equals(Object o) {
+        return o != null && o instanceof LinkEdge && super.equals(o);
+    }
+
+    @Override
+    public Edge reverse() {
+        return new LinkEdge(-getEdgeId(), getToVertex(), getFromVertex());
+    }
+
 }

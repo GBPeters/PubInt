@@ -31,7 +31,7 @@ public class CreatePrismTask extends Task {
         Cone<OriginState> originCone = gf.makeOriginCone(leg.getOrigin(), spt, maxTime);
         spt = gf.makeSPT(leg.getDestination(), maxTime, OTPEntry.RouteMode.TO_DESTINATION);
         Cone<DestinationState> destinationCone = gf.makeDestinationCone(leg.getDestination(), spt, maxTime);
-        Prism p = gf.getPrism(leg, originCone, destinationCone);
+        Prism p = gf.getPrism(originCone, destinationCone);
         leg.setPrism(p);
         MorphiaHandler.getInstance().saveLeg(leg);
     }

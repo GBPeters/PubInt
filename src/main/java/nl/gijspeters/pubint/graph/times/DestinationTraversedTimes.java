@@ -5,6 +5,6 @@ package nl.gijspeters.pubint.graph.times;
  *
  * States derived from optimal paths to a destination should implement this.
  */
-public interface DestinationTimes extends LatestDepartureTime, LatestArrivalTime {
+public interface DestinationTraversedTimes extends LatestDepartureTime, LatestArrivalTime {
 
 }

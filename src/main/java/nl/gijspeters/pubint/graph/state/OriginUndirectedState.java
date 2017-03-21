@@ -7,26 +7,38 @@ import org.mongodb.morphia.annotations.Entity;
 import java.util.Date;
 
 /**
- * Created by gijspeters on 20-10-16.
- *
- * UndirectedState calculated fom an origin
+ * Created by gijspeters on 18-03-17.
  */
 @Entity("state")
-public class OriginUndirectedState extends UndirectedState implements OriginState<Edge> {
+public abstract class OriginUndirectedState extends UndirectedState implements OriginState<Edge> {
 
-    private Date earliestArrival;
+
     private Date earliestDeparture;
 
-    public OriginUndirectedState() {
+    public OriginUndirectedState(Edge edge, Date earliestDeparture) {
+        super(edge);
+        setEarliestDeparture(earliestDeparture);
+    }
 
+    public OriginUndirectedState() {
+        super();
+    }
+
+
+    @Override
+    public Date getEarliestDeparture() {
+        return earliestDeparture;
+    }
+
+    public void setEarliestDeparture(Date earliestDeparture) {
+        this.earliestDeparture = earliestDeparture;
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(9, 33)
                 .append(getTraversable())
-                .append(earliestArrival.getTime())
-                .append(earliestDeparture.getTime())
+                .append(getEarliestDeparture().getTime())
                 .toHashCode();
     }
 
@@ -40,46 +52,6 @@ public class OriginUndirectedState extends UndirectedState implements OriginStat
         }
         OriginUndirectedState c = (OriginUndirectedState) o;
         return getTraversable().equals(c.getTraversable())
-                && getEarliestArrival().equals(c.getEarliestArrival())
                 && getEarliestDeparture().equals(c.getEarliestDeparture());
-    }
-
-    public OriginUndirectedState(Edge edge, Date earliestDeparture, Date earliestArrival) {
-        super(edge);
-        this.earliestArrival = earliestArrival;
-        this.earliestDeparture = earliestDeparture;
-    }
-
-    @Override
-    public Date getEarliestArrival() {
-        return earliestArrival;
-    }
-
-    public void setEarliestArrival(Date earliestArrival) {
-        this.earliestArrival = earliestArrival;
-    }
-
-    @Override
-    public Date getEarliestDeparture() {
-        return earliestDeparture;
-    }
-
-    public void setEarliestDeparture(Date earliestDeparture) {
-        this.earliestDeparture = earliestDeparture;
-    }
-
-    @Override
-    public long getMinimalTraversalTime() {
-        return getEarliestArrival().getTime() - getEarliestDeparture().getTime();
-    }
-
-    @Override
-    public boolean matches(DestinationState destinationState) {
-        if (destinationState instanceof DestinationUndirectedState) {
-            return getTraversable().equals(destinationState.getTraversable())
-                    && earliestDeparture.getTime() <= destinationState.getLatestDeparture().getTime()
-                    && earliestArrival.getTime() <= destinationState.getLatestArrival().getTime();
-        }
-        return false;
     }
 }

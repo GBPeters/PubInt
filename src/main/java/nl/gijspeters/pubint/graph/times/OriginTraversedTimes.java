@@ -5,5 +5,5 @@ package nl.gijspeters.pubint.graph.times;
  *
  * States derived from optimal paths from an origin should implement this.
  */
-public interface OriginTimes extends EarliestDepartureTime, EarliestArrivalTime {
+public interface OriginTraversedTimes extends EarliestDepartureTime, EarliestArrivalTime {
 }

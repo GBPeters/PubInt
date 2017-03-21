@@ -77,4 +77,9 @@ public class MarkovState extends TransitState implements PrismState<Ride> {
     public void setEarliestDepature(Date earliestDepature) {
         this.earliestDepature = earliestDepature;
     }
+
+    @Override
+    public double getVisitProbability(Date originDate, Date destinationDate, Date currentDate) {
+        return 0;
+    }
 }

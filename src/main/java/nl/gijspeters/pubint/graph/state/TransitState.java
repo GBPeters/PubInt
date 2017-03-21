@@ -14,7 +14,7 @@ import java.util.Date;
  * Superclass for States on a transit network. Contains a Ride as Traversable
  */
 @Entity("state")
-public class TransitState extends AbstractState implements State<Ride>, TransitTimes {
+public class TransitState extends AbstractState implements TraversedState<Ride>, TransitTimes {
 
     @Reference
     private Ride ride;

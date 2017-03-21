@@ -31,7 +31,7 @@ public class BasicEdge extends Edge {
     }
 
     public com.vividsolutions.jts.geom.LineString getGeometry() {
-        ArrayList<Coordinate> coords = new ArrayList<Coordinate>();
+        ArrayList<Coordinate> coords = new ArrayList<>();
         for (Point point : this.geometry.getCoordinates()) {
             coords.add(new Coordinate(point.getLongitude(), point.getLatitude()));
         }
@@ -47,5 +47,23 @@ public class BasicEdge extends Edge {
         }
         Point[] points = pointList.toArray(new Point[pointList.size()]);
         this.geometry = GeoJson.lineString(points);
+    }
+
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+        if (!(o instanceof BasicEdge)) {
+            return false;
+        }
+        BasicEdge e = (BasicEdge) o;
+        return super.equals(e)
+                && getGeometry().equals(e.getGeometry());
+    }
+
+    @Override
+    public Edge reverse() {
+        return new BasicEdge(-getEdgeId(), getToVertex(), getFromVertex(),
+                (com.vividsolutions.jts.geom.LineString) getGeometry().reverse(), isStreetEdge());
     }
 }
