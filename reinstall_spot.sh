@@ -64,7 +64,7 @@ Description=PubInt Prism Creator
 
 [Service]
 User=ubuntu
-ExecStart=/usr/bin/java -Xmx32g -jar /home/ubuntu/PubInt-0.1-SNAPSHOT.jar createprisms -m 16 -o 4
+ExecStart=/usr/bin/java -Xmx32g -jar /home/ubuntu/PubInt-0.1-SNAPSHOT.jar createprisms -m 16 -o 4 -v
 WorkingDirectory=/home/ubuntu
 
 [Install]
