@@ -75,7 +75,7 @@
         <dependency>
             <groupId>com.github.GBPeters</groupId>
             <artifactId>OpenTripPlanner</artifactId>
-            <version>24bcbce</version>
+            <version>71699ef</version>
         </dependency>
         <dependency>
             <groupId>org.postgresql</groupId>
