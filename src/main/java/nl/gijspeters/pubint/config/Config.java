@@ -1,5 +1,6 @@
 package nl.gijspeters.pubint.config;
 
+import nl.gijspeters.pubint.model.ModelConfig;
 import nl.gijspeters.pubint.mongohandler.MongoConfig;
 
 import static nl.gijspeters.pubint.config.Constants.BASE_DB;
@@ -19,4 +20,14 @@ public class Config {
         Config.mongoConfig = mongoConfig;
     }
 
+    private static ModelConfig modelConfig = new ModelConfig();
+
+
+    public static ModelConfig getModelConfig() {
+        return modelConfig;
+    }
+
+    public static void setModelConfig(ModelConfig modelConfig) {
+        Config.modelConfig = modelConfig;
+    }
 }

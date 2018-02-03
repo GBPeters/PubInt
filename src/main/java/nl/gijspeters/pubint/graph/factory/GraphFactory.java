@@ -72,7 +72,8 @@ public class GraphFactory {
         int ei = 0;
         int vi = 0;
         for (org.opentripplanner.routing.graph.Edge e : otpedges) {
-            edges.add(tf.makeEdge(e));
+            Edge ed = tf.makeEdge(e);
+            edges.add(ed);
             ei++;
         }
         Collection<org.opentripplanner.routing.graph.Vertex> otpvertices = otpgraph.getVertices();
@@ -80,7 +81,7 @@ public class GraphFactory {
             vertices.add(tf.makeVertex(v));
             vi++;
         }
-        logger.info(String.format("Graph created |V|=%d, |E|=%d", vi, ei));
+        logger.info(String.format("Graph created |V|=%d, |E|=%d", vertices.size(), edges.size()));
         return new BasicGraph(graphId, edges, vertices);
     }
 

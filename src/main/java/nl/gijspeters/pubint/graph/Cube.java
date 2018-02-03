@@ -14,7 +14,7 @@ import java.util.Set;
  * which is a set of states representing a (possible) trajectory in space and time.
  */
 
-public class Cube<T extends State> implements Graph<Traversable> {
+public class Cube<T extends State> implements NavigableGraph<Traversable> {
 
     private double walkSpeed;
 

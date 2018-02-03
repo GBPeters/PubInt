@@ -6,8 +6,11 @@ import nl.gijspeters.pubint.export.csv.prism.PrismDocument;
 import nl.gijspeters.pubint.graph.BasicGraph;
 import nl.gijspeters.pubint.graph.Prism;
 import nl.gijspeters.pubint.graph.factory.GraphFactory;
+import nl.gijspeters.pubint.model.ModelConfig;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
-import nl.gijspeters.pubint.mutlithreading.CreatePrismTask;
+import nl.gijspeters.pubint.mutlithreading.CreateNetworkCursor;
+import nl.gijspeters.pubint.mutlithreading.CreatePrismCursor;
+import nl.gijspeters.pubint.mutlithreading.TaskCursor;
 import nl.gijspeters.pubint.mutlithreading.TaskManager;
 import nl.gijspeters.pubint.otpentry.OTPEntry;
 import nl.gijspeters.pubint.otpentry.OTPHandler;
@@ -103,6 +106,9 @@ public class App {
                 case "createprisms":
                     createPrisms();
                     break;
+                case "runmodel":
+                    runModel();
+                    break;
                 default:
                     throw new CmdLineException("Invalid command.");
             }
@@ -112,6 +118,21 @@ public class App {
             parser.printUsage(System.err);
             System.err.println();
             System.err.println("  Example: java App" + parser.printExample(ALL));
+        }
+    }
+
+    private void runModel() {
+        if (clear) {
+            MorphiaHandler.getInstance().clearCollection("resultgraph");
+        }
+        if (validate) {
+
+        } else {
+            System.out.println("Creating probability networks...");
+            Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class).field("prism").exists();
+            TaskCursor cursor = new CreateNetworkCursor(q, new ModelConfig());
+            TaskManager tm = new TaskManager(cursor, mt);
+            tm.start();
         }
     }
 
@@ -191,7 +212,6 @@ public class App {
                 MorphiaHandler.getInstance().clearCollection("largegraph");
                 MorphiaHandler.getInstance().clearCollection("edge");
                 MorphiaHandler.getInstance().clearCollection("vertex");
-                MorphiaHandler.getInstance().clearCollection("hop");
             }
             GraphFactory gb = new GraphFactory();
             BasicGraph g = gb.getCompleteGraph("amsterdam_complete");
@@ -225,20 +245,13 @@ public class App {
             MorphiaHandler.getInstance().saveLeg(l);
         } else {
             Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class).field("prism").doesNotExist();
-            TaskManager tm = new TaskManager(mt);
             List<OTPEntry> instances = OTPHandler.getInstances(oi);
             List<GraphFactory> factories = new ArrayList<>();
             for (OTPEntry instance : instances) {
                 factories.add(new GraphFactory(instance));
             }
-            int i = 0;
-            for (Leg l : q) {
-                tm.addTask(new CreatePrismTask(tm, l, factories.get(i)));
-                i++;
-                if (i >= factories.size()) {
-                    i = 0;
-                }
-            }
+            TaskCursor cursor = new CreatePrismCursor(q, factories);
+            TaskManager tm = new TaskManager(cursor, mt);
             tm.start();
 
         }

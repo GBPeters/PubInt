@@ -4,9 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 /**
  * Created by gijspeters on 01-03-17.
@@ -14,45 +12,27 @@ import java.util.Queue;
 public class TaskManager implements TaskFinishedCallback {
 
     private static Logger logger = LoggerFactory.getLogger(TaskManager.class);
+    private TaskCursor cursor;
 
-    private class TasksAlreadyStartedException extends RuntimeException {
-
-        public TasksAlreadyStartedException() {
-            super();
-        }
-
-    }
-
-    private boolean started = false;
-    private Queue<Task> taskQueue = new LinkedList<>();
     private List<Task> runningTasks = new ArrayList<>();
     private int maxConcurrency;
 
-    public TaskManager(int maxConcurrency) {
+    public TaskManager(TaskCursor cursor, int maxConcurrency) {
+        this.cursor = cursor;
         this.maxConcurrency = maxConcurrency;
     }
 
-    public boolean addTask(Task t) {
-        if (!started) {
-            return taskQueue.add(t);
-        } else {
-            throw new TasksAlreadyStartedException();
-        }
-    }
-
     public void start() {
-        started = true;
         int i = 0;
-        while (i < maxConcurrency && taskQueue.size() > 0) {
+        while (i < maxConcurrency && cursor.hasTasksLeft()) {
             loadTask();
             i++;
         }
-
     }
 
     private void loadTask() {
-        if (taskQueue.size() > 0) {
-            Task t = taskQueue.poll();
+        if (cursor.hasTasksLeft()) {
+            Task t = cursor.getNextTask(this);
             runningTasks.add(t);
             new Thread(t).start();
         }
@@ -60,7 +40,7 @@ public class TaskManager implements TaskFinishedCallback {
 
     private synchronized void finishTask(Task t) {
         runningTasks.remove(t);
-        String s = String.format("%s finished. %d tasks left.", t.toString(), taskQueue.size() + runningTasks.size());
+        String s = String.format("%s finished. %d tasks left.", t.toString(), cursor.tasksLeft() + runningTasks.size());
         logger.info(s);
         if (runningTasks.size() < maxConcurrency) {
             loadTask();

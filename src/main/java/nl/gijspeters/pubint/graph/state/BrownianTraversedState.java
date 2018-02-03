@@ -8,8 +8,6 @@ import org.mongodb.morphia.annotations.Entity;
 
 import java.util.Date;
 
-import static nl.gijspeters.pubint.config.Constants.DISPERSION;
-
 /**
  * Created by gijspeters on 18-10-16.
  * <p>
@@ -48,7 +46,8 @@ public class BrownianTraversedState extends BrownianState implements TraversedSt
     }
 
     @Override
-    public double getVisitProbability(Date originDate, Date destinationDate, Date currentDate) {
+    public double getVisitProbability(Date originDate, Date destinationDate, Date currentDate,
+                                      double dispersion, double transition) {
         long tO = originDate.getTime();
         long tD = destinationDate.getTime();
         long t = currentDate.getTime();
@@ -56,33 +55,26 @@ public class BrownianTraversedState extends BrownianState implements TraversedSt
         long tjmax = getLatestArrival().getTime();
         assert tO <= t && t <= tD && tO <= timin && tjmax <= tD;
         long timax = getLatestDeparture().getTime();
-        long tjmin = getEarliestArrival().getTime();
         double bimin = 0;
         double bimax = 0;
-        double bjmin = 0;
         double bjmax = 0;
-        double dtO = 1 / (Math.sqrt(2 * Math.PI) * DISPERSION * (t - tO));
-        double dtD = 1 / (Math.sqrt(2 * Math.PI) * DISPERSION * (tD - t));
+        double dtO = 1 / (Math.sqrt(2 * Math.PI) * dispersion * (t - tO));
+        double dtD = 1 / (Math.sqrt(2 * Math.PI) * dispersion * (tD - t));
         if (t >= timin) {
-            double eimin = -Math.pow(timin - tO, 2) / (2 * Math.pow(DISPERSION, 2) * Math.pow(t - tO, 2));
+            double eimin = -Math.pow(timin - tO, 2) / (2 * Math.pow(dispersion, 2) * Math.pow(t - tO, 2));
             bimin = dtO * Math.exp(eimin);
         }
         if (t <= timax) {
-            double eimax = -Math.pow(tD - timax, 2) / (2 * Math.pow(DISPERSION, 2) * Math.pow(tD - t, 2));
+            double eimax = -Math.pow(tD - timax, 2) / (2 * Math.pow(dispersion, 2) * Math.pow(tD - t, 2));
             bimax = dtD * Math.exp(eimax);
         }
-        if (t >= tjmin) {
-            double ejmin = -Math.pow(tjmin - tO, 2) / (2 * Math.pow(DISPERSION, 2) * Math.pow(t - tO, 2));
-            bjmin = dtO * Math.exp(ejmin);
-        }
         if (t <= tjmax) {
-            double ejmax = -Math.pow(tD - tjmax, 2) / (2 * Math.pow(DISPERSION, 2) * Math.pow(tD - t, 2));
+            double ejmax = -Math.pow(tD - tjmax, 2) / (2 * Math.pow(dispersion, 2) * Math.pow(tD - t, 2));
             bjmax = dtD * Math.exp(ejmax);
         }
         double pii = bimin * bimax;
         double pij = bimin * bjmax;
-        double pji = bjmin * bimax;
-        return 0;
+        return pii + pij;
     }
 
     public BrownianTraversedState(Edge edge, Date earliestDeparture, Date latestArrival, long minimalTraversalTime) {

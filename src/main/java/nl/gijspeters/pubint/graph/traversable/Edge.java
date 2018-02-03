@@ -1,10 +1,12 @@
 package nl.gijspeters.pubint.graph.traversable;
 
 import nl.gijspeters.pubint.graph.Vertex;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.Reference;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by gijspeters on 17-10-16.
@@ -69,11 +71,7 @@ public abstract class Edge implements Traversable {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(9, 81)
-                .append(getFromVertex())
-                .append(getToVertex())
-                .append(isStreetEdge())
-                .toHashCode();
+        return getEdgeId();
     }
 
     @Override
@@ -82,7 +80,8 @@ public abstract class Edge implements Traversable {
             return false;
         }
         Edge e = (Edge) o;
-        return getFromVertex().equals(e.getFromVertex())
+        return getEdgeId() == e.getEdgeId() &&
+                getFromVertex().equals(e.getFromVertex())
                 && getToVertex().equals(e.getToVertex())
                 && isStreetEdge() == e.isStreetEdge();
     }
@@ -93,5 +92,12 @@ public abstract class Edge implements Traversable {
     }
 
     public abstract Edge reverse();
+
+    @Override
+    public Set<Edge> getEdges() {
+        Set<Edge> edges = new HashSet<>();
+        edges.add(this);
+        return edges;
+    }
 
 }

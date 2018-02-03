@@ -16,7 +16,7 @@ import java.util.Set;
  *
  */
 @Entity("graph")
-public class BasicGraph implements Graph<Traversable> {
+public class BasicGraph implements NavigableGraph<Traversable> {
 
     @Id
     private String id;

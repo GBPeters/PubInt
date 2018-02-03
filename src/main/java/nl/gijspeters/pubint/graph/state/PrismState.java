@@ -12,6 +12,7 @@ import java.util.Date;
  */
 public interface PrismState<T extends Traversable> extends State<T>, PrismTimes {
 
-    double getVisitProbability(Date originDate, Date destinationDate, Date currentDate);
+    double getVisitProbability(Date originDate, Date destinationDate, Date currentDate,
+                               double transition, double dispersion);
 
 }

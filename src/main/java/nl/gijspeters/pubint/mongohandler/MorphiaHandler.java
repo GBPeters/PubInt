@@ -8,6 +8,7 @@ import nl.gijspeters.pubint.graph.traversable.Edge;
 import nl.gijspeters.pubint.graph.traversable.Hop;
 import nl.gijspeters.pubint.graph.traversable.Ride;
 import nl.gijspeters.pubint.graph.traversable.Traversable;
+import nl.gijspeters.pubint.model.ModelResultGraph;
 import nl.gijspeters.pubint.structure.*;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
@@ -22,12 +23,15 @@ import java.util.*;
 public class MorphiaHandler {
 
 
-    public static final String[] PACKAGES = {"nl.gijspeters.pubint.structure",
+    public static final String[] PACKAGES = {
+            "nl.gijspeters.pubint.structure",
             "nl.gijspeters.pubint.twitter",
             "nl.gijspeters.pubint.graph",
-            "nl.gijspeters.pubint.mongohandler"};
+            "nl.gijspeters.pubint.mongohandler",
+            "nl.gijspeters.pubint.model"
+    };
 
-    public static boolean ASSUME_SAVEDGRAPH = true;
+    private boolean assumeSavedgraph = true;
 
     private final Morphia morphia;
     private final Datastore datastore;
@@ -75,7 +79,7 @@ public class MorphiaHandler {
                 hops.add((Hop) t);
             }
         }
-        if (!ASSUME_SAVEDGRAPH) {
+        if (!assumeSavedgraph) {
             Set<Edge> edges = new HashSet<>();
             for (Hop t : hops) {
                 edges.add(t.getEdge());
@@ -92,17 +96,17 @@ public class MorphiaHandler {
 
     public void saveLargeGraph(BasicGraph basicGraph, boolean basedOnExistingGraph) {
         if (!basedOnExistingGraph) {
-            boolean as = ASSUME_SAVEDGRAPH;
-            ASSUME_SAVEDGRAPH = false;
+            boolean as = assumeSavedgraph;
+            assumeSavedgraph = false;
             saveNodes(basicGraph.getVertices());
             saveTraversables(basicGraph.getTraversables());
-            ASSUME_SAVEDGRAPH = as;
+            assumeSavedgraph = as;
         }
         //getDs().save(new MongoLargeGraph(basicGraph));
     }
 
     public void saveLargeGraph(BasicGraph basicGraph) {
-        saveLargeGraph(basicGraph, ASSUME_SAVEDGRAPH);
+        saveLargeGraph(basicGraph, assumeSavedgraph);
     }
 
     public BasicGraph loadLargeGraph(String graphId) {
@@ -115,10 +119,10 @@ public class MorphiaHandler {
     }
 
     private void saveSimpleCollection(Collection c) {
-        System.out.println("Objects in collection: " + String.valueOf(c.size()));
         for (Object o : c) {
             getDs().save(o);
         }
+        System.out.println("Objects in collection: " + String.valueOf(c.size()));
     }
 
     public void saveAnchor(Anchor a) {
@@ -139,6 +143,11 @@ public class MorphiaHandler {
             saveSimpleCollection(l.getPrism().getStates());
         }
         saveSimpleObject(l);
+    }
+
+    public void saveResultGraph(ModelResultGraph resultGraph) {
+        ResultGraphContainer container = new ResultGraphContainer(resultGraph);
+        saveSimpleObject(container);
     }
 
     public Trajectory getTrajectory(Agent agent) {
@@ -180,4 +189,11 @@ public class MorphiaHandler {
         return l;
     }
 
+    public boolean doesAssumeSavedgraph() {
+        return assumeSavedgraph;
+    }
+
+    public void setAssumeSavedgraph(boolean assumeSavedgraph) {
+        this.assumeSavedgraph = assumeSavedgraph;
+    }
 }

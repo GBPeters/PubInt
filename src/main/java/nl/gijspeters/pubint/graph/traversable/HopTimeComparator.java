@@ -1,13 +1,13 @@
 package nl.gijspeters.pubint.graph.traversable;
 
-import java.util.Comparator;
+import nl.gijspeters.pubint.graph.times.TimeComparator;
 
 /**
  * Created by gijspeters on 02-11-16.
  *
  * Comparator for ordering Hops in a Ride
  */
-public class HopTimeComparator implements Comparator<Hop> {
+public class HopTimeComparator extends TimeComparator<Hop> {
     /**
      * Compares its two arguments for order.  Returns a negative integer,
      * zero, or a positive integer as the first argument is less than, equal
@@ -50,12 +50,6 @@ public class HopTimeComparator implements Comparator<Hop> {
      */
     @Override
     public int compare(Hop o1, Hop o2) {
-        if (o1.getArrival().getTime() < o2.getArrival().getTime()) {
-            return -1;
-        } else if (o1.getArrival().getTime() > o2.getArrival().getTime()) {
-            return 1;
-        } else {
-            return 0;
-        }
+        return compareDates(o1.getArrival(), o2.getArrival());
     }
 }

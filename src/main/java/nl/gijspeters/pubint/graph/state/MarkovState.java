@@ -79,7 +79,24 @@ public class MarkovState extends TransitState implements PrismState<Ride> {
     }
 
     @Override
-    public double getVisitProbability(Date originDate, Date destinationDate, Date currentDate) {
-        return 0;
+    public double getVisitProbability(Date originDate, Date destinationDate, Date currentDate, double dispersion,
+                                      double transition) {
+        long t = currentDate.getTime();
+        long timax = getLatestDeparture().getTime();
+        long tjmin = getEarliestArrival().getTime();
+        if (t < timax || t > tjmin) {
+            return 0;
+        }
+        long tO = originDate.getTime();
+        long tD = destinationDate.getTime();
+        long timin = getEarliestDeparture().getTime();
+        long tjmax = getLatestArrival().getTime();
+        double eimin = -Math.exp(-transition * (timin - tO));
+        double eimax = -Math.exp(-transition * (timax - tO));
+        double ejmin = -Math.exp(-transition * (tD - tjmax));
+        double ejmax = -Math.exp(-transition * (tD - tjmin));
+        double pOi = eimin - eimax;
+        double pjD = ejmin - ejmax;
+        return pOi * pjD;
     }
 }

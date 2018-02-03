@@ -20,5 +20,8 @@ public class Constants {
     public static final double DISPERSION = 3;
 
     public static final double TRANSITION = 0.003;
+
     public static final String OTP_DIR_DEBUG = "/Users/gijspeters/otp";
+
+    public static final int INTERVAL_SECONDS = 30;
 }

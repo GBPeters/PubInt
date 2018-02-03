@@ -3,10 +3,7 @@ package nl.gijspeters.pubint.graph.traversable;
 import nl.gijspeters.pubint.graph.Vertex;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Created by gijspeters on 20-11-16.
@@ -88,6 +85,15 @@ public class GenericRide<T extends Hop> extends TreeSet<T> implements Ridable {
     @Override
     public Vertex getToVertex() {
         return last().getEdge().getToVertex();
+    }
+
+    @Override
+    public Set<Edge> getEdges() {
+        Set<Edge> edges = new HashSet<>();
+        for (Hop h : this) {
+            edges.add(h.getEdge());
+        }
+        return edges;
     }
 
     public int hashCode() {

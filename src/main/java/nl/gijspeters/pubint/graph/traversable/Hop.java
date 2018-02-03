@@ -7,6 +7,7 @@ import org.mongodb.morphia.annotations.Id;
 import org.mongodb.morphia.annotations.Reference;
 
 import java.util.Date;
+import java.util.Set;
 
 /**
  * Created by gijspeters on 15-11-16.
@@ -123,5 +124,9 @@ public class Hop implements Ridable {
 
     public String getSerialId() {
         return serialId;
+    }
+
+    public Set<Edge> getEdges() {
+        return edge.getEdges();
     }
 }

@@ -42,7 +42,7 @@ After=network.target
 
 [Service]
 User=mongodb
-ExecStart=/usr/bin/mongod --quiet --config /etc/mongod.conf --dbpath /extdata/mongodb --wiredTigerEngineConfigString="cache_size=24G"
+ExecStart=/usr/bin/mongod --quiet --config /etc/mongod.conf --dbpath /extdata/mongodb --wiredTigerEngineConfigString="cache_size=3G"
 Restart=always
 
 [Install]
