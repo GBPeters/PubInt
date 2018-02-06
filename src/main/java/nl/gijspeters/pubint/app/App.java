@@ -7,6 +7,9 @@ import nl.gijspeters.pubint.graph.BasicGraph;
 import nl.gijspeters.pubint.graph.Prism;
 import nl.gijspeters.pubint.graph.factory.GraphFactory;
 import nl.gijspeters.pubint.model.ModelConfig;
+import nl.gijspeters.pubint.model.ModelResultGraph;
+import nl.gijspeters.pubint.model.Network;
+import nl.gijspeters.pubint.model.ResultGraphBuilder;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
 import nl.gijspeters.pubint.mutlithreading.CreateNetworkCursor;
 import nl.gijspeters.pubint.mutlithreading.CreatePrismCursor;
@@ -128,11 +131,27 @@ public class App {
         if (validate) {
 
         } else {
-            System.out.println("Creating probability networks...");
-            Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class).field("prism").exists();
-            TaskCursor cursor = new CreateNetworkCursor(q, new ModelConfig());
-            TaskManager tm = new TaskManager(cursor, mt);
-            tm.start();
+            if (test) {
+                Leg leg = MorphiaHandler.getInstance().getTestLeg();
+                ResultGraphBuilder builder = new ResultGraphBuilder(new ModelConfig(), leg);
+                System.out.println("builder created");
+                Network network = builder.buildProbabilityNetwork();
+                System.out.println("p-network created");
+                ModelResultGraph edgeProbs = network.getEdgeProbabilities();
+                MorphiaHandler.getInstance().saveResultGraph(edgeProbs);
+                System.out.println("p-network saved");
+                network = builder.buildVisitTimeNetwork();
+                System.out.println("t-network created");
+                ModelResultGraph edgeTimes = network.getEdgeProbabilities();
+                MorphiaHandler.getInstance().saveResultGraph(edgeTimes);
+                System.out.println("t-network saved");
+            } else {
+                System.out.println("Creating probability networks...");
+                Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class).field("prism").exists();
+                TaskCursor cursor = new CreateNetworkCursor(q, new ModelConfig());
+                TaskManager tm = new TaskManager(cursor, mt);
+                tm.start();
+            }
         }
     }
 
@@ -253,7 +272,6 @@ public class App {
             TaskCursor cursor = new CreatePrismCursor(q, factories);
             TaskManager tm = new TaskManager(cursor, mt);
             tm.start();
-
         }
         if (dump) {
             PrismDocument pd = new PrismDocument(p.getStates());
