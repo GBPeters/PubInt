@@ -46,7 +46,7 @@ public class ResultGraphBuilder {
         return transect;
     }
 
-    public void addAll(int intervalSeconds) {
+    public void addAll() {
         clear();
         SortedSet<PrismState> stateQueue = new TreeSet<>(new DepartureTimeComparator());
         Set<PrismState> currentStates = new HashSet<>();

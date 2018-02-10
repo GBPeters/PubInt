@@ -136,8 +136,10 @@ public class App {
             if (test) {
                 Leg leg = MorphiaHandler.getInstance().getTestLeg();
                 ResultGraphBuilder builder = new ResultGraphBuilder(new ModelConfig(), leg);
+                builder.addAll();
                 System.out.println("builder created");
                 Network network = builder.buildProbabilityNetwork();
+                System.out.println(network.size());
                 System.out.println("p-network created");
                 ModelResultGraph<Edge> edgeProbs = network.getEdgeProbabilities();
                 MorphiaHandler.getInstance().saveResultGraph(edgeProbs);
