@@ -3,9 +3,11 @@ package nl.gijspeters.pubint.app;
 import nl.gijspeters.pubint.config.Config;
 import nl.gijspeters.pubint.export.csv.CSVWriter;
 import nl.gijspeters.pubint.export.csv.prism.PrismDocument;
+import nl.gijspeters.pubint.export.csv.resultgraph.ResultGraphDocument;
 import nl.gijspeters.pubint.graph.BasicGraph;
 import nl.gijspeters.pubint.graph.Prism;
 import nl.gijspeters.pubint.graph.factory.GraphFactory;
+import nl.gijspeters.pubint.graph.traversable.Edge;
 import nl.gijspeters.pubint.model.ModelConfig;
 import nl.gijspeters.pubint.model.ModelResultGraph;
 import nl.gijspeters.pubint.model.Network;
@@ -137,14 +139,23 @@ public class App {
                 System.out.println("builder created");
                 Network network = builder.buildProbabilityNetwork();
                 System.out.println("p-network created");
-                ModelResultGraph edgeProbs = network.getEdgeProbabilities();
+                ModelResultGraph<Edge> edgeProbs = network.getEdgeProbabilities();
                 MorphiaHandler.getInstance().saveResultGraph(edgeProbs);
                 System.out.println("p-network saved");
                 network = builder.buildVisitTimeNetwork();
                 System.out.println("t-network created");
-                ModelResultGraph edgeTimes = network.getEdgeProbabilities();
+                ModelResultGraph<Edge> edgeTimes = network.getEdgeProbabilities();
                 MorphiaHandler.getInstance().saveResultGraph(edgeTimes);
                 System.out.println("t-network saved");
+                if (dump) {
+                    CSVWriter<ResultGraphDocument> writer = new CSVWriter<>("probdump.csv");
+                    ResultGraphDocument probdoc = new ResultGraphDocument(edgeProbs);
+                    writer.writeDocument(probdoc);
+                    writer = new CSVWriter<>("timedump.csv");
+                    ResultGraphDocument timedoc = new ResultGraphDocument(edgeTimes);
+                    writer.writeDocument(timedoc);
+                    System.out.println("CSV files dumped");
+                }
             } else {
                 System.out.println("Creating probability networks...");
                 Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class).field("prism").exists();

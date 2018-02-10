@@ -1,5 +1,6 @@
 package nl.gijspeters.pubint.mutlithreading;
 
+import nl.gijspeters.pubint.graph.traversable.Edge;
 import nl.gijspeters.pubint.model.ModelConfig;
 import nl.gijspeters.pubint.model.ModelResultGraph;
 import nl.gijspeters.pubint.model.Network;
@@ -25,10 +26,10 @@ public class CreateNetworkTask extends Task {
     protected void executeTask() throws Exception {
         ResultGraphBuilder builder = new ResultGraphBuilder(config, leg);
         Network network = builder.buildProbabilityNetwork();
-        ModelResultGraph edgeProbs = network.getEdgeProbabilities();
+        ModelResultGraph<Edge> edgeProbs = network.getEdgeProbabilities();
         MorphiaHandler.getInstance().saveResultGraph(edgeProbs);
         network = builder.buildVisitTimeNetwork();
-        ModelResultGraph edgeTimes = network.getEdgeProbabilities();
+        ModelResultGraph<Edge> edgeTimes = network.getEdgeProbabilities();
         MorphiaHandler.getInstance().saveResultGraph(edgeTimes);
     }
 

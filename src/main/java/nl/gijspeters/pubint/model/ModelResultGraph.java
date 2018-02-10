@@ -3,6 +3,7 @@ package nl.gijspeters.pubint.model;
 import nl.gijspeters.pubint.graph.Graph;
 import nl.gijspeters.pubint.graph.Vertex;
 import nl.gijspeters.pubint.graph.traversable.BasicEdge;
+import nl.gijspeters.pubint.graph.traversable.Edge;
 import nl.gijspeters.pubint.graph.traversable.Ridable;
 import nl.gijspeters.pubint.graph.traversable.Traversable;
 import nl.gijspeters.pubint.structure.Leg;
@@ -16,7 +17,7 @@ import java.util.Set;
 /**
  * Created by gijspeters on 04-04-17.
  */
-public class ModelResultGraph extends HashMap<Traversable, Double> implements Graph<Traversable> {
+public class ModelResultGraph<T extends Traversable> extends HashMap<T, Double> implements Graph<T> {
 
     @Reference
     protected Leg leg;
@@ -25,9 +26,9 @@ public class ModelResultGraph extends HashMap<Traversable, Double> implements Gr
         this.leg = leg;
     }
 
-    public ModelResultGraph(ModelResultGraph resultGraph) {
+    public ModelResultGraph(ModelResultGraph<T> resultGraph) {
         this(resultGraph.getLeg());
-        for (Traversable t : resultGraph.keySet()) {
+        for (T t : resultGraph.keySet()) {
             put(t, resultGraph.get(t));
         }
     }
@@ -36,37 +37,37 @@ public class ModelResultGraph extends HashMap<Traversable, Double> implements Gr
         return leg;
     }
 
-    public Double add(Traversable t, double p) {
+    public Double add(T t, double p) {
         return put(t, getOrDefault(t, 0.0) + p);
     }
 
-    public void addAll(Collection<? extends Traversable> traversables, double p) {
-        for (Traversable t : traversables) {
+    public void addAll(Collection<? extends T> traversables, double p) {
+        for (T t : traversables) {
             add(t, p);
         }
     }
 
 
-    public ModelResultGraph getEdgeProbabilities() {
-        ModelResultGraph graph = new ModelResultGraph(leg);
-        for (Traversable t : keySet()) {
+    public ModelResultGraph<Edge> getEdgeProbabilities() {
+        ModelResultGraph<Edge> graph = new ModelResultGraph<>(leg);
+        for (T t : keySet()) {
             graph.addAll(t.getEdges(), get(t));
         }
         return graph;
     }
 
-    public ModelResultGraph getTransitProbabilities() {
-        ModelResultGraph graph = new ModelResultGraph(leg);
-        for (Traversable t : keySet()) {
+    public ModelResultGraph<Ridable> getTransitProbabilities() {
+        ModelResultGraph<Ridable> graph = new ModelResultGraph<>(leg);
+        for (T t : keySet()) {
             if (t instanceof Ridable) {
-                graph.add(t, get(t));
+                graph.add((Ridable) t, get(t));
             }
         }
         return graph;
     }
 
-    public ModelResultGraph getTransitEdgeProbabilities() {
-        ModelResultGraph graph = new ModelResultGraph(leg);
+    public ModelResultGraph<Edge> getTransitEdgeProbabilities() {
+        ModelResultGraph<Edge> graph = new ModelResultGraph<>(leg);
         for (Traversable t : keySet()) {
             if (t instanceof Ridable) {
                 graph.addAll(t.getEdges(), get(t));
@@ -75,11 +76,11 @@ public class ModelResultGraph extends HashMap<Traversable, Double> implements Gr
         return graph;
     }
 
-    public ModelResultGraph getStreetEdgeProbabilities() {
-        ModelResultGraph graph = new ModelResultGraph(leg);
-        for (Traversable t : keySet()) {
+    public ModelResultGraph<BasicEdge> getStreetEdgeProbabilities() {
+        ModelResultGraph<BasicEdge> graph = new ModelResultGraph<>(leg);
+        for (T t : keySet()) {
             if (t instanceof BasicEdge && ((BasicEdge) t).isStreetEdge()) {
-                graph.add(t, get(t));
+                graph.add((BasicEdge) t, get(t));
             }
         }
         return graph;
@@ -90,7 +91,7 @@ public class ModelResultGraph extends HashMap<Traversable, Double> implements Gr
     }
 
     @Override
-    public Collection<Traversable> getTraversables() {
+    public Collection<T> getTraversables() {
         return keySet();
     }
 

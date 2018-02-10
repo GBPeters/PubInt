@@ -26,7 +26,7 @@ public class CSVWriter<T extends CSVDocument> {
     }
 
     /**
-     * Write a CSVDocument extension to file.
+     * Write a CSVObjectDocument extension to file.
      * @param document
      */
     public void writeDocument(T document) {

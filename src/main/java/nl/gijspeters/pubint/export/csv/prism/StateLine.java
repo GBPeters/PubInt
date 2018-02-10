@@ -2,7 +2,7 @@ package nl.gijspeters.pubint.export.csv.prism;
 
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
-import nl.gijspeters.pubint.export.csv.CSVLine;
+import nl.gijspeters.pubint.export.csv.CSVObjectLine;
 import nl.gijspeters.pubint.graph.state.BrownianTraversedState;
 import nl.gijspeters.pubint.graph.state.MarkovState;
 import nl.gijspeters.pubint.graph.state.PrismState;
@@ -17,9 +17,9 @@ import java.util.List;
 /**
  * Created by gijspeters on 27-02-17.
  *
- * CSVLine extension for a PrismState
+ * CSVObjectLine extension for a PrismState
  */
-public class StateLine extends CSVLine<PrismState> {
+public class StateLine extends CSVObjectLine<PrismState> {
 
     public static final String[] KEYS = {
             "oid",
