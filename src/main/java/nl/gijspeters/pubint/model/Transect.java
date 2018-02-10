@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * Created by gijspeters on 03-04-17.
  */
-public class Transect extends ModelResultGraph {
+public class Transect extends ModelResultGraph<Traversable> {
 
     private Date t;
 
