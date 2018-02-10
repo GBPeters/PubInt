@@ -54,14 +54,17 @@ public class ResultGraphBuilder {
         for (long time = leg.getOrigin().getDate().getTime(); time <= leg.getDestination().getDate().getTime();
              time += config.getIntervalSeconds()) {
             Date t = new Date(time);
+            Set<PrismState> switchStates = new HashSet<>();
             for (PrismState state : stateQueue) {
                 if (state.getEarliestDeparture().getTime() < time) {
-                    currentStates.add(state);
-                    stateQueue.remove(state);
+                    switchStates.add(state);
                 } else {
                     break;
                 }
             }
+            stateQueue.removeAll(switchStates);
+            currentStates.addAll(switchStates);
+            switchStates.clear();
             Transect transect = new Transect(leg, t);
             for (PrismState state : currentStates) {
                 if (time < state.getLatestArrival().getTime()) {
@@ -69,9 +72,10 @@ public class ResultGraphBuilder {
                             config.getDispersion(), config.getTransition());
                     transect.add(state.getTraversable(), p);
                 } else {
-                    currentStates.remove(state);
+                    switchStates.add(state);
                 }
             }
+            currentStates.removeAll(switchStates);
             transects.add(transect);
         }
     }
