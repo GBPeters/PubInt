@@ -147,6 +147,9 @@ public class App {
                 ModelResultGraph<Edge> edgeTimes = network.getEdgeProbabilities();
                 MorphiaHandler.getInstance().saveResultGraph(edgeTimes);
                 System.out.println("t-network saved");
+                System.out.println(edgeProbs.size());
+                Edge e = edgeProbs.keySet().iterator().next();
+                System.out.println(e.toString() + edgeProbs.get(e));
                 if (dump) {
                     CSVWriter<ResultGraphDocument> writer = new CSVWriter<>("probdump.csv");
                     ResultGraphDocument probdoc = new ResultGraphDocument(edgeProbs);
