@@ -10,6 +10,7 @@ import nl.gijspeters.pubint.graph.traversable.Ride;
 import nl.gijspeters.pubint.graph.traversable.Traversable;
 import nl.gijspeters.pubint.model.ModelResultGraph;
 import nl.gijspeters.pubint.structure.*;
+import nl.gijspeters.pubint.validation.ValidationResult;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.mongodb.morphia.Morphia;
@@ -148,6 +149,26 @@ public class MorphiaHandler {
     public void saveResultGraph(ModelResultGraph resultGraph) {
         ResultGraphContainer container = new ResultGraphContainer(resultGraph);
         saveSimpleObject(container);
+    }
+
+    public void saveValidationResult(ValidationResult result) {
+        ValidationResultContainer container = new ValidationResultContainer(result);
+        saveSimpleObject(container);
+    }
+
+    public void saveValidationResults(Set<ValidationResult> results) {
+        for (ValidationResult r : results) {
+            saveValidationResult(r);
+        }
+    }
+
+    public Set<Edge> getEdges() {
+        Set<Edge> edges = new HashSet<>();
+        Query<Edge> edgeq = getDs().createQuery(Edge.class);
+        for (Edge e : edgeq) {
+            edges.add(e);
+        }
+        return edges;
     }
 
     public Trajectory getTrajectory(Agent agent) {

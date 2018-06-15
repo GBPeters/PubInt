@@ -15,16 +15,21 @@ public class ProbabilityNetwork extends Network {
     @Override
     public void addTransect(Transect transect, long deltaTimeSeconds) {
         for (Traversable t : transect.keySet()) {
-            double notVisitP = Math.log(1 - transect.get(t)) * deltaTimeSeconds;
-            add(t, notVisitP);
+            add(t, transect.get(t));
         }
     }
 
     @Override
-    public ModelResultGraph getResultGraph() {
-        ModelResultGraph resultGraph = new ModelResultGraph(getLeg());
+    public Double add(Traversable t, double p) {
+        return (p >= getOrDefault(t, 0.0)) ? put(t, p) : get(t);
+    }
+
+    @Override
+    public ModelResultGraph<Traversable> getResultGraph() {
+        ModelResultGraph<Traversable> resultGraph = new ModelResultGraph<>(getLeg());
         for (Traversable t : keySet()) {
-            resultGraph.add(t, 1 - Math.exp(get(t)));
+//            System.out.println(get(t));
+            resultGraph.add(t, get(t));
         }
         return resultGraph;
     }

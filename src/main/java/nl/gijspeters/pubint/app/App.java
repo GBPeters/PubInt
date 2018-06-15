@@ -7,6 +7,7 @@ import nl.gijspeters.pubint.export.csv.resultgraph.ResultGraphDocument;
 import nl.gijspeters.pubint.graph.BasicGraph;
 import nl.gijspeters.pubint.graph.Prism;
 import nl.gijspeters.pubint.graph.factory.GraphFactory;
+import nl.gijspeters.pubint.graph.traversable.BasicEdge;
 import nl.gijspeters.pubint.graph.traversable.Edge;
 import nl.gijspeters.pubint.model.ModelConfig;
 import nl.gijspeters.pubint.model.ModelResultGraph;
@@ -23,16 +24,15 @@ import nl.gijspeters.pubint.structure.Leg;
 import nl.gijspeters.pubint.structure.Trajectory;
 import nl.gijspeters.pubint.tools.PgMongoMigrator;
 import nl.gijspeters.pubint.validation.ValidationLeg;
+import nl.gijspeters.pubint.validation.ValidationResult;
+import nl.gijspeters.pubint.validation.ValidationResultBuilder;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.mongodb.morphia.query.Query;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static nl.gijspeters.pubint.config.Constants.*;
 import static org.kohsuke.args4j.ExampleMode.ALL;
@@ -127,23 +127,62 @@ public class App {
     }
 
     private void runModel() {
-        if (clear) {
-            MorphiaHandler.getInstance().clearCollection("resultgraph");
-        }
-        if (validate) {
 
+        if (validate) {
+            if (clear) {
+                MorphiaHandler.getInstance().clearCollection("validationresults");
+            }
+            Set<Edge> edges = MorphiaHandler.getInstance().getEdges();
+            System.out.println("Edges loaded");
+            Set<BasicEdge> map = new HashSet<>();
+            for (Edge e : edges) {
+                if (e instanceof BasicEdge) {
+                    map.add((BasicEdge) e);
+                }
+            }
+            System.out.println("Edges casted");
+            if (test) {
+                ValidationLeg leg = (ValidationLeg) MorphiaHandler.getInstance().getTestLeg();
+                System.out.println(leg);
+                ValidationResultBuilder builder = new ValidationResultBuilder(new ModelConfig(), map);
+                System.out.println("Map indexed");
+                Set<ValidationResult> results = builder.buildResult(leg);
+                for (ValidationResult r : results) {
+                    System.out.println("--- New result ---");
+                    System.out.println(r.getAnchor());
+                    System.out.println("Transect size " + r.getTransect().size());
+                    System.out.println(r.getAnchorEdge());
+                    System.out.println(r.getAnchorProbability());
+                    if (dump) {
+                        CSVWriter<ResultGraphDocument> writer = new CSVWriter<>("transectdump.csv");
+                        ResultGraphDocument transectdoc = new ResultGraphDocument(r.getTransect());
+                        writer.writeDocument(transectdoc);
+                        System.out.println("CSV file dumped");
+                    }
+                }
+            }
         } else {
+            if (clear) {
+                MorphiaHandler.getInstance().clearCollection("resultgraph");
+            }
             if (test) {
                 Leg leg = MorphiaHandler.getInstance().getTestLeg();
+                System.out.println(leg);
                 ResultGraphBuilder builder = new ResultGraphBuilder(new ModelConfig(), leg);
                 builder.addAll();
                 System.out.println("builder created");
                 Network network = builder.buildProbabilityNetwork();
                 System.out.println(network.size());
                 System.out.println("p-network created");
-                ModelResultGraph<Edge> edgeProbs = network.getEdgeProbabilities();
+                ModelResultGraph<Edge> edgeProbs = network.getResultGraph().getEdgeProbabilities();
                 MorphiaHandler.getInstance().saveResultGraph(edgeProbs);
                 System.out.println("p-network saved");
+                if (dump) {
+                    CSVWriter<ResultGraphDocument> writer = new CSVWriter<>("probdump.csv");
+                    ResultGraphDocument probdoc = new ResultGraphDocument(edgeProbs);
+                    writer.writeDocument(probdoc);
+                    System.out.println("CSV file dumped");
+                }
                 network = builder.buildVisitTimeNetwork();
                 System.out.println("t-network created");
                 ModelResultGraph<Edge> edgeTimes = network.getEdgeProbabilities();
@@ -153,13 +192,10 @@ public class App {
                 Edge e = edgeProbs.keySet().iterator().next();
                 System.out.println(e.toString() + edgeProbs.get(e));
                 if (dump) {
-                    CSVWriter<ResultGraphDocument> writer = new CSVWriter<>("probdump.csv");
-                    ResultGraphDocument probdoc = new ResultGraphDocument(edgeProbs);
-                    writer.writeDocument(probdoc);
-                    writer = new CSVWriter<>("timedump.csv");
+                    CSVWriter<ResultGraphDocument> writer = new CSVWriter<>("timedump.csv");
                     ResultGraphDocument timedoc = new ResultGraphDocument(edgeTimes);
                     writer.writeDocument(timedoc);
-                    System.out.println("CSV files dumped");
+                    System.out.println("CSV file dumped");
                 }
             } else {
                 System.out.println("Creating probability networks...");

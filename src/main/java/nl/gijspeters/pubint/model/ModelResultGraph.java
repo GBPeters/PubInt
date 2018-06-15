@@ -47,7 +47,6 @@ public class ModelResultGraph<T extends Traversable> extends HashMap<T, Double> 
         }
     }
 
-
     public ModelResultGraph<Edge> getEdgeProbabilities() {
         ModelResultGraph<Edge> graph = new ModelResultGraph<>(leg);
         for (T t : keySet()) {

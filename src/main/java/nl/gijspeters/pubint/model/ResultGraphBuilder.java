@@ -12,38 +12,26 @@ import java.util.*;
 public class ResultGraphBuilder {
 
     private final Leg leg;
-    private ModelConfig config = new ModelConfig();
+    private TransectBuilder builder;
 
     private Set<Transect> transects = new HashSet<>();
 
     public ResultGraphBuilder(ModelConfig config, Leg leg) {
         this.leg = leg;
-        this.config = config;
+        builder = new TransectBuilder(leg, config);
     }
 
-    public ModelConfig getConfig() {
-        return config;
+    public TransectBuilder getBuilder() {
+        return builder;
     }
 
     public boolean add(Date t) {
-        Transect transect = buildTransect(t);
+        Transect transect = getBuilder().buildTransect(t);
         return transects.add(transect);
     }
 
     public void clear() {
         transects.clear();
-    }
-
-    public Transect buildTransect(Date t) {
-        Transect transect = new Transect(leg, t);
-        for (PrismState state : leg.getPrism().getStates()) {
-            double p = state.getVisitProbability(leg.getOrigin().getDate(), leg.getDestination().getDate(), t,
-                    config.getDispersion(), config.getTransition());
-            if (p > 0) {
-                transect.add(state.getTraversable(), p);
-            }
-        }
-        return transect;
     }
 
     public void addAll() {
@@ -52,7 +40,7 @@ public class ResultGraphBuilder {
         Set<PrismState> currentStates = new HashSet<>();
         stateQueue.addAll(leg.getPrism().getStates());
         for (long time = leg.getOrigin().getDate().getTime(); time <= leg.getDestination().getDate().getTime();
-             time += config.getIntervalSeconds()) {
+             time += getBuilder().getConfig().getIntervalSeconds()) {
             Date t = new Date(time);
             Set<PrismState> switchStates = new HashSet<>();
             for (PrismState state : stateQueue) {
@@ -69,7 +57,7 @@ public class ResultGraphBuilder {
             for (PrismState state : currentStates) {
                 if (time < state.getLatestArrival().getTime()) {
                     double p = state.getVisitProbability(leg.getOrigin().getDate(), leg.getDestination().getDate(), t,
-                            config.getDispersion(), config.getTransition());
+                            getBuilder().getConfig().getDispersion(), getBuilder().getConfig().getTransition());
                     transect.add(state.getTraversable(), p);
                 } else {
                     switchStates.add(state);
@@ -82,7 +70,7 @@ public class ResultGraphBuilder {
 
     public Network buildNetwork(Network network) {
         for (Transect transect : transects) {
-            network.addTransect(transect.getNormalisedTransect(), config.getIntervalSeconds());
+            network.addTransect(transect.getNormalisedTransect(), getBuilder().getConfig().getIntervalSeconds());
         }
         return network;
     }

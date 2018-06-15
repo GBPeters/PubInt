@@ -15,7 +15,7 @@ public class VisitTimeNetwork extends Network {
     @Override
     public void addTransect(Transect transect, long deltaTimeSeconds) {
         for (Traversable t : transect.keySet()) {
-            add(t, get(t) * deltaTimeSeconds);
+            add(t, transect.get(t) * deltaTimeSeconds);
         }
     }
 }
