@@ -2,11 +2,7 @@ package nl.gijspeters.pubint.app;
 
 import nl.gijspeters.pubint.config.Config;
 import nl.gijspeters.pubint.export.csv.CSVWriter;
-import nl.gijspeters.pubint.export.csv.prism.PrismDocument;
 import nl.gijspeters.pubint.export.csv.resultgraph.ResultGraphDocument;
-import nl.gijspeters.pubint.graph.BasicGraph;
-import nl.gijspeters.pubint.graph.Prism;
-import nl.gijspeters.pubint.graph.factory.GraphFactory;
 import nl.gijspeters.pubint.graph.traversable.BasicEdge;
 import nl.gijspeters.pubint.graph.traversable.Edge;
 import nl.gijspeters.pubint.model.ModelConfig;
@@ -15,11 +11,8 @@ import nl.gijspeters.pubint.model.Network;
 import nl.gijspeters.pubint.model.ResultGraphBuilder;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
 import nl.gijspeters.pubint.mutlithreading.CreateNetworkCursor;
-import nl.gijspeters.pubint.mutlithreading.CreatePrismCursor;
 import nl.gijspeters.pubint.mutlithreading.TaskCursor;
 import nl.gijspeters.pubint.mutlithreading.TaskManager;
-import nl.gijspeters.pubint.otpentry.OTPEntry;
-import nl.gijspeters.pubint.otpentry.OTPHandler;
 import nl.gijspeters.pubint.structure.Leg;
 import nl.gijspeters.pubint.structure.Trajectory;
 import nl.gijspeters.pubint.tools.PgMongoMigrator;
@@ -34,7 +27,8 @@ import org.mongodb.morphia.query.Query;
 
 import java.util.*;
 
-import static nl.gijspeters.pubint.config.Constants.*;
+import static nl.gijspeters.pubint.config.Constants.OTP_DIR;
+import static nl.gijspeters.pubint.config.Constants.VALIDATE_DB;
 import static org.kohsuke.args4j.ExampleMode.ALL;
 
 /**
@@ -93,7 +87,7 @@ public class App {
             if (validate) {
                 Config.setMongoConfig(VALIDATE_DB);
             }
-            OTPEntry.otpDir = otpDir;
+//            OTPEntry.otpDir = otpDir;
             switch (command) {
                 case "migrate":
                     migrate();
@@ -277,58 +271,60 @@ public class App {
      * Entry method that retrieves the complete graph from OTP and stores it in the MongoDB instance
      */
     public void buildGraph() {
-        try {
-            if (clear) {
-                System.out.println("Clearing large graphs...");
-                MorphiaHandler.getInstance().clearCollection("largegraph");
-                MorphiaHandler.getInstance().clearCollection("edge");
-                MorphiaHandler.getInstance().clearCollection("vertex");
-            }
-            GraphFactory gb = new GraphFactory();
-            BasicGraph g = gb.getCompleteGraph("amsterdam_complete");
-            MorphiaHandler.getInstance().saveLargeGraph(g, false);
-            System.out.println("BasicGraph saved");
-        } catch (Exception e) {
-            e.printStackTrace();
-            System.out.println("BasicGraph building failed.");
-        }
+        System.out.println("Graph building not implemented in this branch");
+//        try {
+//            if (clear) {
+//                System.out.println("Clearing large graphs...");
+//                MorphiaHandler.getInstance().clearCollection("largegraph");
+//                MorphiaHandler.getInstance().clearCollection("edge");
+//                MorphiaHandler.getInstance().clearCollection("vertex");
+//            }
+//            GraphFactory gb = new GraphFactory();
+//            BasicGraph g = gb.getCompleteGraph("amsterdam_complete");
+//            MorphiaHandler.getInstance().saveLargeGraph(g, false);
+//            System.out.println("BasicGraph saved");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            System.out.println("BasicGraph building failed.");
+//        }
     }
 
     /**
      * Entry method for creating prisms from legs
      */
     public void createPrisms() {
-        Prism p = new Prism();
-        if (clear) {
-            System.out.println("Clearing prisms from legs...");
-            Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class).field("prism").exists();
-            for (Leg l : q) {
-                l.setPrism(null);
-                MorphiaHandler.getInstance().saveLeg(l);
-            }
-            MorphiaHandler.getInstance().clearCollection("state");
-        }
-        if (test) {
-            GraphFactory gf = new GraphFactory();
-            Leg l = MorphiaHandler.getInstance().getTestLeg();
-            p = gf.getPrism(l);
-            l.setPrism(p);
-            MorphiaHandler.getInstance().saveLeg(l);
-        } else {
-            Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class).field("prism").doesNotExist();
-            List<OTPEntry> instances = OTPHandler.getInstances(oi);
-            List<GraphFactory> factories = new ArrayList<>();
-            for (OTPEntry instance : instances) {
-                factories.add(new GraphFactory(instance));
-            }
-            TaskCursor cursor = new CreatePrismCursor(q, factories);
-            TaskManager tm = new TaskManager(cursor, mt);
-            tm.start();
-        }
-        if (dump) {
-            PrismDocument pd = new PrismDocument(p.getStates());
-            new CSVWriter<PrismDocument>(CSV_DUMP_FILE).writeDocument(pd);
-        }
-        System.out.println("Prisms created.");
+        System.out.println("Prism building not implemented in this branch.");
+//        Prism p = new Prism();
+//        if (clear) {
+//            System.out.println("Clearing prisms from legs...");
+//            Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class).field("prism").exists();
+//            for (Leg l : q) {
+//                l.setPrism(null);
+//                MorphiaHandler.getInstance().saveLeg(l);
+//            }
+//            MorphiaHandler.getInstance().clearCollection("state");
+//        }
+//        if (test) {
+//            GraphFactory gf = new GraphFactory();
+//            Leg l = MorphiaHandler.getInstance().getTestLeg();
+//            p = gf.getPrism(l);
+//            l.setPrism(p);
+//            MorphiaHandler.getInstance().saveLeg(l);
+//        } else {
+//            Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class).field("prism").doesNotExist();
+//            List<OTPEntry> instances = OTPHandler.getInstances(oi);
+//            List<GraphFactory> factories = new ArrayList<>();
+//            for (OTPEntry instance : instances) {
+//                factories.add(new GraphFactory(instance));
+//            }
+//            TaskCursor cursor = new CreatePrismCursor(q, factories);
+//            TaskManager tm = new TaskManager(cursor, mt);
+//            tm.start();
+//        }
+//        if (dump) {
+//            PrismDocument pd = new PrismDocument(p.getStates());
+//            new CSVWriter<PrismDocument>(CSV_DUMP_FILE).writeDocument(pd);
+//        }
+//        System.out.println("Prisms created.");
     }
 }
