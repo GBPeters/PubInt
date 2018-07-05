@@ -47,7 +47,7 @@ public class BrownianTraversedState extends BrownianState implements TraversedSt
 
     @Override
     public double getVisitProbability(Date originDate, Date destinationDate, Date currentDate,
-                                      double dispersion, double transition) {
+                                      double dispersion, double transition, double transitWeight) {
         long tO = originDate.getTime();
         long tD = destinationDate.getTime();
         long t = currentDate.getTime();

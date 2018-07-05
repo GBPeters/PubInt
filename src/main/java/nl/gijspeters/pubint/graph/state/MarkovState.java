@@ -80,7 +80,7 @@ public class MarkovState extends TransitState implements PrismState<Ride> {
 
     @Override
     public double getVisitProbability(Date originDate, Date destinationDate, Date currentDate, double dispersion,
-                                      double transition) {
+                                      double transition, double transitWeight) {
         long t = currentDate.getTime() / 1000;
         long timax = getLatestDeparture().getTime() / 1000;
         long tjmin = getEarliestArrival().getTime() / 1000;
@@ -97,6 +97,6 @@ public class MarkovState extends TransitState implements PrismState<Ride> {
         double ejmax = -Math.exp(-transition * (tD - tjmin));
         double pOi = eimin - eimax;
         double pjD = ejmin - ejmax;
-        return pOi * pjD;
+        return pOi * pjD * transitWeight;
     }
 }

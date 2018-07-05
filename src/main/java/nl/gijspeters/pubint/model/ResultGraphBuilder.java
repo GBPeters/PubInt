@@ -54,10 +54,11 @@ public class ResultGraphBuilder {
             currentStates.addAll(switchStates);
             switchStates.clear();
             Transect transect = new Transect(leg, t);
+            ModelConfig config = getBuilder().getConfig();
             for (PrismState state : currentStates) {
                 if (time < state.getLatestArrival().getTime()) {
                     double p = state.getVisitProbability(leg.getOrigin().getDate(), leg.getDestination().getDate(), t,
-                            getBuilder().getConfig().getDispersion(), getBuilder().getConfig().getTransition());
+                            config.getDispersion(), config.getTransition(), config.getTransitWeight());
                     transect.add(state.getTraversable(), p);
                 } else {
                     switchStates.add(state);

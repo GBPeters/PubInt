@@ -28,7 +28,7 @@ public class TransectBuilder {
         Transect transect = new Transect(leg, t);
         for (PrismState state : leg.getPrism().getStates()) {
             double p = state.getVisitProbability(leg.getOrigin().getDate(), leg.getDestination().getDate(), t,
-                    config.getDispersion(), config.getTransition());
+                    config.getDispersion(), config.getTransition(), config.getTransitWeight());
             if (p > 0) {
                 transect.add(state.getTraversable(), p);
             }

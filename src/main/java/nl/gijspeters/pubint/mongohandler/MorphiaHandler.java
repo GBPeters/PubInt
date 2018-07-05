@@ -171,6 +171,10 @@ public class MorphiaHandler {
         return edges;
     }
 
+    public Query<Edge> iterateEdges() {
+        return getDs().createQuery(Edge.class);
+    }
+
     public Trajectory getTrajectory(Agent agent) {
         Trajectory t = new Trajectory();
         Agent a = getDs().get(Agent.class, agent.getAgentId());

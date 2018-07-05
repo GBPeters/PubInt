@@ -3,6 +3,7 @@ package nl.gijspeters.pubint.mongohandler;
 
 import nl.gijspeters.pubint.graph.traversable.BasicEdge;
 import nl.gijspeters.pubint.graph.traversable.Traversable;
+import nl.gijspeters.pubint.model.ModelConfig;
 import nl.gijspeters.pubint.model.Transect;
 import nl.gijspeters.pubint.structure.Anchor;
 import nl.gijspeters.pubint.validation.ValidationLeg;
@@ -37,6 +38,8 @@ public class ValidationResultContainer {
 
     private double anchorProbability;
 
+    private ModelConfig config;
+
     public ValidationResultContainer(ValidationResult result) {
         leg = result.getLeg();
         Transect transect = result.getTransect();
@@ -46,6 +49,7 @@ public class ValidationResultContainer {
         anchor = result.getAnchor();
         anchorEdge = result.getAnchorEdge();
         anchorProbability = result.getAnchorProbability();
+        config = result.getConfig();
     }
 
     public ObjectId getOid() {
@@ -58,7 +62,7 @@ public class ValidationResultContainer {
             transect.put(t.getTraversable(), t.getP());
         }
         try {
-            return new ValidationResult(leg, anchor, transect, anchorEdge, anchorProbability);
+            return new ValidationResult(leg, anchor, transect, anchorEdge, anchorProbability, config);
         } catch (SchemaException e) {
             e.printStackTrace();
             return null;

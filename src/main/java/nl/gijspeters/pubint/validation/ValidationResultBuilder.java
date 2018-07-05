@@ -3,21 +3,23 @@ package nl.gijspeters.pubint.validation;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.index.SpatialIndex;
 import com.vividsolutions.jts.index.strtree.STRtree;
 import com.vividsolutions.jts.linearref.LinearLocation;
 import com.vividsolutions.jts.linearref.LocationIndexedLine;
 import nl.gijspeters.pubint.graph.traversable.BasicEdge;
+import nl.gijspeters.pubint.graph.traversable.Edge;
 import nl.gijspeters.pubint.model.ModelConfig;
 import nl.gijspeters.pubint.model.Transect;
 import nl.gijspeters.pubint.model.TransectBuilder;
 import nl.gijspeters.pubint.structure.Anchor;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.collection.SpatialIndexFeatureCollection;
+import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.SchemaException;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.util.NullProgressListener;
+import org.mongodb.morphia.query.Query;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
@@ -30,7 +32,16 @@ public class ValidationResultBuilder {
 
     private static final String FEATURE_SCHEMA = "edge:LineString:srid=4326,edgeid=Integer";
     private static final String FEATURE_NAME = "Edge";
-    private final ModelConfig config;
+
+    public ModelConfig getConfig() {
+        return config;
+    }
+
+    public void setConfig(ModelConfig config) {
+        this.config = config;
+    }
+
+    private ModelConfig config;
     private static final double MAX_SEARCH_SPAN_FRACTION = 0.01;
 
     private double maxSearchDistance;
@@ -38,14 +49,14 @@ public class ValidationResultBuilder {
     private final Map<LocationIndexedLine, BasicEdge> featureMap = new HashMap<>();
 
 
-    private SpatialIndexFeatureCollection features;
+    private DefaultFeatureCollection features;
 
-    public ValidationResultBuilder(ModelConfig modelConfig, Set<BasicEdge> map) {
+    public ValidationResultBuilder(ModelConfig modelConfig, Query<Edge> edges) {
         config = modelConfig;
-        createSpatialIndexedMap(map);
+        createSpatialIndexedMap(edges);
     }
 
-    private void createSpatialIndexedMap(Set<BasicEdge> map) {
+    private void createSpatialIndexedMap(Query<Edge> edges) {
         SimpleFeatureType featureType = null;
         try {
             featureType = DataUtilities.createType(FEATURE_NAME, FEATURE_SCHEMA);
@@ -53,15 +64,22 @@ public class ValidationResultBuilder {
             e.printStackTrace();
         }
         SimpleFeatureBuilder sfb = new SimpleFeatureBuilder(featureType);
-        features = new SpatialIndexFeatureCollection();
+        features = new DefaultFeatureCollection();
         Map<Integer, BasicEdge> edgeMap = new HashMap<>();
-        for (BasicEdge e : map) {
-            sfb.add(e.getGeometry());
-            sfb.add(e.getEdgeId());
-            features.add(sfb.buildFeature(e.toString()));
-            edgeMap.put(e.getEdgeId(), e);
+        for (Edge e : edges) {
+            if (e instanceof BasicEdge) {
+                BasicEdge be = (BasicEdge) e;
+                if (!be.getGeometry().isEmpty()) {
+                    sfb.add(be.getGeometry());
+                    sfb.add(be.getEdgeId());
+                    features.add(sfb.buildFeature(String.valueOf(be.getEdgeId())));
+                    edgeMap.put(be.getEdgeId(), be);
+                } else {
+                    System.out.println("Empty geometry for " + e.toString());
+                }
+            }
         }
-        System.out.println("Slurping in features ...");
+        System.out.println("Indexing...");
         maxSearchDistance = features.getBounds().getSpan(0) * MAX_SEARCH_SPAN_FRACTION;
         try {
             features.accepts(
@@ -70,14 +88,19 @@ public class ValidationResultBuilder {
                         @Override
                         public void visit(Feature feature) {
                             SimpleFeature simpleFeature = (SimpleFeature) feature;
-                            Geometry geom = (MultiLineString) simpleFeature.getDefaultGeometry();
+                            Geometry geom = (LineString) simpleFeature.getDefaultGeometry();
                             // Just in case: check for  null or empty geometry
                             if (geom != null) {
                                 Envelope env = geom.getEnvelopeInternal();
                                 if (!env.isNull()) {
                                     LocationIndexedLine line = new LocationIndexedLine(geom);
                                     index.insert(env, line);
-                                    featureMap.put(line, edgeMap.get(simpleFeature.getAttribute("edgeid")));
+                                    try {
+                                        int edgeId = Integer.parseInt(simpleFeature.getID());
+                                        featureMap.put(line, edgeMap.get(edgeId));
+                                    } catch (ClassCastException e) {
+                                        System.out.println("Something very weird happens here...");
+                                    }
                                 }
                             }
                         }
@@ -97,7 +120,7 @@ public class ValidationResultBuilder {
             double anchorProbability = transect.getOrDefault(anchorEdge, 0.);
             ValidationResult result;
             try {
-                result = new ValidationResult(leg, a, transect, anchorEdge, anchorProbability);
+                result = new ValidationResult(leg, a, transect, anchorEdge, anchorProbability, config);
                 results.add(result);
             } catch (SchemaException e) {
                 e.printStackTrace();

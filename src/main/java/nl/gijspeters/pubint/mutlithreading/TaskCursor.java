@@ -7,8 +7,6 @@ public interface TaskCursor {
 
     Task getNextTask(TaskFinishedCallback callback);
 
-    int tasksLeft();
-
     boolean hasTasksLeft();
 
 }

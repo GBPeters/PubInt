@@ -21,6 +21,8 @@ public class Leg {
     private Anchor destination;
     private PrismContainer prism;
 
+    private double distance;
+
     public Leg() {
     }
 
@@ -83,6 +85,14 @@ public class Leg {
         } else {
             this.prism = new PrismContainer(prism);
         }
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(double distance) {
+        this.distance = distance;
     }
 }
 

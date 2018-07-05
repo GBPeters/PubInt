@@ -3,16 +3,11 @@ package nl.gijspeters.pubint.app;
 import nl.gijspeters.pubint.config.Config;
 import nl.gijspeters.pubint.export.csv.CSVWriter;
 import nl.gijspeters.pubint.export.csv.resultgraph.ResultGraphDocument;
-import nl.gijspeters.pubint.graph.traversable.BasicEdge;
+import nl.gijspeters.pubint.export.csv.validate.ValidationDocument;
 import nl.gijspeters.pubint.graph.traversable.Edge;
-import nl.gijspeters.pubint.model.ModelConfig;
-import nl.gijspeters.pubint.model.ModelResultGraph;
-import nl.gijspeters.pubint.model.Network;
-import nl.gijspeters.pubint.model.ResultGraphBuilder;
+import nl.gijspeters.pubint.model.*;
 import nl.gijspeters.pubint.mongohandler.MorphiaHandler;
-import nl.gijspeters.pubint.mutlithreading.CreateNetworkCursor;
-import nl.gijspeters.pubint.mutlithreading.TaskCursor;
-import nl.gijspeters.pubint.mutlithreading.TaskManager;
+import nl.gijspeters.pubint.mutlithreading.*;
 import nl.gijspeters.pubint.structure.Leg;
 import nl.gijspeters.pubint.structure.Trajectory;
 import nl.gijspeters.pubint.tools.PgMongoMigrator;
@@ -25,6 +20,7 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.mongodb.morphia.query.Query;
 
+import java.io.File;
 import java.util.*;
 
 import static nl.gijspeters.pubint.config.Constants.OTP_DIR;
@@ -59,6 +55,9 @@ public class App {
 
     @Option(name = "-m", usage = "Use multiple threads")
     int mt = 1;
+
+    @Option(name = "-l", usage = "Limit query size")
+    int limit = 0;
 
     @Option(name = "-o", usage = "Use multiple OTP instances")
     int oi = 1;
@@ -108,6 +107,9 @@ public class App {
                 case "runmodel":
                     runModel();
                     break;
+                case "calcdistance":
+                    calcDistance();
+                    break;
                 default:
                     throw new CmdLineException("Invalid command.");
             }
@@ -120,25 +122,34 @@ public class App {
         }
     }
 
+    private void calcDistance() {
+        if (test) {
+            Leg l = MorphiaHandler.getInstance().getTestLeg();
+            double d = l.getOrigin().getCoord().distance(l.getDestination().getCoord());
+            l.setDistance(d);
+            System.out.println(l);
+            System.out.println("Distance = " + d);
+
+        } else {
+            Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class).disableCursorTimeout()
+                    .field("distance").doesNotExist();
+            TaskCursor cursor = new DistanceCursor(q);
+            TaskManager tm = new TaskManager(cursor, mt);
+            tm.start();
+        }
+    }
+
     private void runModel() {
 
         if (validate) {
             if (clear) {
                 MorphiaHandler.getInstance().clearCollection("validationresults");
             }
-            Set<Edge> edges = MorphiaHandler.getInstance().getEdges();
-            System.out.println("Edges loaded");
-            Set<BasicEdge> map = new HashSet<>();
-            for (Edge e : edges) {
-                if (e instanceof BasicEdge) {
-                    map.add((BasicEdge) e);
-                }
-            }
-            System.out.println("Edges casted");
+            Query<Edge> edges = MorphiaHandler.getInstance().iterateEdges();
             if (test) {
                 ValidationLeg leg = (ValidationLeg) MorphiaHandler.getInstance().getTestLeg();
                 System.out.println(leg);
-                ValidationResultBuilder builder = new ValidationResultBuilder(new ModelConfig(), map);
+                ValidationResultBuilder builder = new ValidationResultBuilder(new ModelConfig(), edges);
                 System.out.println("Map indexed");
                 Set<ValidationResult> results = builder.buildResult(leg);
                 for (ValidationResult r : results) {
@@ -152,6 +163,38 @@ public class App {
                         ResultGraphDocument transectdoc = new ResultGraphDocument(r.getTransect());
                         writer.writeDocument(transectdoc);
                         System.out.println("CSV file dumped");
+                    }
+                }
+            } else {
+                System.out.println("Validating prisms...");
+                ConfigGrid grid = new ConfigGrid();
+                ValidationResultBuilder builder = new ValidationResultBuilder(null, edges);
+                for (ModelConfig config : grid.getConfigs()) {
+                    if (new File("validations_" +
+                            config.getDispersion() + "_" + config.getTransition() + "_" + config.getTransitWeight() +
+                            ".csv").exists()) {
+                        System.out.println("Validation for dispersion=" + config.getDispersion() + ", transition="
+                                + config.getTransition() + ", transitWeight=" + config.getTransitWeight() + "exists. " +
+                                "Continuing.");
+                        continue;
+                    }
+                    ;
+
+                    builder.setConfig(config);
+                    System.out.println("Validating for dispersion=" + config.getDispersion() + ", transition="
+                            + config.getTransition() + ", transitWeight=" + config.getTransitWeight());
+                    Query<ValidationLeg> q = MorphiaHandler.getInstance().getDs().createQuery(ValidationLeg.class)
+                            .field("prism").exists().field("distance").greaterThanOrEq(0.005).limit(limit);
+                    TaskCursor cursor = new ValidateCursor(q, builder);
+                    ValidationTaskManager tm = new ValidationTaskManager(cursor, mt);
+                    tm.start();
+                    tm.join();
+                    if (dump) {
+                        ValidationDocument doc = new ValidationDocument(new HashSet<>(tm.getValidations()));
+                        CSVWriter<ValidationDocument> writer = new CSVWriter<>("validations_" +
+                                config.getDispersion() + "_" + config.getTransition() + "_" + config.getTransitWeight() +
+                                ".csv");
+                        writer.writeDocument(doc);
                     }
                 }
             }
@@ -193,7 +236,8 @@ public class App {
                 }
             } else {
                 System.out.println("Creating probability networks...");
-                Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class).field("prism").exists();
+                Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class).field("prism").exists()
+                        .field("distance").greaterThanOrEq(0.005);
                 TaskCursor cursor = new CreateNetworkCursor(q, new ModelConfig());
                 TaskManager tm = new TaskManager(cursor, mt);
                 tm.start();

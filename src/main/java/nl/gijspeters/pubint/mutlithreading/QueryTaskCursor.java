@@ -9,34 +9,26 @@ import java.util.Iterator;
  */
 public abstract class QueryTaskCursor<T> implements TaskCursor {
 
-    protected int tasksLeft;
     protected Iterator<T> iterator;
 
     public QueryTaskCursor(Query<T> query) {
-        Query q = query.cloneQuery();
-        Iterator counter = q.iterator();
-        while (counter.hasNext()) {
-            counter.next();
-            tasksLeft++;
-        }
         iterator = query.iterator();
     }
 
     @Override
     public Task getNextTask(TaskFinishedCallback callback) {
-        tasksLeft--;
-        return createTask(iterator.next(), callback);
+        try {
+            return createTask(iterator.next(), callback);
+        } catch (RuntimeException e) {
+            callback.onError(null, e);
+            return null;
+        }
     }
 
     protected abstract Task createTask(T t, TaskFinishedCallback callback);
 
     @Override
-    public int tasksLeft() {
-        return tasksLeft;
-    }
-
-    @Override
     public boolean hasTasksLeft() {
-        return tasksLeft > 0;
+        return iterator.hasNext();
     }
 }

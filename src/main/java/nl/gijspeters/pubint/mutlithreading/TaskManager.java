@@ -1,8 +1,5 @@
 package nl.gijspeters.pubint.mutlithreading;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,11 +8,15 @@ import java.util.List;
  */
 public class TaskManager implements TaskFinishedCallback {
 
-    private static Logger logger = LoggerFactory.getLogger(TaskManager.class);
     private TaskCursor cursor;
+    private int processed = 0;
+    private int completed = 0;
+    private int errors = 0;
 
     private List<Task> runningTasks = new ArrayList<>();
     private int maxConcurrency;
+
+    private boolean finished = false;
 
     public TaskManager(TaskCursor cursor, int maxConcurrency) {
         this.cursor = cursor;
@@ -30,21 +31,46 @@ public class TaskManager implements TaskFinishedCallback {
         }
     }
 
-    private void loadTask() {
-        if (cursor.hasTasksLeft()) {
-            Task t = cursor.getNextTask(this);
-            runningTasks.add(t);
-            new Thread(t).start();
+    public void join() {
+        while (!finished) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    private synchronized void finishTask(Task t) {
+    private void loadTask() {
+        while (cursor.hasTasksLeft()) {
+            Task t = cursor.getNextTask(this);
+            if (t != null) {
+                runningTasks.add(t);
+                new Thread(t).start();
+                return;
+            }
+            errors++;
+            processed++;
+        }
+        System.out.println(String.format("Almost finished, %d left. %d completed, %d errors.", runningTasks.size(),
+                completed, errors));
+        finished = runningTasks.isEmpty();
+    }
+
+    protected synchronized void finishTask(Task t) {
         runningTasks.remove(t);
-        String s = String.format("%s finished. %d tasks left.", t.toString(), cursor.tasksLeft() + runningTasks.size());
-        logger.info(s);
+        processed++;
+        completed++;
+        String s = String.format("%s finished. %d tasks completed, %d errors.", t, completed, errors);
+        System.out.println(s);
         if (runningTasks.size() < maxConcurrency) {
             loadTask();
         }
+
+    }
+
+    public boolean isFinished() {
+        return finished;
     }
 
     @Override
@@ -54,10 +80,16 @@ public class TaskManager implements TaskFinishedCallback {
 
     @Override
     public void onError(Task t, Exception e) {
-        String s = String.format("%s on %s", e.getClass().getSimpleName(), t.toString());
-        logger.error(s);
-        e.printStackTrace();
-        logger.info("Closing task.");
+        processed++;
+        errors++;
+        String s;
+        if (t == null) {
+            s = String.format("%s on Task Init", e.getClass().getSimpleName());
+        } else {
+            s = String.format("%s on %s", e.getClass().getSimpleName(), t);
+        }
+        System.out.println(s);
+        System.out.println("Closing task.");
         finishTask(t);
     }
 }

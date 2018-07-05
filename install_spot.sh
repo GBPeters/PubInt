@@ -39,8 +39,8 @@ Description=High-performance, schema-free document-oriented database
 After=network.target
 
 [Service]
-User=mongodb
-ExecStart=/usr/bin/mongod --quiet --config /etc/mongod.conf
+User=gijs
+ExecStart=/usr/bin/mongod --quiet --dbpath /data/db
 
 [Install]
 WantedBy=multi-user.target
@@ -65,14 +65,14 @@ mongorestore -d pubint_v --archive=pubint_transfer/pubint_anchor.zip
 wget https://dl.dropboxusercontent.com/s/c9tzekjca8bsbhu/PubInt-0.1-SNAPSHOT.jar
 
 # Create service
-sudo bash -c 'cat >/etc/systemd/system/pubint_create.service' <<EOT
+sudo bash -c 'cat >/etc/systemd/system/pubint_validate.service' <<EOT
 [Unit]
-Description=PubInt Prism Creator
+Description=PubInt Validator
 
 [Service]
-User=ubuntu
-ExecStart=/usr/bin/java -Xmx32g -jar /home/ubuntu/PubInt-0.1-SNAPSHOT.jar createprisms -m 16 -o 4
-WorkingDirectory=/home/ubuntu
+User=gijs
+ExecStart=/usr/bin/java -Xmx12g -jar /home/gijs/PubInt_jar/PubInt-0.1-SNAPSHOT.jar runmodel -d -v -c -m 4 -l 5000
+WorkingDirectory=/data
 
 [Install]
 WantedBy=multi-user.target

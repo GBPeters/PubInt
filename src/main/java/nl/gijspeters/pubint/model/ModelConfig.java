@@ -7,19 +7,23 @@ import static nl.gijspeters.pubint.config.Constants.*;
  */
 public class ModelConfig {
 
-    private final double dispersion;
-    private final double transition;
-    private final int intervalSeconds;
+    private double dispersion;
+    private double transition;
+    private double transitWeight;
+    private int intervalSeconds;
 
     public ModelConfig() {
-        dispersion = DISPERSION;
-        transition = TRANSITION;
-        intervalSeconds = INTERVAL_SECONDS;
+        this(DISPERSION, TRANSITION, TRANSIT_WEIGHT, INTERVAL_SECONDS);
     }
 
     public ModelConfig(double dispersion, double transition, int intervalSeconds) {
+        this(dispersion, transition, TRANSIT_WEIGHT, intervalSeconds);
+    }
+
+    public ModelConfig(double dispersion, double transition, double transitWeight, int intervalSeconds) {
         this.dispersion = dispersion;
         this.transition = transition;
+        this.transitWeight = transitWeight;
         this.intervalSeconds = intervalSeconds;
     }
 
@@ -33,5 +37,9 @@ public class ModelConfig {
 
     public int getIntervalSeconds() {
         return intervalSeconds;
+    }
+
+    public double getTransitWeight() {
+        return transitWeight;
     }
 }

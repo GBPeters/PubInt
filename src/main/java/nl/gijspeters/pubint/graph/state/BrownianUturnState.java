@@ -21,7 +21,7 @@ public class BrownianUturnState extends BrownianState {
 
     @Override
     public double getVisitProbability(Date originDate, Date destinationDate, Date currentDate, double dispersion,
-                                      double transtition) {
+                                      double transtition, double transitWeight) {
         long tO = originDate.getTime();
         long tD = destinationDate.getTime();
         long t = currentDate.getTime();
