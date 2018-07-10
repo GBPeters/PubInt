@@ -129,7 +129,7 @@ public class ValidationResultBuilder {
         return results;
     }
 
-    private BasicEdge selectAnchorEdge(Anchor anchor) {
+    public BasicEdge selectAnchorEdge(Anchor anchor) {
         Coordinate pt = anchor.getCoord();
         Envelope search = new Envelope(pt);
         search.expandBy(maxSearchDistance);

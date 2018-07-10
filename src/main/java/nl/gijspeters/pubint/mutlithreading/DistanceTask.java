@@ -16,6 +16,6 @@ public class DistanceTask extends Task {
     protected void executeTask() throws Exception {
         double d = l.getOrigin().getCoord().distance(l.getDestination().getCoord());
         l.setDistance(d);
-        MorphiaHandler.getInstance().saveLeg(l);
+        MorphiaHandler.getInstance().getDs().save(l);
     }
 }

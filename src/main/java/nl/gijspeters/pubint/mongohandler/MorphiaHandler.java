@@ -10,6 +10,7 @@ import nl.gijspeters.pubint.graph.traversable.Ride;
 import nl.gijspeters.pubint.graph.traversable.Traversable;
 import nl.gijspeters.pubint.model.ModelResultGraph;
 import nl.gijspeters.pubint.structure.*;
+import nl.gijspeters.pubint.validation.ValidationLeg;
 import nl.gijspeters.pubint.validation.ValidationResult;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
@@ -211,6 +212,20 @@ public class MorphiaHandler {
         do {
             l = i.next();
         } while (i.hasNext() && (l.getDeltaTime() < 1200000 || l.getDeltaTime() > 1500000));
+        return l;
+    }
+
+    public ValidationLeg getDumpLeg(int skip) {
+        Query<ValidationLeg> q = MorphiaHandler.getInstance().getDs().createQuery(ValidationLeg.class).field("prism").exists().field("distance").greaterThanOrEq(0.025);
+        Iterator<ValidationLeg> i = q.iterator();
+        ValidationLeg l;
+        int skipped = -1;
+        do {
+            do {
+                l = i.next();
+            } while (i.hasNext() && (l.getDeltaTime() < 1200000) || l.getValidators().size() < 6);
+            skipped++;
+        } while (skipped <= skip);
         return l;
     }
 

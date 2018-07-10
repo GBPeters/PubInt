@@ -3,6 +3,7 @@ package nl.gijspeters.pubint.app;
 import nl.gijspeters.pubint.config.Config;
 import nl.gijspeters.pubint.export.csv.CSVWriter;
 import nl.gijspeters.pubint.export.csv.resultgraph.ResultGraphDocument;
+import nl.gijspeters.pubint.export.csv.validate.ResultDocument;
 import nl.gijspeters.pubint.export.csv.validate.ValidationDocument;
 import nl.gijspeters.pubint.graph.traversable.Edge;
 import nl.gijspeters.pubint.model.*;
@@ -14,6 +15,7 @@ import nl.gijspeters.pubint.tools.PgMongoMigrator;
 import nl.gijspeters.pubint.validation.ValidationLeg;
 import nl.gijspeters.pubint.validation.ValidationResult;
 import nl.gijspeters.pubint.validation.ValidationResultBuilder;
+import nl.gijspeters.pubint.validation.VisitedExample;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -23,8 +25,7 @@ import org.mongodb.morphia.query.Query;
 import java.io.File;
 import java.util.*;
 
-import static nl.gijspeters.pubint.config.Constants.OTP_DIR;
-import static nl.gijspeters.pubint.config.Constants.VALIDATE_DB;
+import static nl.gijspeters.pubint.config.Constants.*;
 import static org.kohsuke.args4j.ExampleMode.ALL;
 
 /**
@@ -62,6 +63,8 @@ public class App {
     @Option(name = "-o", usage = "Use multiple OTP instances")
     int oi = 1;
 
+    @Option(name = "--skip", usage = "Skip first # legs in test leg selection")
+    int skip = 0;
     /**
      * Main method. Starting point for the application.
      *
@@ -147,27 +150,64 @@ public class App {
             }
             Query<Edge> edges = MorphiaHandler.getInstance().iterateEdges();
             if (test) {
-                ValidationLeg leg = (ValidationLeg) MorphiaHandler.getInstance().getTestLeg();
-                System.out.println(leg);
+
                 ValidationResultBuilder builder = new ValidationResultBuilder(new ModelConfig(), edges);
                 System.out.println("Map indexed");
-                Set<ValidationResult> results = builder.buildResult(leg);
-                for (ValidationResult r : results) {
-                    System.out.println("--- New result ---");
-                    System.out.println(r.getAnchor());
-                    System.out.println("Transect size " + r.getTransect().size());
-                    System.out.println(r.getAnchorEdge());
-                    System.out.println(r.getAnchorProbability());
-                    if (dump) {
-                        CSVWriter<ResultGraphDocument> writer = new CSVWriter<>("transectdump.csv");
-                        ResultGraphDocument transectdoc = new ResultGraphDocument(r.getTransect());
-                        writer.writeDocument(transectdoc);
-                        System.out.println("CSV file dumped");
+
+                Query<ValidationLeg> q = MorphiaHandler.getInstance().getDs().createQuery(ValidationLeg.class).field("prism").exists().field("distance").greaterThanOrEq(0.025);
+                Iterator<ValidationLeg> it = q.iterator();
+                int skipped = -1;
+
+                search:
+                do {
+                    ValidationLeg leg;
+                    do {
+                        leg = it.next();
+                        skipped++;
+                    } while (skipped < skip || leg.getDeltaTime() < 1200000 || leg.getValidators().size() < 4);
+
+                    System.out.println(leg);
+                    Set<ValidationResult> results = builder.buildResult(leg);
+                    int i = 0;
+                    List<VisitedExample> examples = new ArrayList<>();
+                    VisitedExample originExample = new VisitedExample(leg.getOrigin(),
+                            builder.selectAnchorEdge(leg.getOrigin()), 1);
+                    examples.add(originExample);
+                    for (ValidationResult r : results) {
+                        System.out.println("--- New result ---");
+                        System.out.println(r.getAnchor());
+                        System.out.println("Transect size " + r.getTransect().size());
+                        System.out.println(r.getAnchorEdge());
+                        System.out.println(r.getAnchorProbability());
+                        if (r.getAnchorProbability() <= 0) {
+                            System.out.println("Invalid prism, continuing");
+                            skip = skipped + 20;
+                            continue search;
+                        }
+                        VisitedExample example = new VisitedExample(r.getAnchor(), r.getAnchorEdge(), r.getAnchorProbability());
+                        examples.add(example);
+                        if (dump) {
+                            CSVWriter<ResultGraphDocument> writer = new CSVWriter<>("transectdump_" + i + ".csv");
+                            ResultGraphDocument transectdoc = new ResultGraphDocument(r.getTransect());
+                            writer.writeDocument(transectdoc);
+                            System.out.println("Validation transect dumped");
+                        }
+                        i++;
                     }
-                }
+                    VisitedExample destinationExample = new VisitedExample(leg.getDestination(),
+                            builder.selectAnchorEdge(leg.getDestination()), 1);
+                    examples.add(destinationExample);
+                    if (dump) {
+                        CSVWriter<ResultDocument> writer = new CSVWriter<>("resultdump.csv");
+                        ResultDocument resultDocument = new ResultDocument(examples);
+                        writer.writeDocument(resultDocument);
+                        System.out.println("Results dumped");
+                    }
+                    break;
+                } while (true);
             } else {
                 System.out.println("Validating prisms...");
-                ConfigGrid grid = new ConfigGrid();
+                ConfigGrid grid = new ConfigGrid(1, 0.001, 1, INTERVAL_SECONDS);
                 ValidationResultBuilder builder = new ValidationResultBuilder(null, edges);
                 for (ModelConfig config : grid.getConfigs()) {
                     if (new File("validations_" +
@@ -178,13 +218,11 @@ public class App {
                                 "Continuing.");
                         continue;
                     }
-                    ;
-
                     builder.setConfig(config);
                     System.out.println("Validating for dispersion=" + config.getDispersion() + ", transition="
                             + config.getTransition() + ", transitWeight=" + config.getTransitWeight());
                     Query<ValidationLeg> q = MorphiaHandler.getInstance().getDs().createQuery(ValidationLeg.class)
-                            .field("prism").exists().field("distance").greaterThanOrEq(0.005).limit(limit);
+                            .field("prism").exists().limit(limit);//.field("distance").greaterThanOrEq(0.005);
                     TaskCursor cursor = new ValidateCursor(q, builder);
                     ValidationTaskManager tm = new ValidationTaskManager(cursor, mt);
                     tm.start();
@@ -236,8 +274,9 @@ public class App {
                 }
             } else {
                 System.out.println("Creating probability networks...");
-                Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class).field("prism").exists()
-                        .field("distance").greaterThanOrEq(0.005);
+                Query<Leg> q = MorphiaHandler.getInstance().getDs().createQuery(Leg.class).field("prism").exists().
+                        limit(limit);
+                //.field("distance").greaterThanOrEq(0.005);
                 TaskCursor cursor = new CreateNetworkCursor(q, new ModelConfig());
                 TaskManager tm = new TaskManager(cursor, mt);
                 tm.start();

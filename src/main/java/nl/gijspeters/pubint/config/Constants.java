@@ -21,9 +21,9 @@ public class Constants {
 
     public static final MongoConfig VALIDATE_DB = new MongoConfig("pubint_v");
 
-    public static final double DISPERSION = 3;
+    public static final double DISPERSION = 1;
 
-    public static final double TRANSITION = 0.003;
+    public static final double TRANSITION = 0.001;
 
     public static final String OTP_DIR_DEBUG = "/Users/gijspeters/otp";
 
@@ -31,9 +31,9 @@ public class Constants {
 
     public static final double TRANSIT_WEIGHT = 1;
 
-    public static final Set<Double> GRID_DISPERIONS = new HashSet<>(Arrays.asList(1., 3., 10.));
+    public static final Set<Double> GRID_DISPERIONS = new HashSet<>(Arrays.asList(1., .5, .002, .001));
 
-    public static final Set<Double> GRID_TRANSITIONS = new HashSet<>(Arrays.asList(0.001, 0.003, 0.005));
+    public static final Set<Double> GRID_TRANSITIONS = new HashSet<>(Arrays.asList(0.0005, 0.001, 0.003));
 
-    public static final Set<Double> GRID_TRANSIT_WEIGHTS = new HashSet<>(Arrays.asList(0.1, 1., 10.));
+    public static final Set<Double> GRID_TRANSIT_WEIGHTS = new HashSet<>(Arrays.asList(1., 10.));
 }

@@ -9,6 +9,18 @@ public class ConfigGrid {
 
     private Set<ModelConfig> configs = new HashSet<>();
 
+    public ConfigGrid(double dispersion, double transition, double transitWeight, int interval) {
+        Set<Double> dispersions = new HashSet<>();
+        Set<Double> transitions = new HashSet<>();
+        Set<Double> transitWeights = new HashSet<>();
+        Set<Integer> intervals = new HashSet<>();
+        dispersions.add(dispersion);
+        transitions.add(transition);
+        transitWeights.add(transitWeight);
+        intervals.add(interval);
+        fillConfigs(dispersions, transitions, transitWeights, intervals);
+    }
+
     public ConfigGrid(Set<Double> dispersions, Set<Double> transitions, Set<Double> transitWeights,
                       Set<Integer> intervals) {
         fillConfigs(dispersions, transitions, transitWeights, intervals);
